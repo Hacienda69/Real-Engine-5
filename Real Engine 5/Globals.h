@@ -66,8 +66,8 @@ enum update_status
 #define WIN_FULLSCREEN false
 #define WIN_RESIZABLE true
 #define WIN_BORDERLESS false
-#define WIN_FULLSCREEN_DESKTOP false
-#define TITLE "REAL ENGINE 5"
+#define WIN_FULLSCREEN_DESKTOP true
+#define TITLE "Real Engine 5"
 
 //Render
 #define VSYNC true

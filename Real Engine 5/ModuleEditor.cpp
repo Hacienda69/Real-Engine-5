@@ -115,6 +115,7 @@ bool ModuleEditor::Init()
     isActiveHierarchy = true;
     isActiveConsole = true;
     isActiveInspector = true;
+    isActiveConfig = true;
 
     return true;
 }
@@ -227,59 +228,8 @@ update_status ModuleEditor::DrawEditor()
 
             ImGui::EndMenu();
         }
-     
-
-        if (ImGui::BeginMenu("Configuration"))
-        {
-            if (ImGui::Checkbox("Vsync", &vsync))
-            {
-                App->renderer3D->SetVsync(vsync);
-            }
-
-            std::string fps = std::to_string(AverageValueFloatVector(mFPSLog));
-            std::string fpsText = "Average FPS: " + fps;
-            ImGui::Text(fpsText.c_str());
-            ImGui::PlotHistogram("FPS", &mFPSLog[0], mFPSLog.size(), 0, "FPS", 0.0f, 100.0f, ImVec2(450, 100));
-
-
-            std::string ms = std::to_string(AverageValueFloatVector(mMsLog));
-            std::string msText = "Average Miliseconds: " + ms;
-            ImGui::Text(msText.c_str());
-            ImGui::PlotHistogram("Ms.", &mMsLog[0], mMsLog.size(), 0, "Miliseconds", 0.0f, 100.0f, ImVec2(450, 100));
-
-
-            WindowCollapsingHeader();
-
-            RenderCollapsingHeader();
-            
-            if (ImGui::CollapsingHeader("Inputs"))
-            {
-                if (ImGui::IsMousePosValid())
-                    ImGui::Text("Mouse pos: (%g, %g)", io.MousePos.x, io.MousePos.y);
-                else
-                    ImGui::Text("Mouse pos: <INVALID>");
-
-                ImGui::Text("Mouse down:");
-                for (int i = 0; i < IM_ARRAYSIZE(io.MouseDown); i++) if (ImGui::IsMouseDown(i)) { ImGui::SameLine(); ImGui::Text("b%d (%.02f secs)", i, io.MouseDownDuration[i]); }
-                ImGui::Text("Mouse wheel: %.1f", io.MouseWheel);
-                
-                ImGuiKey start_key = (ImGuiKey)0;
-                struct funcs { static bool IsLegacyNativeDupe(ImGuiKey key) { return key < 512 && ImGui::GetIO().KeyMap[key] != -1; } }; 
-                ImGui::Text("Keys down:");         for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1)) { if (funcs::IsLegacyNativeDupe(key) || !ImGui::IsKeyDown(key)) continue; ImGui::SameLine(); ImGui::Text((key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key); }
-
-                
-            }
-
-            HardwareCollapsingHeader();
-
-            
-
-            if (ImGui::Button("Close", ImVec2(60, 0)))
-            {
-                ImGui::CloseCurrentPopup();
-            }
-            ImGui::End();
-        }
+ 
+        ViewCollapsingHeader();
 
         if (ImGui::BeginMenu("Help"))
         {
@@ -291,17 +241,13 @@ update_status ModuleEditor::DrawEditor()
             ImGui::EndMenu();
         }
 
-
         //CreateAboutModalPopup(showModalAbout);
         CreateAboutWindow(showAboutWindow);
         CreateConsoleWindow(isActiveConsole);
 
-        ViewCollapsingHeader();
 
         ImGui::EndMainMenuBar();
     }
-
-
 
     if (App->hierarchy->objSelected && isActiveInspector) {
 
@@ -312,30 +258,30 @@ update_status ModuleEditor::DrawEditor()
         ImGui::End();
     }
 
-  
-
     if (isActiveHierarchy) {
         if (ImGui::Begin("GameObjects Hierarchy")) {
 
             App->hierarchy->GameObjectTree(App->scene->root, 0);
-
-
         }
         ImGui::End();
     }
+
+    if (isActiveConfig) DrawConfiguration();
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
     return ret;
-
-    
 }
 
 void ModuleEditor::ViewCollapsingHeader() {
 
     if (ImGui::BeginMenu("View")) {
 
+        if (ImGui::Checkbox("Configuration", &isActiveConfig)) 
+        {
+            isActiveConfig != isActiveConfig;
+        }
         if (ImGui::Checkbox("Hierarchy", &isActiveHierarchy))
         {
             isActiveHierarchy != isActiveHierarchy;
@@ -353,48 +299,28 @@ void ModuleEditor::ViewCollapsingHeader() {
     }
 }
 
-void ModuleEditor::HardwareCollapsingHeader()
+void ModuleEditor::ApplicationCollapsingHeader() 
 {
-    if (ImGui::CollapsingHeader("Hardware"))
-    {
-        ImGui::Text(sdlVersion.c_str());
-        ImGui::Separator();
-        
-        ImGui::Text("CPUs ");
-        ImGui::SameLine();
-        ImGui::Text("%u", cpuCount);
-        ImGui::SameLine();
-        ImGui::Text(" (Cache: %u", cpuCacheSize);
-        ImGui::SameLine();
-        ImGui::Text("kb)\n");
-
-
-        ImGui::Text("System RAM: ");
-        ImGui::SameLine();
-        ImGui::TextColored(IMGUICOL_SKY_BLUE, "%.2f", systemRAM);
-        ImGui::SameLine();
-        ImGui::TextColored(IMGUICOL_SKY_BLUE, "Gb");
-
-        ImGui::Separator();
-        ImGui::Text("Sceen Devices:");
-
-        for (const std::string& screen : screens) {
-            ImGui::Text("%s", screen.c_str());
+    if (ImGui::CollapsingHeader("Application")) {
+        if (ImGui::Checkbox("Vsync", &vsync))
+        {
+            App->renderer3D->SetVsync(vsync);
         }
 
-        ImGui::Text("Caps: ");
+        ImGui::SameLine();
+        int auxFPS = App->maxFrameRate;
+        if (ImGui::SliderInt("Max FPS", &auxFPS, 1, 120))
+            App->maxFrameRate = auxFPS;
 
-        if (Now3D) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "3DNOW,"); }
-        if (AltiVec) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AltiVec,"); }
-        if (AVX) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AVX,"); }
-        if (AVX2) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AVX2,"); }
-        if (MMX) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "MMX,"); }
-        if (RDTSC) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "RDTSC,"); }
-        if (SSE) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE,"); }
-        if (SSE2) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE2,"); }
-        if (SSE3) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE3,"); }
-        if (SSE41) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE41,"); }
-        if (SSE42) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE42"); }
+        char title[25];
+        sprintf_s(title, 25, "FrameRate %0.1f", mFPSLog[mFPSLog.size() - 1]);
+        ImGui::PlotHistogram("##FPS Log", &mFPSLog[0], mFPSLog.size(), 0, title, 0.0f, 120.0f, ImVec2(300, 100));
+
+        sprintf_s(title, 25, "Milliseconds %0.1f", mMsLog[mMsLog.size() - 1]);
+        ImGui::PlotHistogram("##MS Log", &mMsLog[0], mMsLog.size(), 0, title, 0.0f, 50.0f, ImVec2(300, 100));
+
+        ImGui::Text("Average MS: %.3f", 1000.0 / ImGui::GetIO().Framerate);
+        ImGui::Text("Average FPS: %.1f", ImGui::GetIO().Framerate);
 
     }
 }
@@ -403,54 +329,51 @@ void ModuleEditor::WindowCollapsingHeader()
 {
     if (ImGui::CollapsingHeader("Window"))
     {
-        if (ImGui::BeginTable("split", 3))
+        int oldWidth = App->window->width;
+        int oldHeight = App->window->height;
+
+        if (ImGui::Checkbox("Fullscreen", &fullscreen))
         {
-            int oldWidth = App->window->width;
-            int oldHeight = App->window->height;
-
-            ImGui::TableNextColumn();
-            if (ImGui::Checkbox("Fullscreen", &fullscreen))
-            {
-                App->window->SetFullscreen(fullscreen);
-            }
-
-            ImGui::TableNextColumn();
-            if (ImGui::Checkbox("Resizable", &resizable))
-            {
-                App->window->SetResizable(resizable);
-            }
-
-            ImGui::TableNextColumn();
-            ImGui::SliderInt("Window Width", &App->window->width, 320, 2560);
-            
-            ImGui::TableNextColumn();
-            if (ImGui::Checkbox("Borderless", &borderless))
-            {
-                App->window->SetBorderless(borderless);
-            }
-            
-            ImGui::TableNextColumn();
-            if (ImGui::Checkbox("Full Desktop", &fulldesktop))
-            {
-                App->window->SetFulldesktop(fulldesktop);
-            }
-
-   
-            ImGui::TableNextColumn();
-            ImGui::SliderInt("Window Height", &App->window->height, 256, 2048);
-
-            if (oldWidth != App->window->width) { App->window->OnWidthChanged(); }
-            if (oldHeight != App->window->height) { App->window->OnHeightChanged(); }
-
-            ImGui::Spacing();
-
-            if (ImGui::SliderFloat("Brightness", &brightness, 0.100f, 1.000f))
-            {
-                SDL_SetWindowBrightness(App->window->window, brightness);
-                
-            }
-            ImGui::EndTable();
+            App->window->SetFullscreen(fullscreen);
         }
+
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Resizable", &resizable))
+        {
+            App->window->SetResizable(resizable);
+        }
+
+        if (ImGui::Checkbox("Borderless", &borderless))
+        {
+            App->window->SetBorderless(borderless);
+        }
+
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Full Desktop", &fulldesktop))
+        {
+            App->window->SetFulldesktop(fulldesktop);
+        }
+
+        ImGui::SliderInt("Window Height", &App->window->height, 256, 2048);
+        ImGui::SliderInt("Window Width", &App->window->width, 320, 2560);
+
+        if (fulldesktop && fullscreen && !resizable)
+        {
+            App->window->width = oldWidth;
+            App->window->height = oldHeight;
+        }
+
+        if (oldWidth != App->window->width) { App->window->OnWidthChanged(); }
+        if (oldHeight != App->window->height) { App->window->OnHeightChanged(); }
+
+        ImGui::Spacing();
+
+        if (ImGui::SliderFloat("Brightness", &brightness, 0.100f, 1.000f))
+        {
+            SDL_SetWindowBrightness(App->window->window, brightness);
+            
+        }
+        
     }
 }
 
@@ -538,6 +461,76 @@ void ModuleEditor::RenderCollapsingHeader()
     }
 }
 
+void ModuleEditor::InputCollapsingHeader() 
+{
+    if (ImGui::CollapsingHeader("Inputs"))
+    {
+        ImGuiIO io = ImGui::GetIO();
+
+        ImGui::Text("Mouse Position:"); ImGui::SameLine();
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%g, %g", io.MousePos.x, io.MousePos.y);
+        ImGui::Text("Mouse Delta:"); ImGui::SameLine();
+        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%g, %g", io.MouseDelta.x, io.MouseDelta.y);
+        ImGui::Text("Mouse Wheel:", io.MouseWheel);
+
+        struct funcs { static bool IsLegacyNativeDupe(ImGuiKey key) { return key < 512 && ImGui::GetIO().KeyMap[key] != -1; } }; // Hide Native<>ImGuiKey duplicates when both exists in the array
+        ImGuiKey start_key = (ImGuiKey)0;
+
+        ImGui::Text("Keys down:");
+        for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
+        {
+            if (funcs::IsLegacyNativeDupe(key) || !ImGui::IsKeyDown(key)) continue; ImGui::SameLine();
+            ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), (key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
+        }
+    }
+}
+
+void ModuleEditor::HardwareCollapsingHeader()
+{
+    if (ImGui::CollapsingHeader("Hardware"))
+    {
+        ImGui::Text(sdlVersion.c_str());
+        ImGui::Separator();
+
+        ImGui::Text("CPUs ");
+        ImGui::SameLine();
+        ImGui::Text("%u", cpuCount);
+        ImGui::SameLine();
+        ImGui::Text(" (Cache: %u", cpuCacheSize);
+        ImGui::SameLine();
+        ImGui::Text("kb)\n");
+
+
+        ImGui::Text("System RAM: ");
+        ImGui::SameLine();
+        ImGui::TextColored(IMGUICOL_SKY_BLUE, "%.2f", systemRAM);
+        ImGui::SameLine();
+        ImGui::TextColored(IMGUICOL_SKY_BLUE, "Gb");
+
+        ImGui::Separator();
+        ImGui::Text("Sceen Devices:");
+
+        for (const std::string& screen : screens) {
+            ImGui::Text("%s", screen.c_str());
+        }
+
+        ImGui::Text("Caps: ");
+
+        if (Now3D) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "3DNOW,"); }
+        if (AltiVec) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AltiVec,"); }
+        if (AVX) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AVX,"); }
+        if (AVX2) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AVX2,"); }
+        if (MMX) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "MMX,"); }
+        if (RDTSC) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "RDTSC,"); }
+        if (SSE) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE,"); }
+        if (SSE2) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE2,"); }
+        if (SSE3) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE3,"); }
+        if (SSE41) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE41,"); }
+        if (SSE42) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE42"); }
+
+    }
+}
+
 void ModuleEditor::CreateAboutWindow(bool& showAboutWindow)
 {
     if (!showAboutWindow)
@@ -622,16 +615,7 @@ void ModuleEditor::CreateAboutWindow(bool& showAboutWindow)
     // Licence
     ImGui::Text(license.c_str());
 
-    // Close Button
-    if (ImGui::Button("Close", ImVec2(60, 0)))
-    {
-        showAboutWindow = false;
-    }
-
     ImGui::End();
-
-
-
 }
 
 void ModuleEditor::CreateConsoleWindow(bool& showConsoleWindow)
@@ -696,7 +680,6 @@ void ModuleEditor::UpdatePlots()
     
 }
 
-
 void ModuleEditor::AddFPS(const float aFPS)
 {
 
@@ -743,7 +726,6 @@ void ModuleEditor::AddMs(const float aFPS)
     }
 }
 
-
 std::string ModuleEditor::ReadFileIO(const char* filePath)
 {
     std::ifstream file(filePath); 
@@ -779,8 +761,6 @@ float ModuleEditor::AverageValueFloatVector(const std::vector<float>& fps)
     return std::round(average * 10) / 10.0f;
 }
 
-
-
 void ModuleEditor::LOGToConsole(const char* text) {
 
     if (logs == nullptr) return;
@@ -806,6 +786,24 @@ void ModuleEditor::LOGToConsole(const char* text) {
 
 }
 
+void ModuleEditor::DrawConfiguration()
+{
+    ImGui::Begin("Configuration", &isActiveConfig);
 
+    ImGuiIO& io = ImGui::GetIO();
 
+    static char s1[128] = "Real Engine 5";
+    ImGui::InputText("Engine Name", s1, IM_ARRAYSIZE(s1));
+    static char s2[128] = "CITM UPC";
+    ImGui::InputText("Organization", s2, IM_ARRAYSIZE(s2));
 
+    ImGui::Separator();
+
+    ApplicationCollapsingHeader();
+    WindowCollapsingHeader();
+    RenderCollapsingHeader();
+    InputCollapsingHeader();
+    HardwareCollapsingHeader();
+
+    ImGui::End();
+}

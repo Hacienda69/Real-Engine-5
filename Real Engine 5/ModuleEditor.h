@@ -38,12 +38,15 @@ public:
     
 private:
 
-    
+    void DrawConfiguration();
+
     void CreateAboutWindow(bool& showAboutWindow);
     void URLButton(const char* url);
     void CreateConsoleWindow(bool& showConsoleWindow);
+    void ModuleEditor::ApplicationCollapsingHeader();
     void ModuleEditor::WindowCollapsingHeader();
     void ModuleEditor::RenderCollapsingHeader();
+    void ModuleEditor::InputCollapsingHeader();
     void UpdatePlots();
     
 public:
@@ -105,6 +108,7 @@ private:
     bool isActiveInspector;
     bool isActiveConsole;
     bool isActiveHierarchy;
+    bool isActiveConfig;
 
     //About Window
     std::string license;
