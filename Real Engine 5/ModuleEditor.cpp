@@ -552,7 +552,7 @@ void ModuleEditor::CreateAboutWindow(bool& showAboutWindow)
     }
 
     // Basic Info
-    ImGui::Text("Sheesh Engine");
+    ImGui::Text("REAL ENGINE 5");
     ImGui::Separator();
     ImGui::Spacing();
     ImGui::Text("Venture into the realm of game development with the legendary Sheesh Engine, \na creation born from the collaborative efforts of two visionary minds at CITM.");
