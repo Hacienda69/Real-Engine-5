@@ -43,7 +43,7 @@ bool Application::Init()
 {
 	bool ret = true;
 
-	maxFrameRate = 300;
+	maxFrameRate = 60;
 
 	// Call Init() in all modules
 	for (std::vector<Module*>::const_iterator it = list_modules.cbegin(); it != list_modules.cend() && ret; ++it)
@@ -72,20 +72,14 @@ void Application::PrepareUpdate()
 // ---------------------------------------------
 void Application::FinishUpdate()
 {
-	 
 	if (renderer3D->GetVsync())
 	{
 		msLastFrame = ms_timer.Read();
-
-		float timeToWait = 1000.0f / (float)maxFrameRate;
-
-		if (msLastFrame < timeToWait)
-			SDL_Delay(static_cast<Uint32>(fabs(timeToWait - msLastFrame)));
+		float aux = (1000.f / (float)maxFrameRate) - (float)msLastFrame;
+		SDL_Delay(static_cast<Uint32>(fabs(aux)));
 
 		msLastFrame = ms_timer.Read();
-
 	}
-
 }
 
 
