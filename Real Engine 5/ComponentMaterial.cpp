@@ -74,19 +74,19 @@ void ComponentMaterial::PrintInspector()
 	
 	if (ImGui::CollapsingHeader("Texture", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
 	{
-		std::string pathaux = "Path: " + std::string(pathTexture);
-		ImGui::TextWrapped(pathaux.c_str());
+		ImGui::Text("Path: "); ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, pathTexture.c_str());
+
 		int width = mOwner->GetMeshComponent()->mesh->texture_width;
-		std::string aux = "Texture Width: " + std::to_string(width);
-		ImGui::Text(aux.c_str() );
 		int height = mOwner->GetMeshComponent()->mesh->texture_height;
-		std::string aux2 = "Texture Height: " + std::to_string(height);
-		ImGui::Text(aux2.c_str());
+
+		ImGui::Text("Texture Width: ");  ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, std::to_string(width).c_str());
+		ImGui::Text("Texture Height: "); ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, std::to_string(height).c_str());
+
 		ImGui::Image((ImTextureID)textureID, ImVec2(128, 128));
+
 		ImGui::Text("Texture: ");
 		ImGui::SameLine();
 		ImGui::Combo("##ChoseTexture", &textureSelected, listTextures, IM_ARRAYSIZE(listTextures));
-
 	}
 
 	UpdateMeshTexture();

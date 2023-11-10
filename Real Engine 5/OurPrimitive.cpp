@@ -11,6 +11,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
         GameObject* gameObject = new GameObject(App->scene->root);
 		gameObject->name = "Empty Object";
         gameObject->Stype = GeometryType::EMPTY;
+        App->hierarchy->objSelected = gameObject;
 		return gameObject;
 	}
     else
@@ -24,6 +25,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             aux = "Plane";
             gameObject->name = aux;
             gameObject->Stype = GeometryType::P_PLANE;
+            App->hierarchy->objSelected = gameObject;
             return gameObject;
             break;
         case GeometryType::P_CUBE:
@@ -31,6 +33,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             aux = "Cube";
             gameObject->name = aux;
             gameObject->Stype = GeometryType::P_CUBE;
+            App->hierarchy->objSelected = gameObject;
             return gameObject;
 
             break;
@@ -39,6 +42,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             aux = "Cylinder";
             gameObject->name = aux;
             gameObject->Stype = GeometryType::P_CYLINDER;
+            App->hierarchy->objSelected = gameObject;
             return gameObject;
             break;
         case GeometryType::P_SPHERE:
@@ -46,6 +50,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             aux = "Sphere";
             gameObject->name = aux;
             gameObject->Stype = GeometryType::P_SPHERE;
+            App->hierarchy->objSelected = gameObject;
             return gameObject;
             break;
 
@@ -54,6 +59,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             aux = "Icosphere";
             gameObject->name = aux;
             gameObject->Stype = GeometryType::P_ICOSHPERE;
+            App->hierarchy->objSelected = gameObject;
             return gameObject;
             break;
 
@@ -62,6 +68,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             aux = "Cone";
             gameObject->name = aux;
             gameObject->Stype = GeometryType::P_CONE;
+            App->hierarchy->objSelected = gameObject;
             return gameObject;
             break;
 
@@ -70,6 +77,8 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             aux = "Torus";
             gameObject->name = aux;
             gameObject->Stype = GeometryType::P_TORUS;
+            gameObject->Stype = GeometryType::P_TORUS;
+            App->hierarchy->objSelected = gameObject;
             return gameObject;
             break;
         case GeometryType::P_SUZANNE:
@@ -77,6 +86,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             aux = "Suzanne";
             gameObject->name = aux;
             gameObject->Stype = GeometryType::P_SUZANNE;
+            App->hierarchy->objSelected = gameObject;
             return gameObject;
             break;
 

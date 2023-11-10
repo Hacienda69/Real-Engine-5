@@ -39,6 +39,7 @@ public:
 private:
 
     void DrawConfiguration();
+    void DrawAbout();
 
     void CreateAboutWindow(bool& showAboutWindow);
     void URLButton(const char* url);

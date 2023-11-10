@@ -4,12 +4,16 @@ ComponentMesh::ComponentMesh() : Component(nullptr)
 {
 	type = ComponentType::MESH;
 	mesh = nullptr;
+
+	faceNormals = false;
 }
 ComponentMesh::ComponentMesh(GameObject* owner) : Component(owner)
 {
 	type = ComponentType::MESH;
 	mOwner = owner;
 	mesh = nullptr;
+
+	faceNormals = false;
 }
 
 ComponentMesh::ComponentMesh::~ComponentMesh()
@@ -20,12 +24,12 @@ ComponentMesh::ComponentMesh::~ComponentMesh()
 
 void ComponentMesh::PrintInspector()
 {
-	if (ImGui::CollapsingHeader("Mesh"))
+	if (ImGui::CollapsingHeader("Mesh", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
 	{
 		if (mesh == nullptr) return;
 		ImGui::LabelText("##%f", "Number of vertex:");
 		ImGui::SameLine();
-		ImGui::Text("%d", mesh->vertexCount);
+		ImGui::TextColored(IMGUICOL_CYAN, "%d", mesh->vertexCount);
 		ImGui::Checkbox("Face Normals", &faceNormals);
 	}
 }

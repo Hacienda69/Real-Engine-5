@@ -231,15 +231,7 @@ update_status ModuleEditor::DrawEditor()
  
         ViewCollapsingHeader();
 
-        if (ImGui::BeginMenu("Help"))
-        {
-            if (ImGui::MenuItem("About..."))
-            {
-                showAboutWindow = true; 
-            }
-
-            ImGui::EndMenu();
-        }
+        if (ImGui::BeginMenu("Help")) DrawAbout();
 
         //CreateAboutModalPopup(showModalAbout);
         CreateAboutWindow(showAboutWindow);
@@ -319,8 +311,8 @@ void ModuleEditor::ApplicationCollapsingHeader()
         sprintf_s(title, 25, "Milliseconds %0.1f", mMsLog[mMsLog.size() - 1]);
         ImGui::PlotHistogram("##MS Log", &mMsLog[0], mMsLog.size(), 0, title, 0.0f, 50.0f, ImVec2(300, 100));
 
-        ImGui::Text("Average MS: %.3f", 1000.0 / ImGui::GetIO().Framerate);
-        ImGui::Text("Average FPS: %.1f", ImGui::GetIO().Framerate);
+        ImGui::Text("Average MS: ");  ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "%.3f", 1000.0 / ImGui::GetIO().Framerate);
+        ImGui::Text("Average FPS: "); ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "%.1f", ImGui::GetIO().Framerate);
 
     }
 }
@@ -468,9 +460,9 @@ void ModuleEditor::InputCollapsingHeader()
         ImGuiIO io = ImGui::GetIO();
 
         ImGui::Text("Mouse Position:"); ImGui::SameLine();
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%g, %g", io.MousePos.x, io.MousePos.y);
+        ImGui::TextColored(IMGUICOL_CYAN, "%g, %g", io.MousePos.x, io.MousePos.y);
         ImGui::Text("Mouse Delta:"); ImGui::SameLine();
-        ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), "%g, %g", io.MouseDelta.x, io.MouseDelta.y);
+        ImGui::TextColored(IMGUICOL_CYAN, "%g, %g", io.MouseDelta.x, io.MouseDelta.y);
         ImGui::Text("Mouse Wheel:", io.MouseWheel);
 
         struct funcs { static bool IsLegacyNativeDupe(ImGuiKey key) { return key < 512 && ImGui::GetIO().KeyMap[key] != -1; } }; // Hide Native<>ImGuiKey duplicates when both exists in the array
@@ -480,7 +472,7 @@ void ModuleEditor::InputCollapsingHeader()
         for (ImGuiKey key = start_key; key < ImGuiKey_NamedKey_END; key = (ImGuiKey)(key + 1))
         {
             if (funcs::IsLegacyNativeDupe(key) || !ImGui::IsKeyDown(key)) continue; ImGui::SameLine();
-            ImGui::TextColored(ImVec4(0.0f, 1.0f, 1.0f, 1.0f), (key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
+            ImGui::TextColored(IMGUICOL_CYAN, (key < ImGuiKey_NamedKey_BEGIN) ? "\"%s\"" : "\"%s\" %d", ImGui::GetKeyName(key), key);
         }
     }
 }
@@ -503,9 +495,9 @@ void ModuleEditor::HardwareCollapsingHeader()
 
         ImGui::Text("System RAM: ");
         ImGui::SameLine();
-        ImGui::TextColored(IMGUICOL_SKY_BLUE, "%.2f", systemRAM);
+        ImGui::TextColored(IMGUICOL_CYAN, "%.2f", systemRAM);
         ImGui::SameLine();
-        ImGui::TextColored(IMGUICOL_SKY_BLUE, "Gb");
+        ImGui::TextColored(IMGUICOL_CYAN, "Gb");
 
         ImGui::Separator();
         ImGui::Text("Sceen Devices:");
@@ -516,17 +508,17 @@ void ModuleEditor::HardwareCollapsingHeader()
 
         ImGui::Text("Caps: ");
 
-        if (Now3D) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "3DNOW,"); }
-        if (AltiVec) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AltiVec,"); }
-        if (AVX) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AVX,"); }
-        if (AVX2) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "AVX2,"); }
-        if (MMX) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "MMX,"); }
-        if (RDTSC) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "RDTSC,"); }
-        if (SSE) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE,"); }
-        if (SSE2) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE2,"); }
-        if (SSE3) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE3,"); }
-        if (SSE41) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE41,"); }
-        if (SSE42) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_SKY_BLUE, "SSE42"); }
+        if (Now3D)   { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "3DNOW,"); }
+        if (AltiVec) { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "AltiVec,"); }
+        if (AVX)     { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "AVX,"); }
+        if (AVX2)    { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "AVX2,"); }
+        if (MMX)     { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "MMX,"); }
+        if (RDTSC)   { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "RDTSC,"); }
+        if (SSE)     { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "SSE,"); }
+        if (SSE2)    { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "SSE2,"); }
+        if (SSE3)    { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "SSE3,"); }
+        if (SSE41)   { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "SSE41,"); }
+        if (SSE42)   { ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, "SSE42"); }
 
     }
 }
@@ -784,6 +776,107 @@ void ModuleEditor::LOGToConsole(const char* text) {
 
     logs->push_front(aux);
 
+}
+
+void ModuleEditor::DrawAbout() 
+{
+    if (ImGui::CollapsingHeader("About"))
+    {
+        ImGui::SeparatorText("ABOUT THE ENGINE:");
+        ImGui::Text("Real Engine 5 v0.1");
+        ImGui::Text("From the acclaimed studio 'Aprobe Motores', formed by the brilliant");
+        ImGui::Text("developers Marc Escandell and Daniel Manas, comes 'Real Engine 5',");
+        ImGui::Text("a new cutting - edge video game engine in the thriving virtual");
+        ImGui::Text("entertainment industry, we hope you enjoy it.");
+
+        ImGui::NewLine();
+
+        ImGui::SeparatorText("ABOUT THE AUTHORS:");
+        ImGui::BulletText("Marc Escandell Alonso");
+
+        if (ImGui::MenuItem("	Marc's Github: https://github.com/MrMonkey420"))
+            ShellExecute(NULL, "OPEN", "https://github.com/MrMonkey420", NULL, NULL, SW_SHOW);
+
+        ImGui::NewLine();
+
+        ImGui::BulletText("Daniel Manas Calvo");
+
+        if (ImGui::MenuItem("	Dani's Github: https://github.com/Hacienda69"))
+            ShellExecute(NULL, "OPEN", "https://github.com/Hacienda69", NULL, NULL, SW_SHOW);
+
+        ImGui::NewLine();
+
+        ImGui::SeparatorText("3RD PARTY LIBRARIES USED:");
+
+        ImGui::BulletText("SDL 2.0.4");
+        if (ImGui::MenuItem("	SDL: https://www.libsdl.org/"))
+            ShellExecute(NULL, "OPEN", "https://www.libsdl.org/", NULL, NULL, SW_SHOW);
+
+        ImGui::BulletText("ImGui 1.90 WIP");
+        if (ImGui::MenuItem("	ImGui: https://github.com/ocornut/imgui/tree/docking"))
+            ShellExecute(NULL, "OPEN", "https://github.com/ocornut/imgui/tree/docking", NULL, NULL, SW_SHOW);
+
+        ImGui::BulletText("Glew 2.1.0");
+        if (ImGui::MenuItem("	Glew: https://glew.sourceforge.net/"))
+            ShellExecute(NULL, "OPEN", "https://glew.sourceforge.net/", NULL, NULL, SW_SHOW);
+
+        ImGui::BulletText("MathGeoLib 1.0");
+        if (ImGui::MenuItem("	MathGeoLib: https://github.com/juj/MathGeoLib"))
+            ShellExecute(NULL, "OPEN", "https://github.com/juj/MathGeoLib", NULL, NULL, SW_SHOW);
+
+        ImGui::BulletText("OpenGL %s", glGetString(GL_VERSION));
+        if (ImGui::MenuItem("	OpenGL: https://www.opengl.org/"))
+            ShellExecute(NULL, "OPEN", "https://www.opengl.org/", NULL, NULL, SW_SHOW);
+
+        ImGui::BulletText("Assimp %d.%d.%d", aiGetVersionMajor(), aiGetVersionMinor(), aiGetVersionRevision());
+        if (ImGui::MenuItem("	Assimp: https://assimp.org/"))
+            ShellExecute(NULL, "OPEN", "https://assimp.org/", NULL, NULL, SW_SHOW);
+
+        ImGui::BulletText("PhysFS 3.0.2");
+        if (ImGui::MenuItem("	PhysFS: https://icculus.org/physfs/"))
+            ShellExecute(NULL, "OPEN", "https://icculus.org/physfs/", NULL, NULL, SW_SHOW);
+
+        ImGui::BulletText("DevIL 1.8.0");
+        if (ImGui::MenuItem("	DevIL: https://github.com/DentonW/DevIL"))
+            ShellExecute(NULL, "OPEN", "https://github.com/DentonW/DevIL", NULL, NULL, SW_SHOW);
+
+        ImGui::NewLine();
+
+        ImGui::SeparatorText("lICENSE");
+
+        ImGui::NewLine();
+
+        ImGui::Text("MIT License");
+
+        ImGui::NewLine();
+
+        ImGui::Text("Copyright(c) 2023 Hacienda69");
+
+        ImGui::NewLine();
+
+        ImGui::Text("Permission is hereby granted, free of charge, to any person obtaining a copy");
+        ImGui::Text("of this software and associated documentation files(the 'Software'), to deal");
+        ImGui::Text("in the Software without restriction, including without limitation the rights");
+        ImGui::Text("to use, copy, modify, merge, publish, distribute, sublicense, and /or sell");
+        ImGui::Text("copies of the Software, and to permit persons to whom the Software is");
+        ImGui::Text("furnished to do so, subject to the following conditions :");
+
+        ImGui::NewLine();
+
+        ImGui::Text("The above copyright notice and this permission notice shall be included in");
+        ImGui::Text("all copies or substantial portions of the Software.");
+
+        ImGui::NewLine();
+
+        ImGui::Text("THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR");
+        ImGui::Text("IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,");
+        ImGui::Text("FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.IN NO EVENT SHALL THE");
+        ImGui::Text("AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER");
+        ImGui::Text("LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,");
+        ImGui::Text("OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE");
+        ImGui::Text("SOFTWARE.");
+    }
+    ImGui::EndMenu();
 }
 
 void ModuleEditor::DrawConfiguration()
