@@ -18,24 +18,31 @@ public:
 
 	void Look(const float3& Position, const float3& Reference, bool RotateAroundReference = false);
 	void LookAt(const float3& Spot);
-	void Move(const float3& Movement);
+
 	float* GetViewMatrix();
 	void FocusCameraToSelectedObject();
-	void RotationAroundCamera(float dt);
-	void OrbitSelectedObject(float dt);
-	float3 RotateVector(const float3& u, float angle, const float3& v);
 
 private:
+
+	//Simulates First_Person or Around_Reference rotations
+	void ChangeReference(const bool& firstperson);
 
 	void CalculateViewMatrix();
 
 public:
 
-	
-	float3 X, Y, Z, Position, Reference;
+	//You won't need this after using Frustum
+	float3 X, Y, Z, Position, Reference, distanceToReference, defaultDistToRef;
+	float dt;
 
 private:
 
+	//True: first person camera rotation / False: rotation around reference
+	bool First_Person = true;
+
+	//True: calls ChangeReference()
+	bool Rotate_Camera = false;
+
+	//Frustum mMainCamera; Some help here :)
 	mat4x4 ViewMatrix;
-	
 };
