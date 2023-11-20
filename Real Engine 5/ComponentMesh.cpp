@@ -30,6 +30,6 @@ void ComponentMesh::PrintInspector()
 		ImGui::LabelText("##%f", "Number of vertex:");
 		ImGui::SameLine();
 		ImGui::TextColored(IMGUICOL_CYAN, "%d", mesh->vertexCount);
-		ImGui::Checkbox("Face Normals", &faceNormals);
+		ImGui::Checkbox("Face Normals", &faceNormals); ImGui::SameLine(); ImGui::Checkbox("AABB", &mesh->showAABB); ImGui::SameLine(); ImGui::Checkbox("OBB", &mesh->showOBB);
 	}
 }

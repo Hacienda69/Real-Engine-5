@@ -40,6 +40,9 @@ struct Mesh {
     AABB Global_AABB;
     OBB OBB;
 
+    bool showAABB = true;
+    bool showOBB = true;
+
     GLuint id_texture;
     GLuint texture_width = 0;
     GLuint texture_height = 0;
@@ -77,5 +80,7 @@ public:
     std::vector<Mesh*> meshes;
     const char* file_path;
     bool MeshDebug;
+
+    bool showAABB, showOBB;
 };
 

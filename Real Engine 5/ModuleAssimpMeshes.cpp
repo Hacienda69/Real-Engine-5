@@ -31,6 +31,8 @@ bool ModuleAssimpMeshes::Start()
 
     MeshDebug = true;
     
+    showAABB = true;
+    showOBB = true;
                 
     return ret;
 }
@@ -63,17 +65,14 @@ GameObject* ModuleAssimpMeshes::LoadMeshFromFile(const char* file_path)
     {
         LOG("Error loading scene: %s", file_path);
     }
-    
 }
 
 void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObject, GameObject* CgameObject, const aiScene* scene, int index)
 {
     Mesh* ourMesh = new Mesh();
 
-
     std::string assimpMeshName = "Importing Assimp Mesh: " + std::string(aiMesh->mName.C_Str());
     LOG(assimpMeshName.c_str());
-
 
     ourMesh->vertexCount = aiMesh->mNumVertices;
     ourMesh->vertex = new float[ourMesh->vertexCount * VERTEX];
@@ -89,7 +88,6 @@ void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObjec
         ourMesh->vertex[v * VERTEX + 3] = aiMesh->mTextureCoords[0][v].x;
         ourMesh->vertex[v * VERTEX + 4] = aiMesh->mTextureCoords[0][v].y;
     }
-
 
     if (aiMesh->HasFaces())     
     {
@@ -111,12 +109,9 @@ void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObjec
 
         ourMesh->VBO = 0;
         ourMesh->EBO = 0;
-        
-
 
         BufferMesh(ourMesh);
 
-        
         meshes.push_back(ourMesh);
 
         ComponentMesh* meshComp = new ComponentMesh(CgameObject);
@@ -152,18 +147,12 @@ void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObjec
                 CgameObject->AddComponent(mat);
             }
         }
-
         ourMesh->texture_height = App->textures->textureWidth;
         ourMesh->texture_width = App->textures->textureWidth;
-
-    
-
-
     }
     else
     {
         delete ourMesh;
-
     }
 }
 
@@ -227,7 +216,9 @@ void ModuleAssimpMeshes::RenderScene()
         meshes[i]->Global_AABB.SetNegativeInfinity();
         meshes[i]->Global_AABB.Enclose(meshes[i]->OBB);
         meshes[i]->Render();
+           
         meshes[i]->RenderAABB();
+
         glColor3f(0.0f, 0.6f, 0.7f);
         if (meshes[i]->owner->GetMeshComponent()->faceNormals) {
             meshes[i]->RenderFaceNormals();
@@ -439,15 +430,19 @@ void Mesh::RenderAABB()
     float3 obbCorners[8];
     OBB.GetCornerPoints(obbCorners);
 
-    // Dibujar el OBB en pantalla
-    DrawBbox(obbCorners, float3(0.0f, 1.0f, 0.0f));  // Color verde para el OBB
-
     // Obtener los vértices del Global AABB (que ya está transformada)
     float3 globalAABBCorners[8];
     Global_AABB.GetCornerPoints(globalAABBCorners);
 
-    // Dibujar el Global AABB en pantalla
-    DrawBbox(globalAABBCorners, float3(0.0f, 0.0f, 1.0f));  // Color azul para el Global AABB
+    if (showOBB) {
+        // Dibujar el OBB en pantalla
+        DrawBbox(obbCorners, float3(0.0f, 1.0f, 0.0f));  // Color verde para el OBB
+    }
+
+    if (showAABB) {
+        // Dibujar el Global AABB en pantalla
+        DrawBbox(globalAABBCorners, float3(0.0f, 0.0f, 1.0f));  // Color azul para el Global AABB
+    }
 }
 
 void Mesh::DrawBbox(float3* corners, float3 color)
