@@ -1,11 +1,12 @@
 #include "ModuleAssimpMeshes.h"
 #include "Application.h"
 #include "ModuleTexture.h"
-#include"GameObject.h"
-#include"ComponentMesh.h"
-#include"ComponentMaterial.h"
-#include"ComponentTransform.h"
+#include "GameObject.h"
+#include "ComponentMesh.h"
+#include "ComponentMaterial.h"
+#include "ComponentTransform.h"
 
+// MODULE ASSIMP MESHES -------------------------------------------------------------------------------------------------
 ModuleAssimpMeshes::ModuleAssimpMeshes(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
 }
@@ -53,11 +54,7 @@ GameObject* ModuleAssimpMeshes::LoadMeshFromFile(const char* file_path)
             ImportAssimpMesh(scene->mMeshes[i],OBJ, obj, scene,i);
            
         }
-       
 
-           
-        
-        
         aiReleaseImport(scene);
 
         return OBJ;
@@ -124,6 +121,7 @@ void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObjec
 
         ComponentMesh* meshComp = new ComponentMesh(CgameObject);
         ourMesh->owner = CgameObject;
+        ourMesh->GenerateAABB(); // Generate 
         meshComp->mesh = ourMesh;
         CgameObject->AddComponent(meshComp);
 
@@ -196,6 +194,78 @@ mat4x4 ConvertFloat4x4ToMat4(const float4x4& floatMatrix) {
     return mat;
 }
 
+void ModuleAssimpMeshes::BufferMesh(Mesh* mesh)
+{
+    //Fill buffers with vertex
+    // glEnableClientState(GL_VERTEX_ARRAY);
+
+
+    glGenBuffers(1, (GLuint*)&(mesh->VBO));
+    glGenBuffers(1, (GLuint*)&(mesh->EBO));
+
+
+    glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh->vertexCount * VERTEX, mesh->vertex, GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, 0);
+    
+
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * mesh->indexCount, mesh->index, GL_STATIC_DRAW);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+    //glDisableClientState(GL_VERTEX_ARRAY);
+
+}
+
+void ModuleAssimpMeshes::RenderScene()
+{
+    for (int i = 0; i < meshes.size(); i++) {
+        glColor3f(1.0f, 1.0f, 1.0f);
+        meshes[i]->OBB = meshes[i]->Local_AABB;
+        meshes[i]->OBB.Transform(meshes[i]->owner->transform->getGlobalMatrix().Transposed());
+        meshes[i]->Global_AABB.SetNegativeInfinity();
+        meshes[i]->Global_AABB.Enclose(meshes[i]->OBB);
+        meshes[i]->Render();
+        meshes[i]->RenderAABB();
+        glColor3f(0.0f, 0.6f, 0.7f);
+        if (meshes[i]->owner->GetMeshComponent()->faceNormals) {
+            meshes[i]->RenderFaceNormals();
+        }
+        /* glColor3f(1, 0, 0);
+         meshes[i]->RenderVertexNormals();*/
+    }
+}
+
+void ModuleAssimpMeshes::DeleteMesh(Mesh* mesh) {
+    
+    
+
+    auto it = std::find(meshes.begin(), meshes.end(), mesh);
+
+    if (it != meshes.end()) {
+        meshes.erase(it);
+        delete mesh;
+        mesh = nullptr;
+    }
+    else
+    {
+        LOG("DELETE MESH NO HA ENCONTRADO LA MESH DESEADA DE ELIMINAR")
+    }
+}
+
+
+
+bool ModuleAssimpMeshes::CleanUp()
+{
+
+   
+    aiDetachAllLogStreams();
+    return true;
+}
+
+
+// MESH ---------------------------------------------------------------------------------------------------------------------------------------
 void Mesh::Render()
 {
     glEnable(GL_TEXTURE_COORD_ARRAY);
@@ -346,71 +416,51 @@ void Mesh::RenderFaceNormals()
     
 }
 
-
-
-void ModuleAssimpMeshes::BufferMesh(Mesh* mesh)
+void Mesh::GenerateAABB() 
 {
-    //Fill buffers with vertex
-    // glEnableClientState(GL_VERTEX_ARRAY);
+    if (vertexCount == 0) { LOG("Couldn't generate AABB: Mesh doesn't contain any vertex"); return; }
 
+    std::vector<float3> newVertex;
+    newVertex.reserve(vertexCount);  // Reservar espacio para evitar reasignaciones innecesarias.
 
-    glGenBuffers(1, (GLuint*)&(mesh->VBO));
-    glGenBuffers(1, (GLuint*)&(mesh->EBO));
-
-
-    glBindBuffer(GL_ARRAY_BUFFER, mesh->VBO);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(float) * mesh->vertexCount * VERTEX, mesh->vertex, GL_STATIC_DRAW);
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-    
-
-
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, mesh->EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(uint) * mesh->indexCount, mesh->index, GL_STATIC_DRAW);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-    //glDisableClientState(GL_VERTEX_ARRAY);
-
-}
-
-void ModuleAssimpMeshes::RenderScene()
-{
-  
-    for (int i = 0; i < meshes.size(); i++) {
-        glColor3f(1.0f, 1.0f, 1.0f);
-        meshes[i]->Render();
-        glColor3f(0.0f, 0.6f, 0.7f);
-        if (meshes[i]->owner->GetMeshComponent()->faceNormals) { 
-            meshes[i]->RenderFaceNormals(); 
-        }
-       /* glColor3f(1, 0, 0);
-        meshes[i]->RenderVertexNormals();*/
-    }
-    glColor3f(1.0f, 1.0f, 1.0f);    
-}
-
-void ModuleAssimpMeshes::DeleteMesh(Mesh* mesh) {
-    
-    
-
-    auto it = std::find(meshes.begin(), meshes.end(), mesh);
-
-    if (it != meshes.end()) {
-        meshes.erase(it);
-        delete mesh;
-        mesh = nullptr;
-    }
-    else
+    // Iterar sobre los vértices y emplazarlos en el vector.
+    for (uint i = 0; i < vertexCount * VERTEX; i += VERTEX)
     {
-        LOG("DELETE MESH NO HA ENCONTRADO LA MESH DESEADA DE ELIMINAR")
+        newVertex.emplace_back(vertex[i], vertex[i + 1], vertex[i + 2]);
     }
+
+    // Llamar a SetFrom con el vector de float3.
+    Local_AABB.SetFrom(&newVertex[0], newVertex.size());
 }
 
-
-
-bool ModuleAssimpMeshes::CleanUp()
+void Mesh::RenderAABB() 
 {
+    // Obtener los vértices del OBB (que ya está transformada)
+    float3 obbCorners[8];
+    OBB.GetCornerPoints(obbCorners);
 
-   
-    aiDetachAllLogStreams();
-    return true;
+    // Dibujar el OBB en pantalla
+    DrawBbox(obbCorners, float3(0.0f, 1.0f, 0.0f));  // Color verde para el OBB
+
+    // Obtener los vértices del Global AABB (que ya está transformada)
+    float3 globalAABBCorners[8];
+    Global_AABB.GetCornerPoints(globalAABBCorners);
+
+    // Dibujar el Global AABB en pantalla
+    DrawBbox(globalAABBCorners, float3(0.0f, 0.0f, 1.0f));  // Color azul para el Global AABB
+}
+
+void Mesh::DrawBbox(float3* corners, float3 color)
+{
+    int indices[24] = { 0,2,2,6,6,4,4,0,0,1,1,3,3,2,4,5,6,7,5,7,3,7,1,5 };
+    glBegin(GL_LINES);
+    glColor3fv(color.ptr());
+
+    for (size_t i = 0; i < 24; i++)
+    {
+        glVertex3fv(corners[indices[i]].ptr());
+    }
+
+    //glColor3f(255.f, 255.f, 255.f);
+    glEnd();
 }

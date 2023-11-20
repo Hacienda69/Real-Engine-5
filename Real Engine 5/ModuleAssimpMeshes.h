@@ -8,6 +8,8 @@
 #include "Assimp/include/postprocess.h"
 #include"Glew/include/glew.h"
 #include "GameObject.h"
+#include "MathGeoLib/include/Geometry/AABB.h"
+#include "MathGeoLib/include/Geometry/OBB.h"
 #pragma comment (lib, "Assimp/libx86/assimp.lib")
 
 #include <string>
@@ -30,10 +32,13 @@ struct Mesh {
 
     GameObject* owner = nullptr;
 
-
     uint VAO;
     uint VBO;
     uint EBO;
+
+    AABB Local_AABB;
+    AABB Global_AABB;
+    OBB OBB;
 
     GLuint id_texture;
     GLuint texture_width = 0;
@@ -44,6 +49,10 @@ struct Mesh {
     void RenderFaceNormals();
 
     void RenderVertexNormals();
+
+    void GenerateAABB();
+    void RenderAABB();
+    void DrawBbox(float3* corners, float3 color);
 };
 
 class ModuleAssimpMeshes : public Module
