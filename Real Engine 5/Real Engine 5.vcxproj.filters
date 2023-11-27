@@ -339,6 +339,9 @@
     <ClInclude Include="OurPrimitive.h">
       <Filter>Sources\Helpers</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentCamera.h">
+      <Filter>Sources\GameObject\Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="log.cpp">
@@ -532,6 +535,9 @@
     </ClCompile>
     <ClCompile Include="OurPrimitive.cpp">
       <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCamera.cpp">
+      <Filter>Sources\GameObject\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
