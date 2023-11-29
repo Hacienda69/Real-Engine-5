@@ -2,9 +2,10 @@
 #include "Component.h"
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
+#include "ComponentCamera.h"
 #include "OurPrimitive.h"
 
-
+// CONSTRUCTORS & DESTRUCTOR -----------------------------------------------------
 GameObject::GameObject()
 {
 	name = "GameObject";
@@ -12,6 +13,24 @@ GameObject::GameObject()
 	transform = new ComponentTransform(this);
 	isTimetoDelete = false;
 	Stype = GeometryType::NONE;
+	mComponents.push_back(transform);
+}
+
+GameObject::GameObject(GameObject* parent)
+{
+	name = "GameObject";
+	this->mParent = parent;
+	isTimetoDelete = false;
+	Stype = GeometryType::NONE;
+
+	if (parent != nullptr)
+	{
+		parent->mChildren.push_back(this);
+	}
+
+	transform = new ComponentTransform(this);
+	
+
 	mComponents.push_back(transform);
 }
 
@@ -41,31 +60,7 @@ GameObject::~GameObject()
 
 }
 
-GameObject::GameObject(GameObject* parent)
-{
-	name = "GameObject";
-	this->mParent = parent;
-	isTimetoDelete = false;
-	Stype = GeometryType::NONE;
-
-	if (parent != nullptr)
-	{
-		parent->mChildren.push_back(this);
-	}
-
-	transform = new ComponentTransform(this);
-	
-
-	mComponents.push_back(transform);
-}
-
-void GameObject::AddComponent(Component* component)
-{
-	mComponents.push_back(component);
-	component->mOwner = this;
-}
-
-
+// UPDATE ---------------------------------------------------------------------------
 void GameObject::Update()
 {
 	// No tots els children o components tenen un update
@@ -80,48 +75,23 @@ void GameObject::Update()
 	}
 }
 
-GameObject* GameObject::GetParent()
+// ADDCOMPONENT ---------------------------------------------------------------------
+void GameObject::AddComponent(Component* component)
 {
-	return mParent;
+	mComponents.push_back(component);
+	component->mOwner = this;
 }
 
-ComponentMesh* GameObject::GetMeshComponent()
+// CHILDS / PARENTS -----------------------------------------------------------------
+void GameObject::DeleteChild(GameObject* child)
 {
-	for (size_t i = 0; i < mComponents.size(); i++)
-	{
-		if (mComponents[i]->type == ComponentType::MESH)
-		{
-			return (ComponentMesh*)mComponents[i];
+	for (int i = 0; i < mChildren.size(); i++) {
+		if (mChildren[i] == child) {
+			mChildren.erase(mChildren.begin() + i);
+			child->mParent = nullptr;
 		}
 	}
-	return nullptr;
 }
-
-ComponentTransform* GameObject::GetTransformComponent()
-{
-	for (size_t i = 0; i < mComponents.size(); i++)
-	{
-		if (mComponents[i]->type == ComponentType::TRANSFORM)
-		{
-			return (ComponentTransform*)mComponents[i];
-		}
-	}
-	return nullptr;
-}
-
-ComponentMaterial* GameObject::GetComponentTexture()
-{
-	for (size_t i = 0; i < mComponents.size(); i++)
-	{
-		if (mComponents[i]->type == ComponentType::MATERIAL) {
-
-			return (ComponentMaterial*)mComponents[i];
-		}
-	}
-
-	return nullptr;
-}
-
 
 bool GameObject::CheckChildOf(GameObject* parent)
 {
@@ -138,16 +108,6 @@ bool GameObject::CheckChildOf(GameObject* parent)
 		if (CheckChildOf(parent->mChildren[i])) return true;
 	}
 	return false;
-}
-
-void GameObject::DeleteChild(GameObject* child)
-{
-	for (int i = 0; i < mChildren.size(); i++) {
-		if (mChildren[i] == child) {
-			mChildren.erase(mChildren.begin() + i);
-			child->mParent = nullptr;
-		}
-	}
 }
 
 bool GameObject::SetNewParent(GameObject* newParent)
@@ -175,12 +135,12 @@ bool GameObject::SetAsChildOf(GameObject* gameObject)
 	return true;
 }
 
-
+// PRINT INSPECTOR -------------------------------------------------------------------------------
 void GameObject::PrintInspector()
 {
 
 
-	char* listComponenets[]{ "Add Component", "Mesh Component", "Texture Component" };
+	char* listComponenets[]{ "Add Component", "Mesh Component", "Texture Component", "Camera Component"};
 	char aux[255] = { ' ' }; 
 
 
@@ -221,8 +181,61 @@ void GameObject::PrintInspector()
 		ImGui::Text("");
 		ImGui::SameLine(ImGui::GetWindowWidth() / 6);
 
+	}
+}
 
+// GETTERS ----------------------------------------------------------------
+GameObject* GameObject::GetParent()
+{
+	return mParent;
+}
+
+ComponentMesh* GameObject::GetMeshComponent()
+{
+	for (size_t i = 0; i < mComponents.size(); i++)
+	{
+		if (mComponents[i]->type == ComponentType::MESH)
+		{
+			return (ComponentMesh*)mComponents[i];
+		}
+	}
+	return nullptr;
+}
+
+ComponentTransform* GameObject::GetTransformComponent()
+{
+	for (size_t i = 0; i < mComponents.size(); i++)
+	{
+		if (mComponents[i]->type == ComponentType::TRANSFORM)
+		{
+			return (ComponentTransform*)mComponents[i];
+		}
+	}
+	return nullptr;
+}
+
+ComponentMaterial* GameObject::GetTextureComponent()
+{
+	for (size_t i = 0; i < mComponents.size(); i++)
+	{
+		if (mComponents[i]->type == ComponentType::MATERIAL) {
+
+			return (ComponentMaterial*)mComponents[i];
+		}
 	}
 
+	return nullptr;
+}
 
+ComponentCamera* GameObject::GetCameraComponent()
+{
+	for (size_t i = 0; i < mComponents.size(); i++)
+	{
+		if (mComponents[i]->type == ComponentType::CAMERA) {
+
+			return (ComponentCamera*)mComponents[i];
+		}
+	}
+
+	return nullptr;
 }

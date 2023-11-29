@@ -10,6 +10,8 @@ class Component;
 class ComponentTransform;
 class ComponentMesh;
 class ComponentMaterial;
+class ComponentCamera;
+
 class GameObject
 {
 public:
@@ -32,8 +34,9 @@ public:
 
 	ComponentTransform* GetTransformComponent();
 
-	ComponentMaterial* GetComponentTexture();
+	ComponentMaterial* GetTextureComponent();
 
+	ComponentCamera* GetCameraComponent();
 
 	bool isTimetoDelete;
 	std::string name;

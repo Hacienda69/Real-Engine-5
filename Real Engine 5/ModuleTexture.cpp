@@ -113,9 +113,9 @@ uint ModuleTexture::LoadTexture(const char* path)
 			App->hierarchy->objSelected->GetMeshComponent()->mesh->texture_width = imgWidth;
 			App->hierarchy->objSelected->GetMeshComponent()->mesh->texture_height = imgHeight;
 		}
-		if (App->hierarchy->objSelected->GetComponentTexture() != nullptr) {
+		if (App->hierarchy->objSelected->GetTextureComponent() != nullptr) {
 
-			App->hierarchy->objSelected->GetComponentTexture()->pathTexture = path;
+			App->hierarchy->objSelected->GetTextureComponent()->pathTexture = path;
 		}
 	}
 
@@ -163,7 +163,7 @@ void ModuleTexture::NewTexture( uint imgId)
 
 	if (App->hierarchy->objSelected != nullptr) {
 		
-		ComponentMaterial* mat = App->hierarchy->objSelected->GetComponentTexture();
+		ComponentMaterial* mat = App->hierarchy->objSelected->GetTextureComponent();
 		if (mat == nullptr) {
 			App->hierarchy->objSelected->AddComponent(mat);
 		}

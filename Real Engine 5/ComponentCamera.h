@@ -3,7 +3,6 @@
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 
-
 class Component;
 class GameObject;
 
@@ -17,15 +16,29 @@ public:
 	void SetCam();
 	void SetBuffers();
 
-	void UpdateCam();
+	void Update();
+
+	float* GetViewMatrix();
+	float* GetProjetionMatrix();
+
+	void Look(const float3& pos, const float3& ref);
+	void LookAt(const float3& Spot);
+	void Move(const float3& Movement);
 
 public:
 
 	Frustum frustum;
-	float4x4 ViewMatrix;
-	float4x4 ProjectionMatrix;
-	float fov;
+	float3 reference;
+
+	int fov = 60;
+	int farDist = 500;
+
+	bool mainCam = false;
 
 private:
-	uint camBuffer, frameBuffer, objBuffer;
+
+	//uint camBuffer, frameBuffer, objBuffer;
+
+	float4x4 ViewMatrix;
+	float4x4 ProjectionMatrix;
 };
