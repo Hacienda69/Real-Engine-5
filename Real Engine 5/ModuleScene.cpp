@@ -13,7 +13,6 @@ ModuleScene::~ModuleScene()
 
 bool ModuleScene::Init()
 {
-    //CreateLibraryFolder();
     return false;
 }
 
@@ -22,7 +21,7 @@ bool ModuleScene::Start() {
     root = new GameObject(nullptr);
     root->name = ("Scene");
 
-
+    CreateLibraryFolder();
 
     //Load Baker House
     App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
@@ -63,16 +62,18 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
     return newGameObject;
 
 }
-/*
+
 #include <iostream>
 #include <fstream>
 #include <string>
-#include <direct.h>
+#include <direct.h> 
+#include "json.hpp"
 
-void CreateLibraryFolder() {
+using json = nlohmann::json;
+
+void ModuleScene::CreateLibraryFolder() {
     std::string libraryFolderPath = "Game/Library";
 
-    // Check if the Library folder exists; if not, create it
 #ifdef _WIN32
     if (_mkdir(libraryFolderPath.c_str()) == 0) {
         std::cout << "Library folder created successfully." << std::endl;
@@ -89,19 +90,26 @@ void CreateLibraryFolder() {
     }
 #endif
 
-    // Now, you can generate metadata files or perform other operations within this folder
-    // For instance, create and write metadata information for assets in the "Assets" folder
-    // ...
+    json metadata;
+    metadata["assets"] = {
+        { "name", "asset1" },
+        { "type", "model" },
+        { "path", "Assets/Models/asset1.fbx" }
+    };
 
-    // Example of creating a metadata file in the Library folder
-    std::string metadataFilePath = libraryFolderPath + "/metadata.txt";
+    std::string metadataString = metadata.dump();
+    std::ofstream outputFile("metadata.json");
+    outputFile << metadataString;
+    outputFile.close();
+
+    std::string metadataFilePath = libraryFolderPath + "/metadata.json";
     std::ofstream metadataFile(metadataFilePath);
     if (metadataFile.is_open()) {
-        metadataFile << "Example metadata content for assets.\n";
+        metadataFile << metadata.dump(4);
         metadataFile.close();
-        std::cout << "Metadata file created in Library folder." << std::endl;
+        std::cout << "Metadata JSON file created in Library folder." << std::endl;
     }
     else {
-        std::cout << "Failed to create metadata file in Library folder." << std::endl;
+        std::cout << "Failed to create metadata JSON file in Library folder." << std::endl;
     }
-}*/
+}

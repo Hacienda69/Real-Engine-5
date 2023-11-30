@@ -16,7 +16,7 @@ public:
 	update_status PostUpdate(float dt);
 	bool CleanUp();
 
-	//void CreateLibraryFolder();
+	void CreateLibraryFolder();
 
 	GameObject* CreateGameObject(GameObject* parent);
 	GameObject* root = nullptr;

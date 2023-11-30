@@ -342,6 +342,9 @@
     <ClInclude Include="ComponentCamera.h">
       <Filter>Sources\GameObject\Header</Filter>
     </ClInclude>
+    <ClInclude Include="json.hpp">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="log.cpp">
