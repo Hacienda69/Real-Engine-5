@@ -75,6 +75,9 @@ public:
 
     void DeleteMesh(Mesh* mesh);
     
+    bool SerializeMeshToCustomFormat(const Mesh& mesh, const std::string& filePath);
+
+    bool DeserializeMeshFromCustomFormat(Mesh& mesh, const std::string& filePath);
     
 public:
     std::vector<Mesh*> meshes;

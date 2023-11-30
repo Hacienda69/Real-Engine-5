@@ -459,3 +459,65 @@ void Mesh::DrawBbox(float3* corners, float3 color)
     //glColor3f(255.f, 255.f, 255.f);
     glEnd();
 }
+
+#include <fstream>
+
+// Assume Mesh structure is already defined as per your code
+
+// Function to serialize Mesh data into custom format
+bool ModuleAssimpMeshes::SerializeMeshToCustomFormat(const Mesh& mesh, const std::string& filePath) {
+    // Open a file for writing in binary mode
+    std::ofstream outputFile(filePath, std::ios::out | std::ios::binary);
+    if (!outputFile.is_open()) {
+        // Failed to open file
+        return false;
+    }
+
+    // Example: Writing header information
+    uint vertexCount = mesh.vertexCount;
+    uint indexCount = mesh.indexCount;
+
+    // Write header information to the file
+    outputFile.write(reinterpret_cast<const char*>(&vertexCount), sizeof(uint));
+    outputFile.write(reinterpret_cast<const char*>(&indexCount), sizeof(uint));
+
+    // Example: Writing vertex and index data
+    outputFile.write(reinterpret_cast<const char*>(mesh.vertex), sizeof(float) * mesh.vertexCount * VERTEX);
+    outputFile.write(reinterpret_cast<const char*>(mesh.index), sizeof(uint) * mesh.indexCount);
+
+    // Close the file
+    outputFile.close();
+
+    return true;
+}
+
+// Function to deserialize Mesh data from custom format
+bool ModuleAssimpMeshes::DeserializeMeshFromCustomFormat(Mesh& mesh, const std::string& filePath) {
+    // Open a file for reading in binary mode
+    std::ifstream inputFile(filePath, std::ios::in | std::ios::binary);
+    if (!inputFile.is_open()) {
+        // Failed to open file
+        return false;
+    }
+
+    // Example: Read header information
+    uint vertexCount = 0, indexCount = 0;
+    inputFile.read(reinterpret_cast<char*>(&vertexCount), sizeof(uint));
+    inputFile.read(reinterpret_cast<char*>(&indexCount), sizeof(uint));
+
+    // Allocate memory for vertex and index data
+    mesh.vertexCount = vertexCount;
+    mesh.indexCount = indexCount;
+
+    mesh.vertex = new float[mesh.vertexCount * VERTEX];
+    mesh.index = new uint[mesh.indexCount];
+
+    // Example: Read vertex and index data
+    inputFile.read(reinterpret_cast<char*>(mesh.vertex), sizeof(float) * mesh.vertexCount * VERTEX);
+    inputFile.read(reinterpret_cast<char*>(mesh.index), sizeof(uint) * mesh.indexCount);
+
+    // Close the file
+    inputFile.close();
+
+    return true;
+}
