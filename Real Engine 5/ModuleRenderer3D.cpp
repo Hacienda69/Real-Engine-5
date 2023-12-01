@@ -1,6 +1,7 @@
 #include "Globals.h"
 #include "Application.h"
 #include "ModuleRenderer3D.h"
+#include "ComponentCamera.h"
 #include "SDL\include\SDL_opengl.h"
 #include <gl/GL.h>
 #include <gl/GLU.h>
@@ -297,90 +298,8 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	Grid.Render();
 	DrawWithWireframe();
 
-	//(1)--- CUBO CON VÉRTICES [DIRECT MODE] ---
-	//DirectModeTriangleDrawing();
-
-	//(2)--- CUBO CON VERTEX ARRAYS Y glDrawElements() ---
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glBindBuffer(GL_ARRAY_BUFFER, test);
-	//glVertexPointer(3, GL_FLOAT, 0, NULL);
-	//
-	//glDrawArrays(GL_TRIANGLES, 0, (sizeof(g_vertex_buffer_data) / sizeof(float)) / 3);
-	//glDisableClientState(GL_VERTEX_ARRAY);
-
-
-	//(3)--- CUBO CON INDICES (EBO) ---
-	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	//glEnableClientState(GL_VERTEX_ARRAY);
-	//glVertexPointer(3, GL_FLOAT, 0, NULL);
-	//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, NULL);
-	
-	
-	//(4)--- EJEMPLO PARA PRÁCTICAR ---
-	/*glBindBuffer(GL_ARRAY_BUFFER, VBORect);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBORect);
-
-	glEnableClientState(GL_VERTEX_ARRAY);
-	glVertexPointer(3, GL_FLOAT, 0, NULL);*/
-
-	// la linea de abajo es lo que usariamos si quisieramos pintar los vertices, pero queremos con indices, por tanto
-	//glDrawArrays(GL_TRIANGLES, 0, sizeof(vertices) / sizeof(float) / 3);
-	/*glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
-	glDisableClientState(GL_VERTEX_ARRAY);*/
-
 	//(4)--- DRAW BAKE HOUSE ---
 	App->assimpMeshes->RenderScene();
-	
-
-	//(5)--- DRAW TRIANDLE AND ITS NORMAL IN DIRECT MODE
-	//glLineWidth(2.0f);
-	//glBegin(GL_TRIANGLES);
-	//glVertex3d(3, 3, 3); 
-	//glVertex3d(4, 4, 3); 
-	//glVertex3d(4, 3, 3);
-	//glEnd();
-	//glLineWidth(1.0f);
-
-	////Calcular el punto medio de la cara del triangulo
-	//double xMedio = (3 + 4 + 4) / 3.0; 
-	//double yMedio = (3 + 4 + 3) / 3.0;
-	//double zMedio = (3 + 3 + 3) / 3.0;
-
-	//// Calcula la normal de la cara del triángulo usando el producto cruz
-	//double edge1x = 4 - 3;
-	//double edge1y = 4 - 3;
-	//double edge1z = 3 - 3;
-	//double edge2x = 4 - 3;
-	//double edge2y = 3 - 3;
-	//double edge2z = 3 - 3;
-
-	//double normalx = edge1y * edge2z - edge1z * edge2y;
-	//double normaly = edge1z * edge2x - edge1x * edge2z;
-	//double normalz = edge1x * edge2y - edge1y * edge2x;
-
-	//// Normaliza la normal
-	//double length = sqrt(normalx * normalx + normaly * normaly + normalz * normalz);
-	//normalx /= length;
-	//normaly /= length;
-	//normalz /= length;
-
-	//// Define la longitud de la línea en la dirección de la normal
-	//double lineaLongitud = 3.0;
-
-	//// Calcula el punto final de la línea
-	//double xFinal = xMedio + normalx * lineaLongitud;
-	//double yFinal = yMedio + normaly * lineaLongitud;
-	//double zFinal = zMedio + normalz * lineaLongitud;
-
-	//glLineWidth(2.0f);
-	//glBegin(GL_LINES);
-	//glVertex3d(xMedio, yMedio, zMedio);
-	//glVertex3d(xFinal, yFinal, zFinal);
-	//glEnd();
-	//glLineWidth(1.0f);
-	
-	
 
 	if (App->editor->DrawEditor() == UPDATE_STOP)
 	{

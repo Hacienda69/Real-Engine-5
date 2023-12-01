@@ -4,8 +4,6 @@
 #include "Application.h"
 #include "ImGui/imgui.h"
 
-
-
 struct Mesh;
 
 class ComponentMesh : public Component

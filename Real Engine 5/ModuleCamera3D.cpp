@@ -111,7 +111,11 @@ update_status ModuleCamera3D::Update(float dt)
 		break;
 	}
 	
-	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN) sceneCamera->LookAt(GetSelectedobjPos());
+	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
+	{
+		if(App->hierarchy->objSelected != nullptr) sceneCamera->LookAt(GetSelectedobjPos());
+		else LOG("Selected object is nullptr");
+	}
 
 	sceneCamera->frustum.pos += newPos;
 
@@ -126,7 +130,6 @@ float3 ModuleCamera3D::GetSelectedobjPos()
 	{
 		ret = App->hierarchy->objSelected->GetTransformComponent()->getPosition();
 	}
-	else LOG("Selected object = nullptr");
 
 	return ret;
 }

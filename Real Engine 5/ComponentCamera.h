@@ -21,9 +21,14 @@ public:
 	float* GetViewMatrix();
 	float* GetProjetionMatrix();
 
+	uint* GetFrameBuffer();
+	uint* GetCamBuffer();
+	uint* GetObjBuffer();
+
 	void Look(const float3& pos, const float3& ref);
 	void LookAt(const float3& Spot);
-	void Move(const float3& Movement);
+	
+	//void Move(const float3& Movement);
 
 public:
 
@@ -37,7 +42,9 @@ public:
 
 private:
 
-	//uint camBuffer, frameBuffer, objBuffer;
+	uint frameBuffer; // Frame buffer
+	uint camBuffer;	  // Color buffer
+	uint objBuffer;	  // Depth buffer
 
 	float4x4 ViewMatrix;
 	float4x4 ProjectionMatrix;
