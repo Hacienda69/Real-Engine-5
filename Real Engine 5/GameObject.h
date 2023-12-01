@@ -48,4 +48,6 @@ public:
 	ComponentTransform* transform;
 	GeometryType Stype;
 
+	int newComponent = 0; // 1 = Mesh, 2 = Texture, 3 = Camera
+
 };

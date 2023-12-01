@@ -2,6 +2,7 @@
 #include "Application.h"
 #include "GameObject.h"
 #include "ComponentMesh.h"
+#include "ComponentCamera.h"
 
 GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType type)
 {
@@ -14,6 +15,19 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
         App->hierarchy->objSelected = gameObject;
 		return gameObject;
 	}
+    else if (type == GeometryType::CAMERA)
+    {
+        GameObject* gameObject = new GameObject(App->scene->root);
+        gameObject->name = "Camera";
+        gameObject->Stype = GeometryType::CAMERA;
+        App->hierarchy->objSelected = gameObject;
+
+        ComponentCamera* cam = new ComponentCamera(gameObject);
+
+        gameObject->AddComponent(cam);
+
+        return gameObject;
+    }
     else
     {
         const char* aux = " ";
@@ -76,7 +90,6 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
             gameObject = App->assimpMeshes->LoadMeshFromFile("Assets/Models/torus.fbx");
             aux = "Torus";
             gameObject->name = aux;
-            gameObject->Stype = GeometryType::P_TORUS;
             gameObject->Stype = GeometryType::P_TORUS;
             App->hierarchy->objSelected = gameObject;
             return gameObject;

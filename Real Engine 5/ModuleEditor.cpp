@@ -185,6 +185,11 @@ update_status ModuleEditor::DrawEditor()
                 PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::EMPTY);
             }
 
+            if (ImGui::MenuItem(" CAMERA  ")) {
+
+                PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::CAMERA);
+            }
+
             if (ImGui::MenuItem(" CUBE  ")) {
                 
                 PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::P_CUBE);

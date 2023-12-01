@@ -30,6 +30,8 @@ public:
 	
 	//void Move(const float3& Movement);
 
+	void PrintInspector();
+
 public:
 
 	Frustum frustum;
@@ -37,8 +39,10 @@ public:
 
 	int fov = 60;
 	int farDist = 500;
-
+	bool perspective = true;
 	bool mainCam = false;
+
+	int cameraType; // 0 = Perspective, 1 = Orthographic
 
 private:
 

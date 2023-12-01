@@ -5,6 +5,7 @@ class GameObject;
 
 enum class GeometryType {
 	EMPTY,
+	CAMERA,
 	P_PLANE,
 	P_CUBE,
 	P_SPHERE,

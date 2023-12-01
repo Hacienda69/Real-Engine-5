@@ -138,11 +138,8 @@ bool GameObject::SetAsChildOf(GameObject* gameObject)
 // PRINT INSPECTOR -------------------------------------------------------------------------------
 void GameObject::PrintInspector()
 {
-
-
-	char* listComponenets[]{ "Add Component", "Mesh Component", "Texture Component", "Camera Component"};
+	char* listComponents[] { "Add Component", "Mesh Component", "Material Component", "Camera Component" };
 	char aux[255] = { ' ' }; 
-
 
 	if (mParent != nullptr)
 	{
@@ -181,7 +178,42 @@ void GameObject::PrintInspector()
 		ImGui::Text("");
 		ImGui::SameLine(ImGui::GetWindowWidth() / 6);
 
+		if (ImGui::Combo("##Add Component", &newComponent, listComponents, IM_ARRAYSIZE(listComponents)))
+		{
+			switch (newComponent) {
+			case 1: // Mesh
+			{
+				if (GetMeshComponent() == nullptr) {
+					ComponentMesh* cm = new ComponentMesh();
+					AddComponent(cm);
+				}
+				else LOG("Mesh Component already added")
+			}
+			break;
+			case 2: // Material
+			{
+				//if (GetTextureComponent() == nullptr) {
+				//	ComponentMaterial* ct = new ComponentMaterial();
+				//	AddComponent(ct);
+				//}
+				//else LOG("Texture Component already added")
+			}
+			break;
+			case 3: // Camera
+			{
+				if (GetCameraComponent() == nullptr) {
+					ComponentCamera* cc = new ComponentCamera();
+					AddComponent(cc);
+				}
+				else LOG("Camera Component already added")
+			}
+			break;
+			}
+			newComponent = 0;
+		}
+
 	}
+	//ImGui::End();
 }
 
 // GETTERS ----------------------------------------------------------------

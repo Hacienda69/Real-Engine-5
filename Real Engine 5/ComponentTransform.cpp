@@ -97,6 +97,7 @@ void ComponentTransform:: PrintInspector() {
 
 	if (ImGui::CollapsingHeader("Transform", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
 	{
+		//ImGui::SameLine((ImGui::GetWindowWidth() / 2) - 75);
 		ImGui::Text("X\t\t Y\t\t Z");
 		ImGui::InputFloat3("Position", position.ptr());
 

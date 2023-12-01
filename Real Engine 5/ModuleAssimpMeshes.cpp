@@ -123,7 +123,6 @@ void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObjec
         ourMesh->id_texture = App->textures->checkersID;
 
         /*meshComp->type = ComponentType::MESH;*/
-
         
         if (scene->HasMaterials()) {
             if (scene->mMaterials[scene->mMeshes[index]->mMaterialIndex]->GetTextureCount(aiTextureType_DIFFUSE) > 0) {

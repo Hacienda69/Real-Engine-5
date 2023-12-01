@@ -25,7 +25,7 @@ public:
 	update_status Update(float dt);
 	bool CleanUp();
 
-	float3 GetSelectedobjPos();
+	float3 GetSelectedObjPos();
 
 private:
 	void MouseRotation(float dx, float dy, float sensitivity);

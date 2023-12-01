@@ -129,3 +129,30 @@ void ComponentCamera::LookAt(const float3& Spot)
     float3 X = float3(0, 1, 0).Cross(frustum.front).Normalized();
     frustum.up = frustum.front.Cross(X);
 }
+
+void ComponentCamera::PrintInspector() 
+{
+    const char* camType[] = { "Perspective", "Orthographic" };
+
+    if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
+    {
+        if (mainCam) { ImGui::SameLine(); ImGui::Text(" ( Main Camera ) "); }
+
+        if (ImGui::Combo("Camera Type", &cameraType, camType, IM_ARRAYSIZE(camType)))
+        {
+            if (cameraType == 0) frustum.type = FrustumType::PerspectiveFrustum;
+            if (cameraType == 1) frustum.type = FrustumType::OrthographicFrustum;
+        }
+
+        ImGui::Text(" ");
+
+        if (ImGui::SliderInt("Field of View", &fov, 50, 110))
+        {
+            frustum.verticalFov = fov * DEGTORAD;
+            frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.7f);
+        }
+
+        if (ImGui::Checkbox("Set Main Camera", &mainCam));
+
+    }
+}

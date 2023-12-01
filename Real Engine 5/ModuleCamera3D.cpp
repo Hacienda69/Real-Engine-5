@@ -97,7 +97,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// ------------------------------------------------------------	
 	case camStates::FOCUSED:
 
-		sceneCamera->LookAt(GetSelectedobjPos());
+		sceneCamera->LookAt(GetSelectedObjPos());
 
 		//Calculate distance
 		float distToRef = float3(sceneCamera->reference - sceneCamera->frustum.pos).Length();
@@ -113,7 +113,7 @@ update_status ModuleCamera3D::Update(float dt)
 	
 	if (App->input->GetKey(SDL_SCANCODE_F) == KEY_DOWN)
 	{
-		if(App->hierarchy->objSelected != nullptr) sceneCamera->LookAt(GetSelectedobjPos());
+		if(App->hierarchy->objSelected != nullptr) sceneCamera->LookAt(GetSelectedObjPos());
 		else LOG("Selected object is nullptr");
 	}
 
@@ -122,7 +122,7 @@ update_status ModuleCamera3D::Update(float dt)
 	return UPDATE_CONTINUE;
 }
 
-float3 ModuleCamera3D::GetSelectedobjPos()
+float3 ModuleCamera3D::GetSelectedObjPos()
 {
 	float3 ret = float3(0, 0, 0);
 
