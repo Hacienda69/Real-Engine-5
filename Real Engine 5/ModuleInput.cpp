@@ -38,6 +38,19 @@ bool ModuleInput::Init()
 // Called every draw update
 update_status ModuleInput::PreUpdate(float dt)
 {
+	if (mouse_buttons[SDL_BUTTON_LEFT] == KEY_DOWN) {
+		Ray ray = App->camera->GenerateRayFromMouse(mouse_x, mouse_y);
+
+		// Perform mouse picking by iterating through objects in the scene
+		for (auto& gameObject : App->scene->GetRoot()->GetChildren()) {
+			if (gameObject->IntersectsRay(ray)) {
+				// Handle intersection here (e.g., select the object)
+				App->hierarchy->SetGameObject(gameObject);
+				break; // Stop after the first intersection
+			}
+		}
+	}
+
 	SDL_PumpEvents();
 
 	const Uint8* keys = SDL_GetKeyboardState(NULL);

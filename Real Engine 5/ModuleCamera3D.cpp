@@ -162,3 +162,29 @@ void ModuleCamera3D::MouseRotation(float dx, float dy, float sensitivity)
 	rm.SetRotatePart(dir.Normalized());
 	sceneCamera->frustum.SetWorldMatrix(rm.Float3x4Part());
 }
+
+Ray ModuleCamera3D::GenerateRayFromMouse(int mouse_x, int mouse_y) {
+	// Get the projection matrix and view matrix from the camera
+	float4x4 proj = sceneCamera->frustum.ProjectionMatrix();
+	float4x4 view = sceneCamera->frustum.ViewMatrix();
+
+	// Calculate normalized device coordinates
+	float normalizedX = (2.0f * mouse_x) / SCREEN_WIDTH - 1.0f;
+	float normalizedY = 1.0f - (2.0f * mouse_y) / SCREEN_HEIGHT;
+
+	// Calculate clip space coordinates
+	float4 clipCoords(normalizedX, normalizedY, -1.0f, 1.0f);
+
+	// Transform to eye space
+	float4 eyeCoords = proj.Inverted() * clipCoords;
+	eyeCoords = float4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
+
+	// Transform to world space
+	float4 rayDir = view.Inverted() * eyeCoords;
+	float3 rayDirection(rayDir.x, rayDir.y, rayDir.z);
+	rayDirection.Normalize();
+
+	float3 rayOrigin = sceneCamera->frustum.pos;
+
+	return Ray(rayOrigin, rayDirection);
+}

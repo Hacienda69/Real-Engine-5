@@ -27,6 +27,8 @@ public:
 
 	float3 GetSelectedObjPos();
 
+	Ray GenerateRayFromMouse(int mouse_x, int mouse_y);
+
 private:
 	void MouseRotation(float dx, float dy, float sensitivity);
 

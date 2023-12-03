@@ -152,6 +152,18 @@ void ModuleHierarchy::GameObjectTree(GameObject* obj, int index)
 		ImGui::TreePop();
 	}
 
+	if (obj == objSelected) {
+		ImGui::PushStyleColor(ImGuiCol_HeaderHovered, ImVec4(0.5f, 0.5f, 1.0f, 1.0f));
+		ImGui::PushStyleColor(ImGuiCol_HeaderActive, ImVec4(0.5f, 0.5f, 1.0f, 1.0f));
+	}
+
+	// Rest of your existing code for tree node rendering
+
+	// Restore style if not selected
+	if (obj == objSelected) {
+		ImGui::PopStyleColor(2);
+	}
+
 }
 
 void ModuleHierarchy::SetGameObject(GameObject* obj)

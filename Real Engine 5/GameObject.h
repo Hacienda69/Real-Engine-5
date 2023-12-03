@@ -3,6 +3,7 @@
 #include <vector>
 #include <string>
 
+#include "MathGeoLib/include/MathGeoLib.h"
 
 enum class ComponentType;
 enum class GeometryType;
@@ -38,11 +39,12 @@ public:
 
 	ComponentCamera* GetCameraComponent();
 
+	const std::vector<GameObject*>& GetChildren() const;
+
 	bool isTimetoDelete;
 	std::string name;
 
 	GameObject* mParent;
-	std::vector<GameObject*> mChildren;
 	std::vector<Component*> mComponents;
 
 	ComponentTransform* transform;
@@ -50,4 +52,7 @@ public:
 
 	int newComponent = 0; // 1 = Mesh, 2 = Texture, 3 = Camera
 
+	bool IntersectsRay(const Ray& ray);
+
+	std::vector<GameObject*> mChildren;
 };

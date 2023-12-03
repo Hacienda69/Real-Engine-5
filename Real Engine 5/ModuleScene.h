@@ -27,6 +27,5 @@ public:
 	GameObject* prova5;
 	GameObject* prova6;
 
-private:
-	
+	GameObject* GetRoot() const { return root; }
 };
