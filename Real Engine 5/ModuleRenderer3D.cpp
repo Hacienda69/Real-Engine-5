@@ -241,9 +241,6 @@ bool ModuleRenderer3D::Init()
 	glGenBuffers(1, &EBORect);
 	glGenVertexArrays(1, &VAORect);
 
-	
-
-
 	glBindVertexArray(VAORect);
 	glBindBuffer(GL_ARRAY_BUFFER, VBORect);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
@@ -275,11 +272,13 @@ bool ModuleRenderer3D::Start()
 // PreUpdate: clear buffer
 update_status ModuleRenderer3D::PreUpdate(float dt)
 {
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glLoadIdentity();
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	//glLoadIdentity();
 
-	glMatrixMode(GL_MODELVIEW);
-	glLoadMatrixf(App->camera->sceneCamera->GetViewMatrix());
+	//glMatrixMode(GL_MODELVIEW);
+	//glLoadMatrixf(App->camera->sceneCamera->GetViewMatrix());
+
+	App->camera->sceneCamera->StartDraw();
 
 	// light 0 on cam pos
 	float3 camPos = float3(App->camera->sceneCamera->frustum.pos);
@@ -331,6 +330,7 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 
 	//(4)--- DRAW BAKE HOUSE ---
 	App->assimpMeshes->RenderScene();
+<<<<<<< Updated upstream
 	
 
 	//(5)--- DRAW TRIANDLE AND ITS NORMAL IN DIRECT MODE
@@ -381,6 +381,9 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	//glLineWidth(1.0f);
 	
 	
+=======
+	App->camera->sceneCamera->EndDraw();
+>>>>>>> Stashed changes
 
 	if (App->editor->DrawEditor() == UPDATE_STOP)
 	{

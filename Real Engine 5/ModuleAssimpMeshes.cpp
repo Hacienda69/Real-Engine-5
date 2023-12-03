@@ -352,59 +352,6 @@ void Mesh::RenderFaceNormals()
         glEnd();
         glLineWidth(1.0f);
     }
-    
-
-    ////---num_vertex
-    //for (size_t i = 0; i < num_vertex; i += 9)
-    //{
-
-    //    // Calcular el punto medio de la cara del triángulo
-    //    double xMedio = (vertex[i] + vertex[i + 3] + vertex[i + 6]) / 3.0;
-    //    double yMedio = (vertex[i + 1] + vertex[i + 4] + vertex[i + 7]) / 3.0;
-    //    double zMedio = (vertex[i + 2] + vertex[i + 5] + vertex[i + 8]) / 3.0;
-
-    //    // Calcular la normal de la cara del triángulo usando el producto cruz
-    //    double edge1x = vertex[i + 3] - vertex[i];
-    //    double edge1y = vertex[i + 4] - vertex[i + 1];
-    //    double edge1z = vertex[i + 5] - vertex[i + 2];
-
-    //    double edge2x = vertex[i + 6] - vertex[i];
-    //    double edge2y = vertex[i + 7] - vertex[i + 1];
-    //    double edge2z = vertex[i + 8] - vertex[i + 2];
-
-    //    double normalx = edge1y * edge2z - edge1z * edge2y;
-    //    double normaly = edge1z * edge2x - edge1x * edge2z;
-    //    double normalz = edge1x * edge2y - edge1y * edge2x;
-
-    //    // Normaliza la normal
-    //    double length = sqrt(normalx * normalx + normaly * normaly + normalz * normalz);
-    //    normalx /= length;
-    //    normaly /= length;
-    //    normalz /= length;
-
-    //    // Define la longitud de la línea en la dirección de la normal
-    //    double lineaLongitud = 3.0;
-
-    //    // Calcula el punto final de la línea
-    //    double xFinal = xMedio + normalx * lineaLongitud;
-    //    double yFinal = yMedio + normaly * lineaLongitud;
-    //    double zFinal = zMedio + normalz * lineaLongitud;
-
-    //    // Establecer el color a rojo
-    //    glColor3f(1.0f, 0.0f, 0.0f);
-
-    //    // Dibujar la normal como una línea roja desde el punto medio de la cara
-    //    glLineWidth(2.0f);
-    //    glBegin(GL_LINES);
-    //    glVertex3d(xMedio, yMedio, zMedio);
-    //    glVertex3d(xFinal, yFinal, zFinal);
-    //    glEnd();
-    //    glLineWidth(1.0f);
-
-
-    //    glEnd();
-    //}
-    
 }
 
 void Mesh::GenerateAABB() 

@@ -26,6 +26,13 @@ ComponentCamera::~ComponentCamera()
 	//glDeleteFramebuffers(1, &frameBuffer);
 	//glDeleteFramebuffers(1, &camBuffer);
 	//glDeleteFramebuffers(1, &objBuffer);
+<<<<<<< Updated upstream
+=======
+
+    glDeleteFramebuffers(1, &frameBuffer);
+    glDeleteTextures(1, &colorBuffer);    // Cambiado a glDeleteTextures
+    glDeleteRenderbuffers(1, &objBuffer); // Cambiado a glDeleteRenderbuffers
+>>>>>>> Stashed changes
 }
 
 void ComponentCamera::Update()
@@ -38,10 +45,36 @@ void ComponentCamera::Update()
     frustum.up = m.RotatePart().Col(1).Normalized();
     frustum.front = m.RotatePart().Col(2).Normalized();
 
-    //ViewMatrix = frustum.ViewMatrix();
-    //ProjectionMatrix = frustum.ProjectionMatrix();
+    ViewMatrix = frustum.ViewMatrix();
+    ProjectionMatrix = frustum.ProjectionMatrix();
 
-    //frustum = Frustum(ViewMatrix * ProjectionMatrix);
+    RenderFrustum();
+}
+
+void ComponentCamera::StartDraw()
+{
+    glEnable(GL_DEPTH_TEST);
+
+    glLoadIdentity();
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf((GLfloat*)ProjectionMatrix.v);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf((GLfloat*)ViewMatrix.v);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, frameBuffer);
+
+    glClearColor(0.08f, 0.08f, 0.08f, 1.f);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+}
+
+void ComponentCamera::EndDraw()
+{
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_DEPTH_TEST);
+
+    //glClearColor(0.05f, 0.05f, 0.05f, 1.f);
+    //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
 // SETCAM --------------------------------------------------------------------------------
@@ -106,6 +139,91 @@ float* ComponentCamera::GetProjetionMatrix()
     return ProjectionMatrix.ptr();
 }
 
+<<<<<<< Updated upstream
+// OLD MODULECAMERA FUNCTIONS ------------------------------------------------------------
+void ComponentCamera::Look(const float3& pos, const float3& ref)
+=======
+uint* ComponentCamera::GetFrameBuffer() { return &frameBuffer; }
+uint* ComponentCamera::GetCamBuffer()   { return &colorBuffer; }
+uint* ComponentCamera::GetObjBuffer()   { return &objBuffer; }
+
+// RENDER FRUSTUM ------------------------------------------------------------------------
+void ComponentCamera::RenderFrustum()
+>>>>>>> Stashed changes
+{
+    float3 frustumCorners[8];
+    frustum.GetCornerPoints(frustumCorners);
+
+    float3 color = float3(1.f, 1.f, 1.f);
+
+    glColor3fv(&color.x);
+    glLineWidth(2.f);
+    glBegin(GL_LINES);
+
+    glVertex3fv(&frustumCorners[0].x);
+    glVertex3fv(&frustumCorners[2].x);
+    glVertex3fv(&frustumCorners[2].x);
+    glVertex3fv(&frustumCorners[6].x);
+    glVertex3fv(&frustumCorners[6].x);
+    glVertex3fv(&frustumCorners[4].x);
+    glVertex3fv(&frustumCorners[4].x);
+    glVertex3fv(&frustumCorners[0].x);
+
+    glVertex3fv(&frustumCorners[0].x);
+    glVertex3fv(&frustumCorners[1].x);
+    glVertex3fv(&frustumCorners[1].x);
+    glVertex3fv(&frustumCorners[3].x);
+    glVertex3fv(&frustumCorners[3].x);
+    glVertex3fv(&frustumCorners[2].x);
+    glVertex3fv(&frustumCorners[4].x);
+    glVertex3fv(&frustumCorners[5].x);
+
+    glVertex3fv(&frustumCorners[6].x);
+    glVertex3fv(&frustumCorners[7].x);
+    glVertex3fv(&frustumCorners[5].x);
+    glVertex3fv(&frustumCorners[7].x);
+    glVertex3fv(&frustumCorners[3].x);
+    glVertex3fv(&frustumCorners[7].x);
+    glVertex3fv(&frustumCorners[1].x);
+    glVertex3fv(&frustumCorners[5].x);
+
+    glEnd();
+    glLineWidth(1.f);
+    glColor3f(1.f, 1.f, 1.f);
+}
+
+<<<<<<< Updated upstream
+void ComponentCamera::Move(const float3& Movement)
+{
+    frustum.pos += Movement;
+=======
+// PRINT INSPECTOR -----------------------------------------------------------------------
+void ComponentCamera::PrintInspector() 
+{
+    const char* camType[] = { "Perspective", "Orthographic" };
+
+    if (ImGui::CollapsingHeader("Camera", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
+    {
+        if (mainCam) { ImGui::SameLine(); ImGui::Text(" ( Main Camera ) "); }
+
+        if (ImGui::Combo("Camera Type", &cameraType, camType, IM_ARRAYSIZE(camType)))
+        {
+            if (cameraType == 0) frustum.type = FrustumType::PerspectiveFrustum;
+            if (cameraType == 1) frustum.type = FrustumType::OrthographicFrustum;
+        }
+
+        ImGui::Text(" ");
+
+        if (ImGui::SliderInt("Field of View", &fov, 50, 110))
+        {
+            frustum.verticalFov = fov * DEGTORAD;
+            frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.7f);
+        }
+
+        if (ImGui::Checkbox("Set Main Camera", &mainCam));
+    }
+}
+
 // OLD MODULECAMERA FUNCTIONS ------------------------------------------------------------
 void ComponentCamera::Look(const float3& pos, const float3& ref)
 {
@@ -121,9 +239,5 @@ void ComponentCamera::LookAt(const float3& Spot)
     frustum.front = (Spot - frustum.pos).Normalized();
     float3 X = float3(0, 1, 0).Cross(frustum.front).Normalized();
     frustum.up = frustum.front.Cross(X);
-}
-
-void ComponentCamera::Move(const float3& Movement)
-{
-    frustum.pos += Movement;
+>>>>>>> Stashed changes
 }
