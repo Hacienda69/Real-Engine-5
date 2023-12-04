@@ -4,6 +4,7 @@
 #include"ComponentMaterial.h"
 #include "ImGui/backends/imgui_impl_sdl2.h"
 #include "OurPrimitive.h"
+#include "ModuleCamera3D.h"
 #define MAX_KEYS 300
 
 ModuleInput::ModuleInput(Application* app, bool start_enabled) : Module(app, start_enabled)
@@ -38,15 +39,14 @@ bool ModuleInput::Init()
 // Called every draw update
 update_status ModuleInput::PreUpdate(float dt)
 {
-	if (mouse_buttons[SDL_BUTTON_LEFT] == KEY_DOWN) {
+	if (mouse_buttons[SDL_BUTTON_LEFT] == KEY_DOWN) { 
 		Ray ray = App->camera->GenerateRayFromMouse(mouse_x, mouse_y);
 
-		// Perform mouse picking by iterating through objects in the scene
 		for (auto& gameObject : App->scene->GetRoot()->GetChildren()) {
 			if (gameObject->IntersectsRay(ray)) {
-				// Handle intersection here (e.g., select the object)
+
 				App->hierarchy->SetGameObject(gameObject);
-				break; // Stop after the first intersection
+				break; 
 			}
 		}
 	}

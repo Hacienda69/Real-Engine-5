@@ -4,6 +4,7 @@
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
 #include "OurPrimitive.h"
+#include "ModuleInput.h"
 
 // CONSTRUCTORS & DESTRUCTOR -----------------------------------------------------
 GameObject::GameObject()
@@ -271,25 +272,19 @@ ComponentCamera* GameObject::GetCameraComponent()
 
 	return nullptr;
 }
-/*
+
 bool GameObject::IntersectsRay(const Ray& ray) {
-	// Check if the game object has a transform component
-	if (!transform)
+	ComponentMesh* meshComponent = GetMeshComponent();
+
+	if (meshComponent) {
+		Mesh* objMesh = meshComponent->mesh;
+
+		if (ray.Intersects(objMesh->Local_AABB)) {
+			return true;
+		}
+	}
+	else
 		return false;
-
-	// Assuming the GameObject has a bounding box, get the AABB
-	AABB boundingBox = transform->GetAABB(); // Get the AABB from the transform
-
-	// Check for intersection between the ray and the bounding box
-	float distance = 0.0f;
-	return boundingBox.Intersects(ray, distance);
-}
-*/
-bool GameObject::IntersectsRay(const Ray& ray) {
-	// Implement your intersection logic here
-	// Check for intersection with the object's mesh or collider
-	// Return true if the ray intersects with the object, false otherwise
-	return true;
 }
 
 const std::vector<GameObject*>& GameObject::GetChildren() const {

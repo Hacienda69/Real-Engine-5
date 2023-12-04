@@ -58,9 +58,6 @@ update_status ModuleHierarchy::Update(float dt)
 		objSelected = nullptr;
 	}
 
-
-
-
 	return UPDATE_CONTINUE;
 }
 
