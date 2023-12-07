@@ -36,6 +36,23 @@ bool ModuleScene::Start() {
 
 update_status ModuleScene::PreUpdate(float dt) {
     
+    switch (gameState) {
+        case 1: 
+            deltaTimeScene = (float)timerGameScene.Read() / 690.0f;
+            timerGameScene.Stop();
+            timerGameScene.Start();
+            //TODO cubo rotando
+            break;
+        case 2:
+            timerGameScene.Stop();
+            //TODO hacer que el cubo deje de rotar
+            deltaTimeScene = 0;
+            isPlay = false;
+            break;
+        case 3:	
+            isPlay = false;
+            break;
+    }
     return UPDATE_CONTINUE;
 }
 
@@ -68,6 +85,39 @@ bool ModuleScene::CleanUp() {
     LOG("Scene Cleanup")
     delete root;
     return true;
+}
+
+void ModuleScene::Play()
+{
+    if (isPlay == false) {
+        LOG("User is in game");
+        isPlay = true;
+        gameState = 1;
+    }
+    else if (isPlay == true) {
+        LOG("User is NOT in game");
+        gameState = 2;
+        deltaTimeScene = 0;
+        timerGameScene.Stop();
+        isPlay = false;
+    }
+}
+
+void ModuleScene::Stop() {
+    deltaTimeScene = 0;
+    ImGui::SetWindowFocus("Editor");
+    gameState = 2;
+}
+
+void ModuleScene::Pause() {
+    if (isPlay == true) {
+        gameState = 3;
+        isPlay = false;
+    }
+    else {
+        gameState = 1;
+        isPlay = true;
+    }
 }
 
 GameObject* ModuleScene::CreateGameObject(GameObject* parent)

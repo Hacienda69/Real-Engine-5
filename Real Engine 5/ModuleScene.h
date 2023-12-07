@@ -1,4 +1,5 @@
 #pragma once
+#include "Timer.h"
 #include "Module.h"
 #include "Globals.h"
 #include "ComponentCamera.h"
@@ -15,7 +16,16 @@ public:
 	update_status PreUpdate(float dt);
 	update_status Update(float dt);
 	update_status PostUpdate(float dt);
+	void Play();
+	void Stop();
+	void Pause();
 	bool CleanUp();
+
+	Timer timerGameScene;
+	bool isStop = false;
+	bool isPlay = false;
+	int gameState = 0;
+	float deltaTimeScene = 0;
 
 	void CreateLibraryFolder();
 	void setMainCamera(ComponentCamera* cam);
