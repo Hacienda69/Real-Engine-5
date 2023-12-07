@@ -15,6 +15,8 @@ GameObject::GameObject()
 	isTimetoDelete = false;
 	Stype = GeometryType::NONE;
 	mComponents.push_back(transform);
+
+	App->scene->gameObjects.push_back(this);
 }
 
 GameObject::GameObject(GameObject* parent)
@@ -37,6 +39,11 @@ GameObject::GameObject(GameObject* parent)
 
 GameObject::~GameObject()
 {
+	for (int i = 0; i < App->scene->gameObjects.size(); i++)
+	{
+		if (App->scene->gameObjects[i] == this) App->scene->gameObjects.erase(App->scene->gameObjects.begin() + i);
+	}
+
 	name = "";
 	transform = nullptr;
 
@@ -58,7 +65,6 @@ GameObject::~GameObject()
 	}
 
 	mComponents.clear();
-
 }
 
 // UPDATE ---------------------------------------------------------------------------
@@ -79,8 +85,8 @@ void GameObject::Update()
 // ADDCOMPONENT ---------------------------------------------------------------------
 void GameObject::AddComponent(Component* component)
 {
-	mComponents.push_back(component);
 	component->mOwner = this;
+	mComponents.push_back(component);
 }
 
 // CHILDS / PARENTS -----------------------------------------------------------------
@@ -205,6 +211,7 @@ void GameObject::PrintInspector()
 				if (GetCameraComponent() == nullptr) {
 					ComponentCamera* cc = new ComponentCamera();
 					AddComponent(cc);
+					App->scene->sceneCameras.push_back(cc);
 				}
 				else LOG("Camera Component already added")
 			}
@@ -279,7 +286,8 @@ bool GameObject::IntersectsRay(const Ray& ray) {
 	if (meshComponent) {
 		Mesh* objMesh = meshComponent->mesh;
 
-		if (ray.Intersects(objMesh->Local_AABB)) {
+		if (ray.Intersects(objMesh->OBB)) {
+			LOG("Rasho ¡");
 			return true;
 		}
 	}

@@ -1,6 +1,7 @@
 #pragma once
 #include "Component.h"
 #include "GameObject.h"
+#include "ModuleAssimpMeshes.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 
 class Component;
@@ -32,6 +33,10 @@ public:
 
 	void PrintInspector();
 
+	void RenderFrustum();
+
+	int ContainsAABB(AABB& refBox);
+
 public:
 
 	Frustum frustum;
@@ -52,4 +57,6 @@ private:
 
 	float4x4 ViewMatrix;
 	float4x4 ProjectionMatrix;
+
+	bool renderFrustum = true;
 };

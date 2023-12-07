@@ -43,6 +43,8 @@ struct Mesh {
     bool showAABB = true;
     bool showOBB = true;
 
+    bool isInFrustum = false;
+
     GLuint id_texture;
     GLuint texture_width = 0;
     GLuint texture_height = 0;

@@ -214,7 +214,10 @@ void ModuleAssimpMeshes::RenderScene()
         meshes[i]->OBB.Transform(meshes[i]->owner->transform->getGlobalMatrix().Transposed());
         meshes[i]->Global_AABB.SetNegativeInfinity();
         meshes[i]->Global_AABB.Enclose(meshes[i]->OBB);
-        meshes[i]->Render();
+
+        //meshes[i]->Render();
+
+        if(meshes[i]->isInFrustum) meshes[i]->Render();
            
         meshes[i]->RenderAABB();
 
@@ -222,7 +225,7 @@ void ModuleAssimpMeshes::RenderScene()
         if (meshes[i]->owner->GetMeshComponent()->faceNormals) {
             meshes[i]->RenderFaceNormals();
         }
-        /* glColor3f(1, 0, 0);
+        /* glColor3f(1, 0, 0); 
          meshes[i]->RenderVertexNormals();*/
     }
 }
@@ -248,7 +251,6 @@ void ModuleAssimpMeshes::DeleteMesh(Mesh* mesh) {
 
 bool ModuleAssimpMeshes::CleanUp()
 {
-
    
     aiDetachAllLogStreams();
     return true;

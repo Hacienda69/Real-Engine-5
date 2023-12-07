@@ -1,6 +1,7 @@
 #pragma once
 #include "Module.h"
 #include "Globals.h"
+#include "ComponentCamera.h"
 
 class GameObject;
 class ModuleScene : public Module
@@ -17,6 +18,11 @@ public:
 	bool CleanUp();
 
 	void CreateLibraryFolder();
+	void setMainCamera(ComponentCamera* cam);
+
+	std::vector<GameObject*> gameObjects;
+	std::vector<ComponentCamera*> sceneCameras;
+	ComponentCamera* mainCamera;
 
 	GameObject* CreateGameObject(GameObject* parent);
 	GameObject* root = nullptr;

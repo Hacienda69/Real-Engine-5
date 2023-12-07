@@ -25,6 +25,7 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
         ComponentCamera* cam = new ComponentCamera(gameObject);
 
         gameObject->AddComponent(cam);
+        App->scene->sceneCameras.push_back(cam);
 
         return gameObject;
     }

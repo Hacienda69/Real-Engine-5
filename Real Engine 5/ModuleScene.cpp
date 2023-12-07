@@ -9,6 +9,8 @@ ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, sta
 
 ModuleScene::~ModuleScene() 
 {
+    gameObjects.clear();
+    sceneCameras.clear();
 }
 
 bool ModuleScene::Init()
@@ -26,6 +28,7 @@ bool ModuleScene::Start() {
     //Load Baker House
     App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
    
+    mainCamera = nullptr;
 
     return true;
 }
@@ -37,6 +40,21 @@ update_status ModuleScene::PreUpdate(float dt) {
 }
 
 update_status ModuleScene::Update(float dt) {
+
+    //LOG("GameObjects: %d", gameObjects.size());
+    LOG("SceneCameras: %d", sceneCameras.size());
+
+
+    for (int i = 0; i < gameObjects.size(); i++)
+    {
+        gameObjects[i]->Update();
+    }
+
+    for (int i = 0; i < sceneCameras.size(); i++)
+    {
+        sceneCameras[i]->Update();
+        if (sceneCameras[i]->mainCam) mainCamera = sceneCameras[i];
+    }
     
     return UPDATE_CONTINUE;
 }
@@ -57,7 +75,7 @@ GameObject* ModuleScene::CreateGameObject(GameObject* parent)
 {
     GameObject* newGameObject = new GameObject(parent);
 
-
+    gameObjects.push_back(newGameObject);
 
     return newGameObject;
 
@@ -111,5 +129,19 @@ void ModuleScene::CreateLibraryFolder() {
     }
     else {
         std::cout << "Failed to create metadata JSON file in Library folder." << std::endl;
+    }
+}
+
+void ModuleScene::setMainCamera(ComponentCamera* cam) 
+{
+    for (int i = 0; i < sceneCameras.size(); i++)
+    {
+        sceneCameras[i]->mainCam = false;
+        if (sceneCameras[i] == cam)
+        {
+            LOG("Setting main camera");
+            sceneCameras[i]->mainCam = true;
+            break;
+        }
     }
 }
