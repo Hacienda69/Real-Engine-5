@@ -48,12 +48,12 @@ void ComponentCamera::Update()
         for (int i = 0; i < App->assimpMeshes->meshes.size(); i++) {
             if (ContainsAABB(App->assimpMeshes->meshes[i]->Global_AABB) > 0) {
                 App->assimpMeshes->meshes[i]->isInFrustum = true;
-                LOG("Mesh is inside frustm");
+                //LOG("Mesh is inside frustm");
             }
             else
             {
                 App->assimpMeshes->meshes[i]->isInFrustum = false;
-                LOG("There are meshes outside frustum");
+                //LOG("There are meshes outside frustum");
             }
         }
         return;
@@ -67,17 +67,17 @@ void ComponentCamera::Update()
 
         if (renderFrustum) RenderFrustum();
 
-        if (mainCam) 
+        if (mainCam && frustumCulling) 
         {
             for (int i = 0; i < App->assimpMeshes->meshes.size(); i++) {
                 if (ContainsAABB(App->assimpMeshes->meshes[i]->Global_AABB) > 0) {
                     App->assimpMeshes->meshes[i]->isInFrustum = true;
-                    LOG("Mesh is inside frustm");
+                    //LOG("Mesh is inside frustm");
                 }
                 else
                 {
                     App->assimpMeshes->meshes[i]->isInFrustum = false;
-                    LOG("There are meshes outside frustum");
+                    //LOG("There are meshes outside frustum");
                 }
             }
             return;
@@ -189,6 +189,11 @@ void ComponentCamera::PrintInspector()
     {
         if (mainCam) { ImGui::SameLine(); ImGui::Text(" ( Main Camera ) "); }
 
+        if (ImGui::Checkbox("Main Camera", &mainCam)) 
+        {
+            App->scene->setMainCamera(this);
+        }
+
         if (ImGui::Combo("Camera Type", &cameraType, camType, IM_ARRAYSIZE(camType)))
         {
             if (cameraType == 0) frustum.type = FrustumType::PerspectiveFrustum;
@@ -203,11 +208,9 @@ void ComponentCamera::PrintInspector()
             frustum.horizontalFov = 2.0f * atanf(tanf(frustum.verticalFov / 2.0f) * 1.7f);
         }
 
-        if (ImGui::Checkbox("Set Main Camera", &mainCam)) 
-        {
-            App->scene->setMainCamera(this);
-        }
         if (ImGui::Checkbox("Render Frustum", &renderFrustum));
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Frustum Culling", &frustumCulling));
     }
 }
 

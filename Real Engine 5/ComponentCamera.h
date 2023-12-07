@@ -59,4 +59,5 @@ private:
 	float4x4 ProjectionMatrix;
 
 	bool renderFrustum = true;
+	bool frustumCulling = true;
 };

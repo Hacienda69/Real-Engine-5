@@ -43,7 +43,7 @@ update_status ModuleCamera3D::Update(float dt)
 	// Implement a debug camera with keys and mouse
 	// Now we can make this movememnt frame rate independant!
 	
-	//sceneCamera->Update();
+	sceneCamera->Update();
 
 	Frustum auxFrustum = sceneCamera->frustum;
 

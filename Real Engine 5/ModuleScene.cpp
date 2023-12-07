@@ -42,8 +42,7 @@ update_status ModuleScene::PreUpdate(float dt) {
 update_status ModuleScene::Update(float dt) {
 
     //LOG("GameObjects: %d", gameObjects.size());
-    LOG("SceneCameras: %d", sceneCameras.size());
-
+    //LOG("SceneCameras: %d", sceneCameras.size());
 
     for (int i = 0; i < gameObjects.size(); i++)
     {
