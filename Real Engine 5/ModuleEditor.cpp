@@ -116,6 +116,8 @@ bool ModuleEditor::Init()
     isActiveConsole = true;
     isActiveInspector = true;
     isActiveConfig = true;
+    isActiveScene = true;
+    isActiveGame = true;
 
     return true;
 }
@@ -240,6 +242,8 @@ update_status ModuleEditor::DrawEditor()
         //CreateAboutModalPopup(showModalAbout);
         CreateAboutWindow(showAboutWindow);
         CreateConsoleWindow(isActiveConsole);
+        App->scene->SceneWindow(isActiveScene);
+        App->scene->GameWindow(isActiveGame);
 
         if (ImGui::Button("Play")) {
             App->scene->Play();

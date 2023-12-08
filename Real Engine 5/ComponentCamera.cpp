@@ -23,10 +23,6 @@ ComponentCamera::ComponentCamera(GameObject* owner) : Component(owner)
 
 ComponentCamera::~ComponentCamera() 
 {
-	//glDeleteFramebuffers(1, &frameBuffer);
-	//glDeleteFramebuffers(1, &camBuffer);
-	//glDeleteFramebuffers(1, &objBuffer);
-
     for (int i = 0; i < App->scene->sceneCameras.size(); i++)
     {
         if (App->scene->sceneCameras[i] == this) App->scene->sceneCameras.erase(App->scene->sceneCameras.begin() + i);
@@ -120,15 +116,16 @@ void ComponentCamera::SetBuffers()
     glGenTextures(1, &camBuffer); 
     glBindTexture(GL_TEXTURE_2D, camBuffer); 
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, SCREEN_WIDTH, SCREEN_HEIGHT, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-    //glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camBuffer, 0); 
 
-    float color[4] = { 0.1,0.1,0.1,0 };
+    float color[4] = { 0.f, 0.f, 0.f, 0.f };
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, color);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER); 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);  
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR); 
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR); 
     glBindTexture(GL_TEXTURE_2D, 0); 
+
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, camBuffer, 0); 
 
     // Crear un depth attachment (z-buffer)
     glGenRenderbuffers(1, &objBuffer); 
@@ -160,9 +157,9 @@ float* ComponentCamera::GetProjectionMatrix()
     return ProjectionMatrix.ptr();
 }
 
-uint* ComponentCamera::GetFrameBuffer() { return &frameBuffer; }
-uint* ComponentCamera::GetCamBuffer()   { return &camBuffer; }
-uint* ComponentCamera::GetObjBuffer()   { return &objBuffer; }
+uint ComponentCamera::GetFrameBuffer() { return frameBuffer; }
+uint ComponentCamera::GetCamBuffer()   { return camBuffer; }
+uint ComponentCamera::GetObjBuffer()   { return objBuffer; }
 
 // OLD MODULECAMERA FUNCTIONS ------------------------------------------------------------
 void ComponentCamera::Look(const float3& pos, const float3& ref)

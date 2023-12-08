@@ -22,9 +22,9 @@ public:
 	float* GetViewMatrix();
 	float* GetProjectionMatrix();
 
-	uint* GetFrameBuffer();
-	uint* GetCamBuffer();
-	uint* GetObjBuffer();
+	uint GetFrameBuffer();
+	uint GetCamBuffer();
+	uint GetObjBuffer();
 
 	void Look(const float3& pos, const float3& ref);
 	void LookAt(const float3& Spot);

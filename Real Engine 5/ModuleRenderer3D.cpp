@@ -11,7 +11,6 @@
 #pragma comment (lib, "Glew/libx86/glew32.lib")
 
 
-
 #ifdef _DEBUG
 #pragma comment (lib, "MathGeoLib/libx86/Debug2/MathGeoLib.lib") /* link Microsoft OpenGL lib   */
 #else
@@ -199,13 +198,10 @@ bool ModuleRenderer3D::Init()
 		glewInit();
 	}
 
-	
 	OnResize(SCREEN_WIDTH, SCREEN_HEIGHT);
 
 	Grid.axis = true;
 
-	
-	
 	glGenBuffers(1, &test);
 	glBindBuffer(GL_ARRAY_BUFFER, test);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(g_vertex_buffer_data), g_vertex_buffer_data, GL_STATIC_DRAW);
@@ -214,6 +210,7 @@ bool ModuleRenderer3D::Init()
 	VBO = 0;
 	EBO = 0;
 	VAO = 0;
+
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 	glGenVertexArrays(1, &VAO);
@@ -232,18 +229,13 @@ bool ModuleRenderer3D::Init()
 	
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); 
 
-
 	VAORect = 0;
 	VBORect = 0;
 	EBORect = 0;
 	
-	
 	glGenBuffers(1, &VBORect);
 	glGenBuffers(1, &EBORect);
 	glGenVertexArrays(1, &VAORect);
-
-	
-
 
 	glBindVertexArray(VAORect);
 	glBindBuffer(GL_ARRAY_BUFFER, VBORect);
@@ -260,15 +252,11 @@ bool ModuleRenderer3D::Init()
 	glBindVertexArray(0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-
 	return ret;
 }
 
 bool ModuleRenderer3D::Start()
 {
-	
-	
-			
 	return true;
 }
 
@@ -285,37 +273,15 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->sceneCamera->GetViewMatrix());
 
+	glBindFramebuffer(GL_FRAMEBUFFER, App->camera->sceneCamera->GetFrameBuffer());
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 	// light 0 on cam pos
 	float3 camPos = float3(App->camera->sceneCamera->frustum.pos);
 	lights[0].SetPos(camPos.x, camPos.y, camPos.z);
 
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
-
-	//ImGui_ImplOpenGL3_NewFrame();
-	//ImGui_ImplSDL2_NewFrame();
-	//ImGui::NewFrame();
-
-	//ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove |
-	//	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoNavFocus;
-
-	//const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
-	//ImGui::SetNextWindowPos(main_viewport->WorkPos);
-	//ImGui::SetNextWindowSize(main_viewport->Size);
-	//ImGui::SetNextWindowViewport(main_viewport->ID);
-
-	//ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
-	//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
-	//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
-
-	//ImGui::Begin("DockingInv", nullptr, flags);
-
-	//ImGui::PopStyleVar(3);
-
-	//ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
-	//ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
-	//
-	//ImGui::End();
 
 	return UPDATE_CONTINUE;
 }
@@ -326,20 +292,32 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	Grid.Render();
 	DrawWithWireframe();
 
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 	//(4)--- DRAW BAKE HOUSE ---
 	App->assimpMeshes->RenderScene();
 
-	//App->scene->SceneWindow();
-	//App->scene->GameWindow();
+	if (App->scene->mainCamera != nullptr)
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
+		glLoadIdentity();
+
+		glMatrixMode(GL_PROJECTION);
+		glLoadMatrixf(App->scene->mainCamera->GetProjectionMatrix());
+
+		glMatrixMode(GL_MODELVIEW);
+		glLoadMatrixf(App->scene->mainCamera->GetViewMatrix());
+
+
+		glBindFramebuffer(GL_FRAMEBUFFER, App->scene->mainCamera->GetFrameBuffer());
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	if (App->editor->DrawEditor() == UPDATE_STOP)
 	{
 		return UPDATE_STOP;
 	}
-
-	//ImGui::Render();
 
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;

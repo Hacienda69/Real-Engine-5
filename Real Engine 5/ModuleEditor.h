@@ -110,6 +110,8 @@ private:
     bool isActiveConsole;
     bool isActiveHierarchy;
     bool isActiveConfig;
+    bool isActiveScene;
+    bool isActiveGame;
 
     //About Window
     std::string license;

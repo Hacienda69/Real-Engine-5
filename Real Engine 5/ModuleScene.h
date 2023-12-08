@@ -6,9 +6,11 @@
 #include "ImGui/imgui.h"
 
 class GameObject;
+
 class ModuleScene : public Module
 {
 public:
+
 	ModuleScene(Application* app, bool start_enabled = true);
 	~ModuleScene();
 
@@ -22,8 +24,17 @@ public:
 	void Pause();
 	bool CleanUp();
 
-	void SceneWindow();
-	void GameWindow();
+	void SceneWindow(bool& active);
+	void GameWindow(bool& active);
+
+	void setMainCamera(ComponentCamera* cam);
+
+	GameObject* GetRoot() const { return root; }
+
+	ImVec2 NormalizeMouse(float x, float y, float w, float h, ImVec2 pos);
+
+public:
+
 	ImVec2 sizeScreen;
 
 	Timer timerGameScene;
@@ -34,8 +45,6 @@ public:
 	float regulator;
 
 	float rotatingScene;
-
-	void setMainCamera(ComponentCamera* cam);
 
 	std::vector<GameObject*> gameObjects;
 	std::vector<ComponentCamera*> sceneCameras;
@@ -49,8 +58,4 @@ public:
 	GameObject* prova4;
 	GameObject* prova5;
 	GameObject* prova6;
-
-	GameObject* GetRoot() const { return root; }
-
-	ImVec2 NormalizeMouse(float x, float y, float w, float h, ImVec2 pos);
 };

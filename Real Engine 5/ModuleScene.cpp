@@ -94,27 +94,114 @@ bool ModuleScene::CleanUp() {
     return true;
 }
 
-void ModuleScene::SceneWindow() {
+void ModuleScene::SceneWindow(bool& active) {
     ImGui::Begin("Scene");
-
     sizeScreen = ImGui::GetContentRegionAvail();
 
-    float aspectRatio = sizeScreen.x / sizeScreen.y;
-    App->camera->sceneCamera->frustum.verticalFov = App->camera->sceneCamera->fov * DEGTORAD;
-    App->camera->sceneCamera->frustum.horizontalFov = 2.0f * atanf(tanf(App->camera->sceneCamera->frustum.verticalFov / 2.0f) * aspectRatio);
+    ImVec2 newWinSize = sizeScreen;
+    newWinSize.x = (newWinSize.y / 9.0f) * 16.0f;
 
-    ImGui::Image((ImTextureID)App->camera->sceneCamera->GetCamBuffer(), sizeScreen, ImVec2(0, 1), ImVec2(1, 0));
+    float uvOffset = (sizeScreen.x - newWinSize.x) / 2.0f;
+    uvOffset /= newWinSize.x;
+
+    ImGui::Image((ImTextureID)App->camera->sceneCamera->GetCamBuffer(), sizeScreen, ImVec2(-uvOffset, 1), ImVec2(1 + uvOffset, 0));
+
+    if (ImGui::IsMouseClicked(0) && App->input->GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT && ImGui::IsWindowHovered())
+    {
+        std::vector<GameObject*> objectsSelectedByMouse;
+
+        // Get mouse position
+        ImVec2 mousePosition = ImGui::GetMousePos();
+
+        // Normalize mouse position
+        ImVec2 normalizedMousePos = NormalizeMouse(ImGui::GetWindowPos().x,
+            ImGui::GetWindowPos().y + ImGui::GetFrameHeight(),
+            ImGui::GetWindowSize().x,
+            ImGui::GetWindowSize().y - ImGui::GetFrameHeight(), mousePosition);
+
+        normalizedMousePos.x -= 0.5f;
+        normalizedMousePos.y -= 0.5f;
+
+        // Create picking line using the camera frustum
+        LineSegment pickingLine = App->camera->sceneCamera->frustum.UnProjectLineSegment(normalizedMousePos.x, normalizedMousePos.y);
+        //App->renderer3D->ray = pickingLine;
+
+        // Iterate through meshes for intersection
+        for (size_t i = 0; i < App->assimpMeshes->meshes.size(); i++)
+        {
+            if (pickingLine.Intersects(App->assimpMeshes->meshes[i]->OBB))
+            {
+                if (App->assimpMeshes->meshes[i]->owner != nullptr)
+                    objectsSelectedByMouse.push_back(App->assimpMeshes->meshes[i]->owner);
+            }
+        }
+
+        float currentDistance;
+        float minDistance = 0;
+
+        // Find closest object
+        for (int i = 0; i < objectsSelectedByMouse.size(); i++)
+        {
+            Mesh* mesh = objectsSelectedByMouse[i]->GetMeshComponent()->mesh;
+            float4x4 matrix = objectsSelectedByMouse[i]->transform->getGlobalMatrix().Transposed();
+
+            for (int j = 0; j < mesh->indexCount; j += 3)
+            {
+                float4 point1, point2, point3;
+                float* vertex1 = &mesh->vertex[mesh->index[j] * VERTEX];
+                float* vertex2 = &mesh->vertex[mesh->index[j + 1] * VERTEX];
+                float* vertex3 = &mesh->vertex[mesh->index[j + 2] * VERTEX];
+
+                point1 = matrix * float4(*vertex1, *(vertex1 + 1), *(vertex1 + 2), 1);
+                point2 = matrix * float4(*vertex2, *(vertex2 + 1), *(vertex2 + 2), 1);
+                point3 = matrix * float4(*vertex3, *(vertex3 + 1), *(vertex3 + 2), 1);
+
+                float3 _point1, _point2, _point3;
+                _point1 = float3(point1.x, point1.y, point1.z);
+                _point2 = float3(point2.x, point2.y, point2.z);
+                _point3 = float3(point3.x, point3.y, point3.z);
+
+                Triangle triangle(_point1, _point2, _point3);
+
+                if (pickingLine.Intersects(triangle, &currentDistance, nullptr))
+                {
+                    if (minDistance == 0) {
+                        minDistance = currentDistance;
+                        App->hierarchy->SetGameObject(objectsSelectedByMouse[i]);
+                        continue;
+                    }
+
+                    if (minDistance > currentDistance) {
+                        minDistance = currentDistance;
+                        App->hierarchy->SetGameObject(objectsSelectedByMouse[i]);
+                    }
+                }
+            }
+        }
+
+        // If no objects selected, clear selection
+        if (objectsSelectedByMouse.size() == 0)
+            App->hierarchy->SetGameObject(nullptr);
+
+        objectsSelectedByMouse.clear();
+    }
 
     ImGui::End();
 }
 
-void ModuleScene::GameWindow() {
+void ModuleScene::GameWindow(bool& active) {
     ImGui::Begin("Game");
+    
     sizeScreen = ImGui::GetContentRegionAvail();
     float aspectRatio = sizeScreen.x / sizeScreen.y;
-    mainCamera->frustum.verticalFov = mainCamera->fov * DEGTORAD;
-    mainCamera->frustum.horizontalFov = 2.0f * atanf(tanf(mainCamera->frustum.verticalFov / 2.0f) * aspectRatio);
-    ImGui::Image((ImTextureID)mainCamera->GetCamBuffer(), sizeScreen, ImVec2(0, 1), ImVec2(1, 0));
+
+    if (mainCamera != nullptr) 
+    {
+        mainCamera->frustum.verticalFov = mainCamera->fov * DEGTORAD;
+        mainCamera->frustum.horizontalFov = 2.0f * atanf(tanf(mainCamera->frustum.verticalFov / 2.0f) * aspectRatio);
+
+        ImGui::Image((ImTextureID)mainCamera->GetCamBuffer(), sizeScreen, ImVec2(0, 1), ImVec2(1, 0));
+    }
 
     ImGui::End();
 }
