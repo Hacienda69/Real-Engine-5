@@ -36,9 +36,7 @@ bool ModuleAssimpMeshes::Start()
                 
     return ret;
 }
-
-
-
+//PROBLEMA
 GameObject* ModuleAssimpMeshes::LoadMeshFromFile(const char* file_path)
 {
     const aiScene* scene = aiImportFile(file_path, aiProcess_Triangulate|aiProcess_FlipUVs);
