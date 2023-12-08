@@ -39,12 +39,11 @@ bool ModuleInput::Init()
 // Called every draw update
 update_status ModuleInput::PreUpdate(float dt)
 {
-	if (mouse_buttons[SDL_BUTTON_LEFT] == KEY_DOWN) { 
+	if (mouse_buttons[SDL_BUTTON_LEFT] == KEY_DOWN && GetKey(SDL_SCANCODE_LALT) != KEY_REPEAT) { 
 		Ray ray = App->camera->GenerateRayFromMouse(mouse_x, mouse_y);
 
-		for (auto& gameObject : App->scene->GetRoot()->GetChildren()) {
+		for (auto& gameObject : App->scene->gameObjects) {
 			if (gameObject->IntersectsRay(ray)) {
-
 				App->hierarchy->SetGameObject(gameObject);
 				break; 
 			}

@@ -57,6 +57,8 @@ public:
 
 	void SetWireframeMode(bool enable);
 
+	void DrawLine(float3 &origin, float3 &dir);
+
 
 private:
 	void DrawWithWireframe();

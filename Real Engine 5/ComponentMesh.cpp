@@ -33,3 +33,7 @@ void ComponentMesh::PrintInspector()
 		ImGui::Checkbox("Face Normals", &faceNormals); ImGui::SameLine(); ImGui::Checkbox("AABB", &mesh->showAABB); ImGui::SameLine(); ImGui::Checkbox("OBB", &mesh->showOBB);
 	}
 }
+
+Mesh* ComponentMesh::getMesh() {
+	return mesh;
+}

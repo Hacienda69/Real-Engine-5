@@ -3,6 +3,11 @@
 #include "Application.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
+#include "ModuleEditor.h"
+
+#include "ImGui/imgui.h"
+#include "ImGui/backends/imgui_impl_opengl3.h"
+#include "ImGui/backends/imgui_impl_sdl2.h"
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled) 
 {
@@ -89,8 +94,9 @@ bool ModuleScene::CleanUp() {
     return true;
 }
 
-void ModuleScene::EditorWindow() {
-    ImGui::Begin("Editor");
+void ModuleScene::SceneWindow() {
+    ImGui::Begin("Scene");
+
     sizeScreen = ImGui::GetContentRegionAvail();
 
     float aspectRatio = sizeScreen.x / sizeScreen.y;
@@ -98,74 +104,6 @@ void ModuleScene::EditorWindow() {
     App->camera->sceneCamera->frustum.horizontalFov = 2.0f * atanf(tanf(App->camera->sceneCamera->frustum.verticalFov / 2.0f) * aspectRatio);
 
     ImGui::Image((ImTextureID)App->camera->sceneCamera->GetCamBuffer(), sizeScreen, ImVec2(0, 1), ImVec2(1, 0));
-
-    if (ImGui::IsMouseClicked(0) && ImGui::IsWindowHovered()) {
-
-        ImVec2 mousePos = ImGui::GetMousePos();
-        ImVec2 normalized = NormalizeMouse(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y + ImGui::GetFrameHeight(), ImGui::GetWindowSize().x, ImGui::GetWindowSize().y - ImGui::GetFrameHeight(), mousePos);
-
-        LineSegment my_ray = App->camera->sceneCamera->frustum.UnProjectLineSegment(normalized.x, normalized.y);
-        std::vector<GameObject*> interVec;
-
-        for (size_t i = 0; i < App->assimpMeshes->meshes.size(); i++)
-        {
-            if (my_ray.Intersects(App->assimpMeshes->meshes[i]->OBB)) {
-                if (App->assimpMeshes->meshes[i]->owner != nullptr)
-                {
-                    if (App->assimpMeshes->meshes[i]->owner != nullptr)
-                        interVec.push_back(App->assimpMeshes->meshes[i]->owner);
-                }
-            }
-        };
-
-        float distLength;
-        float minDistLenght = 0;
-
-        for (size_t j = 0; j < interVec.size(); j++) {
-
-            ComponentMesh* gObjMesh = interVec[j]->GetMeshComponent();
-            if (gObjMesh != nullptr) {
-
-                    Mesh* mesh = gObjMesh->mesh;
-                    float4x4 matTrans = interVec[j]->transform->getGlobalMatrix().Transposed();
-
-                    if (mesh->indexCount > 9) {
-                        for (size_t b = 0; b < mesh->indexCount; b += 3) {
-
-                            float* t1 = &mesh->vertex[mesh->index[b] * VERTEX];
-                            float* t2 = &mesh->vertex[mesh->index[b + 1] * VERTEX];
-                            float* t3 = &mesh->vertex[mesh->index[b + 2] * VERTEX];
-
-                            float4 tr1 = matTrans * float4(*t1, *(t1 + 1), *(t1 + 2), 1);
-                            float4 tr2 = matTrans * float4(*t2, *(t2 + 1), *(t2 + 2), 1);
-                            float4 tr3 = matTrans * float4(*t3, *(t3 + 1), *(t3 + 2), 1);
-
-                            float3 tri1 = float3(tr1.x, tr1.y, tr1.z);
-                            float3 tri2 = float3(tr2.x, tr2.y, tr2.z);
-                            float3 tri3 = float3(tr3.x, tr3.y, tr3.z);
-
-                            Triangle triangle(tri1, tri2, tri3);
-
-                            if (my_ray.Intersects(triangle, &distLength, nullptr))
-                            {
-                                if (minDistLenght == 0) {
-                                    minDistLenght = distLength;
-                                    App->hierarchy->SetGameObject(interVec[j]);
-                                    continue;
-                                }
-                                if (distLength < minDistLenght) {
-                                    minDistLenght = distLength;
-                                    App->hierarchy->SetGameObject(interVec[j]);
-                                }
-
-                            }
-                        }
-                    }
-            }
-
-        }
-        interVec.clear();
-    }
 
     ImGui::End();
 }

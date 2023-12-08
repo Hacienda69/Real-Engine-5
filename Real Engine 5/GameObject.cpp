@@ -286,8 +286,8 @@ bool GameObject::IntersectsRay(const Ray& ray) {
 	if (meshComponent) {
 		Mesh* objMesh = meshComponent->mesh;
 
-		if (ray.Intersects(objMesh->OBB)) {
-			LOG("Rasho ¡");
+		if (ray.Intersects(objMesh->Global_AABB)) {
+			LOG("Hit!");
 			return true;
 		}
 	}

@@ -22,7 +22,7 @@ public:
 	void Pause();
 	bool CleanUp();
 
-	void EditorWindow();
+	void SceneWindow();
 	void GameWindow();
 	ImVec2 sizeScreen;
 

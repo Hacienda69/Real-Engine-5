@@ -170,8 +170,8 @@ Ray ModuleCamera3D::GenerateRayFromMouse(int mouse_x, int mouse_y) {
 	float4x4 proj = sceneCamera->frustum.ProjectionMatrix();
 	float4x4 view = sceneCamera->frustum.ViewMatrix();
 
-	float normalizedX = (2.0f * mouse_x) / SCREEN_WIDTH - 1.0f;
-	float normalizedY = 1.0f - (2.0f * mouse_y) / SCREEN_HEIGHT;
+	float normalizedX = (2.f * mouse_x) / App->window->width - 1.0f;
+	float normalizedY = 1.0f - (2.f * mouse_y) / App->window->height;
 
 	float4 clipCoords(normalizedX, normalizedY, -1.0f, 1.0f);
 
@@ -183,6 +183,8 @@ Ray ModuleCamera3D::GenerateRayFromMouse(int mouse_x, int mouse_y) {
 	rayDirection.Normalize();
 
 	float3 rayOrigin = sceneCamera->frustum.pos;
+
+	LOG("RAYCAST || origin: (%f, %f, %f) || direction: (%f, %f, %f)", rayOrigin.x, rayOrigin.y, rayOrigin.z, rayDirection.x, rayDirection.y, rayDirection.z);
 
 	return Ray(rayOrigin, rayDirection);
 }

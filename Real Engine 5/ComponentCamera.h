@@ -20,7 +20,7 @@ public:
 	void Update();
 
 	float* GetViewMatrix();
-	float* GetProjetionMatrix();
+	float* GetProjectionMatrix();
 
 	uint* GetFrameBuffer();
 	uint* GetCamBuffer();

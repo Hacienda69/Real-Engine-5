@@ -279,6 +279,9 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
 
+	glMatrixMode(GL_PROJECTION);
+	glLoadMatrixf(App->camera->sceneCamera->GetProjectionMatrix());
+
 	glMatrixMode(GL_MODELVIEW);
 	glLoadMatrixf(App->camera->sceneCamera->GetViewMatrix());
 
@@ -289,6 +292,31 @@ update_status ModuleRenderer3D::PreUpdate(float dt)
 	for(uint i = 0; i < MAX_LIGHTS; ++i)
 		lights[i].Render();
 
+	//ImGui_ImplOpenGL3_NewFrame();
+	//ImGui_ImplSDL2_NewFrame();
+	//ImGui::NewFrame();
+
+	//ImGuiWindowFlags flags = ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoScrollbar | ImGuiWindowFlags_NoMove |
+	//	ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoNavFocus;
+
+	//const ImGuiViewport* main_viewport = ImGui::GetMainViewport();
+	//ImGui::SetNextWindowPos(main_viewport->WorkPos);
+	//ImGui::SetNextWindowSize(main_viewport->Size);
+	//ImGui::SetNextWindowViewport(main_viewport->ID);
+
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowRounding, 0.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowBorderSize, 0.0f);
+	//ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(0.0f, 0.0f));
+
+	//ImGui::Begin("DockingInv", nullptr, flags);
+
+	//ImGui::PopStyleVar(3);
+
+	//ImGuiID dockspace_id = ImGui::GetID("MyDockSpace");
+	//ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), ImGuiDockNodeFlags_PassthruCentralNode);
+	//
+	//ImGui::End();
+
 	return UPDATE_CONTINUE;
 }
 
@@ -298,13 +326,20 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 	Grid.Render();
 	DrawWithWireframe();
 
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 	//(4)--- DRAW BAKE HOUSE ---
 	App->assimpMeshes->RenderScene();
+
+	//App->scene->SceneWindow();
+	//App->scene->GameWindow();
 
 	if (App->editor->DrawEditor() == UPDATE_STOP)
 	{
 		return UPDATE_STOP;
 	}
+
+	//ImGui::Render();
 
 	SDL_GL_SwapWindow(App->window->window);
 	return UPDATE_CONTINUE;
@@ -497,3 +532,18 @@ void ModuleRenderer3D::DrawWithWireframe()
 	wireframeMode ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
+void ModuleRenderer3D::DrawLine(float3& origin, float3& direction)
+{
+	glColor3f(0.0f, 0.0f, 1.0f);  // Color azul para la línea
+
+	glBegin(GL_LINES);
+
+	// Punto de origen
+	glVertex3fv(origin.ptr());
+
+	// Punto de destino (calculado sumando la dirección)
+	float3 endPoint = origin + direction;
+	glVertex3fv(endPoint.ptr());
+
+	glEnd();
+}

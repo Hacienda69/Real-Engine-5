@@ -18,4 +18,6 @@ public:
 	bool faceNormals;
 
 	void PrintInspector();
+
+	Mesh* getMesh();
 };
