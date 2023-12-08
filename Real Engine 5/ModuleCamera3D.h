@@ -5,8 +5,6 @@
 #include "MathGeoLib/include/Math/float4x4.h"
 #include "ComponentCamera.h"
 
-#include "glmath.h"
-
 class ComponentCamera;
 
 enum class camStates {

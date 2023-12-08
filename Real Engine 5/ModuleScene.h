@@ -3,6 +3,7 @@
 #include "Module.h"
 #include "Globals.h"
 #include "ComponentCamera.h"
+#include "ImGui/imgui.h"
 
 class GameObject;
 class ModuleScene : public Module
@@ -21,13 +22,19 @@ public:
 	void Pause();
 	bool CleanUp();
 
+	void EditorWindow();
+	void GameWindow();
+	ImVec2 sizeScreen;
+
 	Timer timerGameScene;
 	bool isStop = false;
 	bool isPlay = false;
 	int gameState = 0;
-	float deltaTimeScene = 0;
+	float deltaTime = 0;
+	float regulator;
 
-	void CreateLibraryFolder();
+	float rotatingScene;
+
 	void setMainCamera(ComponentCamera* cam);
 
 	std::vector<GameObject*> gameObjects;
@@ -44,4 +51,6 @@ public:
 	GameObject* prova6;
 
 	GameObject* GetRoot() const { return root; }
+
+	ImVec2 NormalizeMouse(float x, float y, float w, float h, ImVec2 pos);
 };

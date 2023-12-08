@@ -230,7 +230,6 @@ update_status ModuleEditor::DrawEditor()
                 PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::P_SUZANNE);
             }
 
-
             ImGui::EndMenu();
         }
  
@@ -242,23 +241,22 @@ update_status ModuleEditor::DrawEditor()
         CreateAboutWindow(showAboutWindow);
         CreateConsoleWindow(isActiveConsole);
 
+        if (ImGui::Button("Play")) {
+            App->scene->Play();
+            App->scene->gameState = 1;
+            ImGui::SetWindowFocus("Game");
+        }
+        if (ImGui::Button("Stop")) {
+            App->scene->Stop();
+            App->scene->gameState = 2;
+            ImGui::SetWindowFocus("Editor");
+        }
+        if (ImGui::Button("Pause")) {
+            App->scene->Pause();
+            App->scene->gameState = 3;
+        }
 
         ImGui::EndMainMenuBar();
-    }
-
-    if (ImGui::Button("Play")) {
-        App->scene->Play();
-        App->scene->gameState = 1;
-        ImGui::SetWindowFocus("Game");
-    }
-    if (ImGui::Button("Stop")) {
-        App->scene->Stop();
-        App->scene->gameState = 2;
-        ImGui::SetWindowFocus("Scene");
-    }
-    if (ImGui::Button("Pause")) {
-        App->scene->Pause();
-        App->scene->gameState = 3;
     }
 
     if (App->hierarchy->objSelected && isActiveInspector) {
