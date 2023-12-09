@@ -223,15 +223,33 @@ void ModuleAssimpMeshes::RenderScene()
         if (meshes[i]->owner->GetMeshComponent()->faceNormals) {
             meshes[i]->RenderFaceNormals();
         }
-        /* glColor3f(1, 0, 0); 
-         meshes[i]->RenderVertexNormals();*/
     }
 }
 
-void ModuleAssimpMeshes::DeleteMesh(Mesh* mesh) {
-    
-    
+void ModuleAssimpMeshes::RenderGame()
+{
+    glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+    glLoadIdentity();
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadMatrixf(App->scene->mainCamera->GetProjectionMatrix());
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadMatrixf(App->scene->mainCamera->GetViewMatrix());
+
+    glBindFramebuffer(GL_FRAMEBUFFER, App->scene->mainCamera->GetFrameBuffer());
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    std::vector<Mesh*> auxMeshes = App->assimpMeshes->meshes;
+
+    for (int i = 0; i < auxMeshes.size(); i++)
+        if (auxMeshes[i]->isInFrustum)
+            auxMeshes[i]->Render();
+}
+
+void ModuleAssimpMeshes::DeleteMesh(Mesh* mesh) 
+{
     auto it = std::find(meshes.begin(), meshes.end(), mesh);
 
     if (it != meshes.end()) {

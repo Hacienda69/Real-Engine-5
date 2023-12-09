@@ -6,6 +6,11 @@
 #include "ComponentTransform.h"
 #include "ComponentCamera.h"
 #include "MathGeoLib/include/Geometry/Frustum.h"
+#include "MathGeoLib/include/MathGeoLib.h"
+
+
+#include "ImGui/backends/imgui_impl_opengl3.h"
+#include "ImGui/backends/imgui_impl_sdl2.h"
 
 ModuleCamera3D::ModuleCamera3D(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
@@ -165,26 +170,25 @@ void ModuleCamera3D::MouseRotation(float dx, float dy, float sensitivity)
 	sceneCamera->frustum.SetWorldMatrix(rm.Float3x4Part());
 }
 
-Ray ModuleCamera3D::GenerateRayFromMouse(int mouse_x, int mouse_y) {
+LineSegment ModuleCamera3D::GenerateRayFromMouse() {
 
-	float4x4 proj = sceneCamera->frustum.ProjectionMatrix();
-	float4x4 view = sceneCamera->frustum.ViewMatrix();
+	ImVec2 mousePos = ImGui::GetMousePos();
 
-	float normalizedX = (2.f * mouse_x) / App->window->width - 1.0f;
-	float normalizedY = 1.0f - (2.f * mouse_y) / App->window->height;
+	ImVec2 normalizedMousePos = NormalizeMousePos(ImGui::GetWindowPos().x,
+		ImGui::GetWindowPos().y + ImGui::GetFrameHeight(),
+		ImGui::GetWindowSize().x,
+		ImGui::GetWindowSize().y - ImGui::GetFrameHeight(), mousePos);
 
-	float4 clipCoords(normalizedX, normalizedY, -1.0f, 1.0f);
+	normalizedMousePos.x -= 0.5f;
+	normalizedMousePos.y -= 0.5f;
 
-	float4 eyeCoords = proj.Inverted() * clipCoords;
-	eyeCoords = float4(eyeCoords.x, eyeCoords.y, -1.0f, 0.0f);
+	LineSegment ray = App->camera->sceneCamera->frustum.UnProjectLineSegment(normalizedMousePos.x, normalizedMousePos.y);
+	App->renderer3D->rayCast = ray;
 
-	float4 rayDir = view.Inverted() * eyeCoords;
-	float3 rayDirection(rayDir.x, rayDir.y, rayDir.z);
-	rayDirection.Normalize();
+	return ray;
+}
 
-	float3 rayOrigin = sceneCamera->frustum.pos;
-
-	LOG("RAYCAST || origin: (%f, %f, %f) || direction: (%f, %f, %f)", rayOrigin.x, rayOrigin.y, rayOrigin.z, rayDirection.x, rayDirection.y, rayDirection.z);
-
-	return Ray(rayOrigin, rayDirection);
+ImVec2 ModuleCamera3D::NormalizeMousePos(float x, float y, float w, float h, ImVec2 p)
+{
+	return ImVec2((p.x - x) / w, 1.0f - (p.y - y) / h);
 }

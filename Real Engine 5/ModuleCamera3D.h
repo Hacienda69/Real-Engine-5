@@ -3,7 +3,13 @@
 #include "Globals.h"
 #include "MathGeoLib/include/Math/float3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
+#include "MathGeoLib/include/MathGeoLib.h"
+#include "MathGeoLib/include/Geometry/LineSegment.h"
+
 #include "ComponentCamera.h"
+
+#include "ImGui/backends/imgui_impl_opengl3.h"
+#include "ImGui/backends/imgui_impl_sdl2.h"
 
 class ComponentCamera;
 
@@ -25,7 +31,8 @@ public:
 
 	float3 GetSelectedObjPos();
 
-	Ray GenerateRayFromMouse(int mouse_x, int mouse_y);
+	LineSegment GenerateRayFromMouse();
+	ImVec2 NormalizeMousePos(float x, float y, float w, float h, ImVec2 p);
 
 private:
 	void MouseRotation(float dx, float dy, float sensitivity);

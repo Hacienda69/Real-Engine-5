@@ -33,6 +33,8 @@ public:
 
 	ImVec2 NormalizeMouse(float x, float y, float w, float h, ImVec2 pos);
 
+	void SetSelectedByTriangle(LineSegment ray, std::vector<GameObject*> GoList);
+
 public:
 
 	ImVec2 sizeScreen;
@@ -49,6 +51,8 @@ public:
 	std::vector<GameObject*> gameObjects;
 	std::vector<ComponentCamera*> sceneCameras;
 	ComponentCamera* mainCamera;
+
+	GameObject* defaultCamera;
 
 	GameObject* CreateGameObject(GameObject* parent);
 	GameObject* root = nullptr;

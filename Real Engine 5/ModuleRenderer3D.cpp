@@ -294,22 +294,12 @@ update_status ModuleRenderer3D::PostUpdate(float dt)
 
 	//(4)--- DRAW BAKE HOUSE ---
 	App->assimpMeshes->RenderScene();
+	DrawLine(rayCast.a, rayCast.b);
 
 	if (App->scene->mainCamera != nullptr)
 	{
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		glLoadIdentity();
-
-		glMatrixMode(GL_PROJECTION);
-		glLoadMatrixf(App->scene->mainCamera->GetProjectionMatrix());
-
-		glMatrixMode(GL_MODELVIEW);
-		glLoadMatrixf(App->scene->mainCamera->GetViewMatrix());
-
-
-		glBindFramebuffer(GL_FRAMEBUFFER, App->scene->mainCamera->GetFrameBuffer());
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		App->assimpMeshes->RenderGame();
+		DrawLine(rayCast.a, rayCast.b);
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -510,18 +500,33 @@ void ModuleRenderer3D::DrawWithWireframe()
 	wireframeMode ? glPolygonMode(GL_FRONT_AND_BACK, GL_LINE) : glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 }
 
-void ModuleRenderer3D::DrawLine(float3& origin, float3& direction)
+//void ModuleRenderer3D::DrawLine(float3& origin, float3& direction)
+//{
+//	glColor3f(0.0f, 0.0f, 1.0f);  // Color azul para la línea
+//
+//	glBegin(GL_LINES);
+//
+//	// Punto de origen
+//	glVertex3fv(origin.ptr());
+//
+//	// Punto de destino (calculado sumando la dirección)
+//	float3 endPoint = origin + direction;
+//	glVertex3fv(endPoint.ptr());
+//
+//	glEnd();
+//}
+
+void ModuleRenderer3D::DrawLine(float3 &origin, float3 &end)
 {
-	glColor3f(0.0f, 0.0f, 1.0f);  // Color azul para la línea
-
 	glBegin(GL_LINES);
+	glLineWidth(3.0f);
 
-	// Punto de origen
+	glColor3fv(float3(0.0f, 255.0f, 0.0f).ptr());
+
 	glVertex3fv(origin.ptr());
+	glVertex3fv(end.ptr());
 
-	// Punto de destino (calculado sumando la dirección)
-	float3 endPoint = origin + direction;
-	glVertex3fv(endPoint.ptr());
+	glColor3f(255.f, 255.f, 255.f);
 
 	glEnd();
 }

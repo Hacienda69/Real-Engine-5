@@ -5,6 +5,9 @@
 
 #include "MathGeoLib/include/Math/float3x3.h"
 #include "MathGeoLib/include/Math/float4x4.h"
+#include "MathGeoLib/include/MathGeoLib.h"
+#include "MathGeoLib/include/Geometry/LineSegment.h"
+
 #include "Primitive.h"
 #include "Glew/include/glew.h"
 
@@ -57,7 +60,8 @@ public:
 
 	void SetWireframeMode(bool enable);
 
-	void DrawLine(float3 &origin, float3 &dir);
+	//void DrawLine(float3 &origin, float3 &dir);
+	void DrawLine(float3& origin, float3& end);
 
 
 private:
@@ -83,6 +87,7 @@ public:
 	GLuint VBORect;
 	GLuint EBORect;
 	
+	LineSegment rayCast;
 	
 private:
 	//renderer attributes

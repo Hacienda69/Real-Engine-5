@@ -73,7 +73,9 @@ public:
     GameObject* LoadMeshFromFile(const char* file_path);
     void ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObject, GameObject* CgameObject, const aiScene* scene, int index);
     void BufferMesh(Mesh* mesh);
+
     void RenderScene();
+    void RenderGame();
 
     void DeleteMesh(Mesh* mesh);
     
