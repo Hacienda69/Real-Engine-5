@@ -37,8 +37,8 @@ void ComponentCamera::Update()
 {
     // Actualiza el frustum
 
-    //La cámara necesita estar dentro de un gameObject o ModuleCamera3D para que se actualize
-    //Sólo tienen frustum culling la mainCamera y la cámara de ModuleCamera3D
+    //La cámara necesita estar dentro de un gameObject o ModuleCamera3D para que se actualice
+    //Sólo tienen frustum culling la mainCamera y la cámara de ModuleCamera3D (para que no sea un caos)
     if (mOwner == nullptr) 
     {
         for (int i = 0; i < App->assimpMeshes->meshes.size(); i++) {
@@ -81,11 +81,7 @@ void ComponentCamera::Update()
 
     }
 
-
-    //ViewMatrix = frustum.ViewMatrix();
-    //ProjectionMatrix = frustum.ProjectionMatrix();
-
-    //frustum = Frustum(ViewMatrix * ProjectionMatrix);
+    // Aquí debería actualizarse las dimensiones del frustum según la ventana creada en App->scene->SceneWindow()
 
 }
 
