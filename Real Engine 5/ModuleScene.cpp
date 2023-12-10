@@ -30,7 +30,6 @@ bool ModuleScene::Start() {
     
     root = new GameObject(nullptr);
     //HOLACARACOLA root->name = ("Scene");
-    regulator = 1.0f;
     //Load Baker House
     App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
    
@@ -46,19 +45,21 @@ bool ModuleScene::Start() {
 update_status ModuleScene::PreUpdate(float dt) {
     
     switch (gameState) {
-        case 1: 
-            deltaTime = (float)timerGameScene.Read() / 690.0f;
+        case 1: // PLAY
+            deltaTime = (float)timerGameScene.Read() / 1000.0f;
             timerGameScene.Stop();
             timerGameScene.Start();
             //TODO cubo rotando
             break;
-        case 2:
+
+        case 2: // STOP
             timerGameScene.Stop();
             //TODO hacer que el cubo deje de rotar
             deltaTime = 0;
             isPlay = false;
             break;
-        case 3:	
+
+        case 3:	// PAUSE
             isPlay = false;
             break;
     }
@@ -69,9 +70,8 @@ update_status ModuleScene::Update(float dt) {
 
     //LOG("GameObjects: %d", gameObjects.size());
     //LOG("SceneCameras: %d", sceneCameras.size());
-    rotatingScene = 1;
 
-    regulator += deltaTime;
+    PlayEvent(isPlay);
 
     for (int i = 0; i < gameObjects.size(); i++)
     {
@@ -100,6 +100,7 @@ bool ModuleScene::CleanUp() {
 }
 
 void ModuleScene::SceneWindow(bool& active) {
+    
     ImGui::Begin("Scene");
     sizeScreen = ImGui::GetContentRegionAvail();
 
@@ -116,7 +117,7 @@ void ModuleScene::SceneWindow(bool& active) {
 
         std::vector<GameObject*> intersectedGO;
 
-        for (size_t i = 0; i < App->assimpMeshes->meshes.size(); i++)
+        for (int i = 0; i < App->assimpMeshes->meshes.size(); i++)
         {
             if (ray.Intersects(App->assimpMeshes->meshes[i]->OBB))
             {
@@ -125,10 +126,8 @@ void ModuleScene::SceneWindow(bool& active) {
             }
         }
 
-        SetSelectedByTriangle(ray, intersectedGO);
-
-        if (intersectedGO.size() == 0)
-            App->hierarchy->SetGameObject(nullptr);
+        if (intersectedGO.size() == 0) App->hierarchy->SetGameObject(nullptr);
+        else SetSelectedByTriangle(ray, intersectedGO);
 
         intersectedGO.clear();
     }
@@ -259,4 +258,18 @@ void ModuleScene::SetSelectedByTriangle(LineSegment ray, std::vector<GameObject*
             }
         }
     }
+}
+
+void ModuleScene::PlayEvent(bool& isPlay)
+{
+    if (!isPlay) return;
+
+    GameObject* house = App->hierarchy->findByName("BakerHouse.fbx"); 
+    float3 previousRot = house->transform->getRotation(); 
+
+    float angularSpeed = 300.f;
+
+    float rotationAngle = angularSpeed * deltaTime;
+
+    house->transform->setRotation(float3(previousRot.x, previousRot.y + rotationAngle, previousRot.z));
 }

@@ -280,21 +280,6 @@ ComponentCamera* GameObject::GetCameraComponent()
 	return nullptr;
 }
 
-bool GameObject::IntersectsRay(const Ray& ray) {
-	ComponentMesh* meshComponent = GetMeshComponent();
-
-	if (meshComponent) {
-		Mesh* objMesh = meshComponent->mesh;
-
-		if (ray.Intersects(objMesh->Global_AABB)) {
-			LOG("Hit!");
-			return true;
-		}
-	}
-	else
-		return false;
-}
-
 const std::vector<GameObject*>& GameObject::GetChildren() const {
 	return mChildren;
 }

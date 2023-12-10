@@ -53,7 +53,6 @@ private:
 public:
     std::deque<std::string>* logs = nullptr;
 
-
 private:
     std::vector<float> mFPSLog;
     std::vector<float> mMsLog;

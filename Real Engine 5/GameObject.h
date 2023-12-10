@@ -52,7 +52,5 @@ public:
 
 	int newComponent = 0; // 1 = Mesh, 2 = Texture, 3 = Camera
 
-	bool IntersectsRay(const Ray& ray);
-
 	std::vector<GameObject*> mChildren;
 };

@@ -19,9 +19,14 @@ public:
 	update_status PreUpdate(float dt);
 	update_status Update(float dt);
 	update_status PostUpdate(float dt);
+
 	void Play();
 	void Stop();
 	void Pause();
+
+	// What happens when play is pressed
+	void PlayEvent(bool& isPlay);
+
 	bool CleanUp();
 
 	void SceneWindow(bool& active);
@@ -44,9 +49,8 @@ public:
 	bool isPlay = false;
 	int gameState = 0;
 	float deltaTime = 0;
-	float regulator;
 
-	float rotatingScene;
+	float counter = 0.f;
 
 	std::vector<GameObject*> gameObjects;
 	std::vector<ComponentCamera*> sceneCameras;
@@ -56,10 +60,5 @@ public:
 
 	GameObject* CreateGameObject(GameObject* parent);
 	GameObject* root = nullptr;
-	GameObject* prova1;
-	GameObject* prova2;
-	GameObject* prova3;
-	GameObject* prova4;
-	GameObject* prova5;
-	GameObject* prova6;
+	
 };

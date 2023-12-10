@@ -22,6 +22,12 @@ public:
 	void GameObjectTree(GameObject* obj, int index);
 	void SetGameObject(GameObject* obj);
 
+	GameObject* findByName(const std::string& name);
+
+private: 
+	GameObject* findByName(GameObject* currentNode, const std::string& name);
+
+public:
 	GameObject* TargetDropped;	
 	GameObject* objSelected;
 	GameObject* objHovered;

@@ -167,3 +167,32 @@ void ModuleHierarchy::SetGameObject(GameObject* obj)
 {
 	objSelected = obj;
 }
+
+// Find by name & root
+GameObject* ModuleHierarchy::findByName(GameObject* currentNode, const std::string& name)
+{
+	if (currentNode == nullptr) {
+		return nullptr;  // No se encontró el GameObject
+	}
+
+	if (currentNode->name == name) {
+		return currentNode;  // Se encontró el GameObject
+	}
+
+	// Explora los nodos hijos de manera recursiva
+	for (GameObject* child : currentNode->GetChildren()) {
+		GameObject* result = findByName(child, name);
+		if (result != nullptr) {
+			return result;  // Si se encuentra en algún nodo hijo, devuelve el resultado
+		}
+	}
+
+	return nullptr;  // No se encontró en este subárbol
+}
+
+// Find by name
+GameObject* ModuleHierarchy::findByName(const std::string& name)
+{
+	// Inicia la búsqueda desde el nodo raíz del árbol
+	return findByName(App->scene->root, name);
+}
