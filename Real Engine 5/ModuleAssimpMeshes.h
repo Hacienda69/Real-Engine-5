@@ -70,10 +70,11 @@ public:
     bool Init() override;
     bool Start() override;
     bool CleanUp() override;
+    GameObject* ProcessNode(const aiScene* scene, aiNode* node, GameObject* parent, std::string Path);
     GameObject* LoadMeshFromFile(const char* file_path);
-    void ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObject, GameObject* CgameObject, const aiScene* scene, int index);
+    Mesh* ImportAssimpMesh(aiMesh* aiMesh);
+    std::string ImportTexture(const aiScene* scene, int index, std::string path);
     void BufferMesh(Mesh* mesh);
-
     void RenderScene();
     void RenderGame();
 

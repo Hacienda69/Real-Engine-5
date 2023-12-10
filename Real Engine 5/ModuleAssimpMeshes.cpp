@@ -36,6 +36,7 @@ bool ModuleAssimpMeshes::Start()
                 
     return ret;
 }
+
 //PROBLEMA
 GameObject* ModuleAssimpMeshes::LoadMeshFromFile(const char* file_path)
 {
@@ -43,17 +44,8 @@ GameObject* ModuleAssimpMeshes::LoadMeshFromFile(const char* file_path)
 
     if (scene != nullptr&& scene->HasMeshes())
     {
-        GameObject* OBJ = new GameObject(App->scene->root);
-        OBJ->name = std::string(file_path).substr(std::string(file_path).find_last_of(char(92)) + 1);
-        OBJ->name = OBJ->name.substr(std::string(file_path).find_last_of("/") + 1);
-        for (int i = 0; i < scene->mNumMeshes; i++)
-        {
-            GameObject* obj = new GameObject();
-            OBJ->SetAsChildOf(obj);
-            obj->name = "Mesh_" + std::to_string(i);
-            ImportAssimpMesh(scene->mMeshes[i],OBJ, obj, scene,i);
-           
-        }
+        GameObject* OBJ = ProcessNode(scene, scene->mRootNode, App->scene->root, file_path);
+
 
         aiReleaseImport(scene);
 
@@ -65,7 +57,7 @@ GameObject* ModuleAssimpMeshes::LoadMeshFromFile(const char* file_path)
     }
 }
 
-void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObject, GameObject* CgameObject, const aiScene* scene, int index)
+Mesh* ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh)
 {
     Mesh* ourMesh = new Mesh();
 
@@ -75,8 +67,8 @@ void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObjec
     ourMesh->vertexCount = aiMesh->mNumVertices;
     ourMesh->vertex = new float[ourMesh->vertexCount * VERTEX];
 
-    ourMesh->vertexNormalFaces = new float[ourMesh->vertexCount * 3];
-    memcpy(ourMesh->vertexNormalFaces, aiMesh->mVertices, sizeof(float) * ourMesh->vertexCount * 3);
+    //ourMesh->vertexNormalFaces = new float[ourMesh->vertexCount * 3];
+    //memcpy(ourMesh->vertexNormalFaces, aiMesh->mVertices, sizeof(float) * ourMesh->vertexCount * 3);
 
     for (int v = 0; v < ourMesh->vertexCount; v++) {    
         ourMesh->vertex[v * VERTEX] = aiMesh->mVertices[v].x;
@@ -107,21 +99,22 @@ void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObjec
 
         ourMesh->VBO = 0;
         ourMesh->EBO = 0;
+        ourMesh->GenerateAABB(); // Generate 
 
         BufferMesh(ourMesh);
 
         meshes.push_back(ourMesh);
-
+        /*
         ComponentMesh* meshComp = new ComponentMesh(CgameObject);
         ourMesh->owner = CgameObject;
-        ourMesh->GenerateAABB(); // Generate 
+
         meshComp->mesh = ourMesh;
         CgameObject->AddComponent(meshComp);
 
         ourMesh->id_texture = App->textures->checkersID;
 
-        /*meshComp->type = ComponentType::MESH;*/
-        
+        //meshComp->type = ComponentType::MESH;
+       
         if (scene->HasMaterials()) {
             if (scene->mMaterials[scene->mMeshes[index]->mMaterialIndex]->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
                 
@@ -143,14 +136,115 @@ void ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh, GameObject* PgameObjec
                 mat->mOwner = CgameObject;
                 CgameObject->AddComponent(mat);
             }
-        }
+        } 
         ourMesh->texture_height = App->textures->textureWidth;
-        ourMesh->texture_width = App->textures->textureWidth;
+        ourMesh->texture_width = App->textures->textureWidth;*/
+        return ourMesh;
     }
     else
     {
         delete ourMesh;
+        return nullptr;
     }
+}
+
+GameObject* ModuleAssimpMeshes::ProcessNode(const aiScene* scene, aiNode* node, GameObject* parent, std::string Path)
+{
+    if (node->mNumMeshes == 0 && node->mNumChildren == 0) return nullptr;
+
+    GameObject* gObj = new GameObject(parent);
+
+    gObj->name = node->mName.C_Str();
+
+    aiVector3D scale, position, rotation;
+    aiQuaternion QuatRotation;
+
+    node->mTransformation.Decompose(scale, QuatRotation, position);
+    rotation = QuatRotation.GetEuler();
+
+    gObj->transform->getScale() = float3(scale.x, scale.y, scale.z);
+    gObj->transform->setPosition(float3(position.x, position.y, position.z));
+    gObj->transform->setRotation(float3(rotation.x, rotation.y, rotation.z));
+    gObj->transform->calculateMatrix();
+
+    if (node->mNumMeshes != 0) {
+
+        ComponentMesh* component = new ComponentMesh(gObj);
+
+
+        std::string texture_path = "";
+
+
+        for (int i = 0; i < node->mNumMeshes; i++)
+        {
+            Mesh* mesh = ImportAssimpMesh(scene->mMeshes[node->mMeshes[i]]);
+
+            if (mesh == nullptr) {
+                LOG("Error loading scene %s", Path);
+                continue;
+            }
+
+            mesh->owner = gObj;
+            component->meshes.push_back(mesh);
+
+            if (texture_path == "") texture_path = ImportTexture(scene, node->mMeshes[i], Path);
+
+        }
+
+        gObj->mComponents.push_back(component);
+
+        if (texture_path != "") {
+            ComponentMaterial* componentT = new ComponentMaterial(gObj);
+            gObj->mComponents.push_back(componentT);
+            componentT->SetTexture(texture_path.c_str());
+        }
+    }
+
+    for (int i = 0; i < node->mNumChildren; i++) {
+        ProcessNode(scene, node->mChildren[i], gObj, Path);
+    }
+
+    return gObj;
+}
+
+std::string ModuleAssimpMeshes::ImportTexture(const aiScene* scene, int index, std::string path)
+{
+
+    if (scene->HasMaterials())
+    {
+        aiMaterial* MaterialIndex = scene->mMaterials[scene->mMeshes[index]->mMaterialIndex];
+        if (MaterialIndex->GetTextureCount(aiTextureType_DIFFUSE) > 0) {
+
+            aiString TextPath;
+            MaterialIndex->GetTexture(aiTextureType_DIFFUSE, 0, &TextPath);
+
+            for (int i = 0; i < path.size(); i++)
+            {
+                if (path[i] == '\\')
+                {
+                    path[i] = '/';
+                }
+            }
+            std::string NormTextPath = TextPath.C_Str();
+
+            for (int i = 0; i < NormTextPath.size(); i++)
+            {
+                if (NormTextPath[i] == '\\')
+                {
+                    NormTextPath[i] = '/';
+                }
+            }
+            std::string AssetsPath = path;
+            uint AssetsPos = AssetsPath.find("Assets/");
+
+            AssetsPath = AssetsPath.substr(AssetsPos, AssetsPath.find_last_of("/") - AssetsPos);
+            AssetsPath = AssetsPath.substr(AssetsPos, AssetsPath.find_last_of("/") - AssetsPos);
+            AssetsPath.append("/Textures/").append(TextPath.C_Str());
+
+            return AssetsPath;
+        }
+    }
+    return "";
 }
 
 void ModuleAssimpMeshes::BufferMesh(Mesh* mesh)

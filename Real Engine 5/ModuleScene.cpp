@@ -55,7 +55,7 @@ update_status ModuleScene::PreUpdate(float dt) {
             timerGameScene.Stop();
 
             //TODO hacer que el cubo deje de rotar
-            App->hierarchy->findByName("BakerHouse.fbx")->transform->resetMatrix();
+            //App->hierarchy->findByName("BakerHouse.fbx")->transform->resetMatrix();
 
             deltaTime = 0;
             isPlay = false;
@@ -224,7 +224,7 @@ void ModuleScene::SetSelectedByTriangle(LineSegment ray, std::vector<GameObject*
 
     for (int i = 0; i < GoList.size(); i++)
     {
-        Mesh* mesh = GoList[i]->GetMeshComponent()->mesh;
+        Mesh* mesh = GoList[i]->GetMeshComponent()->meshes[i];
         float4x4 matrix = GoList[i]->transform->getGlobalMatrix().Transposed();
 
         for (int j = 0; j < mesh->indexCount; j += 3)
@@ -265,7 +265,7 @@ void ModuleScene::SetSelectedByTriangle(LineSegment ray, std::vector<GameObject*
 void ModuleScene::PlayEvent()
 {
     counter += deltaTime;
-
+    /*
     if (counter > 0.03f)
     {
         GameObject* house = App->hierarchy->findByName("BakerHouse.fbx");
@@ -274,6 +274,6 @@ void ModuleScene::PlayEvent()
         house->transform->setRotation(float3(previousRot.x, previousRot.y + 1, previousRot.z));
         counter = 0.f;
     }
-
+    */
     //LOG("Counter %f", counter)
 }

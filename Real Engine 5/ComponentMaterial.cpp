@@ -1,4 +1,3 @@
-
 #pragma once
 #include "ComponentMaterial.h"
 #include <string>
@@ -46,25 +45,25 @@ void ComponentMaterial::ResetTexture()
 void ComponentMaterial::UpdateMeshTexture()
 {
 	ComponentMesh* componentMesh = mOwner->GetMeshComponent();
+	for (int i = 0; 1 < mOwner->GetMeshComponent()->meshes.size(); i++) {
+		if (componentMesh == nullptr)
+			return;
 
-	if (componentMesh == nullptr)
-		return;
-	 
-	if (textureSelected == 0)
-	{
-		componentMesh->mesh->id_texture = textureID;
-		
-		return;
+		if (textureSelected == 0)
+		{
+			componentMesh->meshes[i]->id_texture = textureID;
+
+			return;
+		}
+
+		if (textureSelected == 2)
+		{
+			componentMesh->meshes[i]->id_texture = App->textures->checkersID;
+			return;
+		}
+
+		componentMesh->meshes[i]->id_texture = -1;
 	}
-
-	if (textureSelected == 2)
-	{
-		componentMesh->mesh->id_texture = App->textures->checkersID;
-		return;
-	}
-	
-	componentMesh->mesh->id_texture = -1;
-
 }
 
 void ComponentMaterial::PrintInspector()
@@ -76,8 +75,8 @@ void ComponentMaterial::PrintInspector()
 	{
 		ImGui::Text("Path: "); ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, pathTexture.c_str());
 
-		int width = mOwner->GetMeshComponent()->mesh->texture_width;
-		int height = mOwner->GetMeshComponent()->mesh->texture_height;
+		int width = mOwner->GetMeshComponent()->meshes[0]->texture_width;
+		int height = mOwner->GetMeshComponent()->meshes[0]->texture_height;
 
 		ImGui::Text("Texture Width: ");  ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, std::to_string(width).c_str());
 		ImGui::Text("Texture Height: "); ImGui::SameLine(); ImGui::TextColored(IMGUICOL_CYAN, std::to_string(height).c_str());

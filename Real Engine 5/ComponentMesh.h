@@ -13,11 +13,11 @@ public:
 	ComponentMesh(GameObject* owner);
 	~ComponentMesh();
 
-	Mesh* mesh;
+	std::vector<Mesh*> meshes;
 	
 	bool faceNormals;
 
 	void PrintInspector();
 
-	Mesh* getMesh();
+	std::vector<Mesh*> getMeshes();
 };

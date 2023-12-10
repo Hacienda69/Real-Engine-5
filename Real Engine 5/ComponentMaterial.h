@@ -10,19 +10,17 @@
 class ComponentMaterial : public Component
 {
 public:
-	ComponentMaterial();
-	ComponentMaterial(GameObject* owner);
-	~ComponentMaterial();
+    ComponentMaterial();
+    ComponentMaterial(GameObject* owner);
+    ~ComponentMaterial();
 
-	void SetTexture(const char* path);
-	void ResetTexture();
-	void UpdateMeshTexture();
+    void SetTexture(const char* path);
+    void ResetTexture();
+    void UpdateMeshTexture();
 
-	void PrintInspector();
+    void PrintInspector();
 
-	std::string pathTexture = " ";
-	GLuint textureID = 0;
-	int textureSelected = 0;
-
-
+    std::string pathTexture = " ";
+    GLuint textureID = 0;
+    int textureSelected = 0;
 };

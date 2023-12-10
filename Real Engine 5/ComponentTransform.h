@@ -30,12 +30,9 @@ public:
 
 	void PrintInspector();
 
-
-	
-
-private:
 	void calculateMatrix();
 
+private:
 	float4x4 matrix;
 	float3 position;
 	float3 rotation;
