@@ -38,9 +38,9 @@ bool ModuleAssimpMeshes::Start()
 }
 
 //PROBLEMA
-GameObject* ModuleAssimpMeshes::LoadMeshFromFile(const char* file_path)
+GameObject* ModuleAssimpMeshes::LoadMeshFromFile(string file_path)
 {
-    const aiScene* scene = aiImportFile(file_path, aiProcess_Triangulate|aiProcess_FlipUVs);
+    const aiScene* scene = aiImportFile(file_path.c_str(), aiProcessPreset_TargetRealtime_MaxQuality);
 
     if (scene != nullptr&& scene->HasMeshes())
     {
@@ -74,7 +74,7 @@ Mesh* ModuleAssimpMeshes::ImportAssimpMesh(aiMesh* aiMesh)
         ourMesh->vertex[v * VERTEX] = aiMesh->mVertices[v].x;
         ourMesh->vertex[v * VERTEX + 1] = aiMesh->mVertices[v].y;
         ourMesh->vertex[v * VERTEX + 2] = aiMesh->mVertices[v].z;
-
+        if (aiMesh->mTextureCoords[0] == nullptr) continue;
         ourMesh->vertex[v * VERTEX + 3] = aiMesh->mTextureCoords[0][v].x;
         ourMesh->vertex[v * VERTEX + 4] = aiMesh->mTextureCoords[0][v].y;
     }
@@ -164,7 +164,6 @@ GameObject* ModuleAssimpMeshes::ProcessNode(const aiScene* scene, aiNode* node, 
 
     gObj->transform->getScale() = float3(scale.x, scale.y, scale.z);
     gObj->transform->setPosition(float3(position.x, position.y, position.z));
-    gObj->transform->setRotation(float3(rotation.x, rotation.y, rotation.z));
     gObj->transform->calculateMatrix();
 
     if (node->mNumMeshes != 0) {

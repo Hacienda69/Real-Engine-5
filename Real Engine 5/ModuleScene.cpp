@@ -29,10 +29,13 @@ bool ModuleScene::Init()
 bool ModuleScene::Start() {
     
     root = new GameObject(nullptr);
-    //HOLACARACOLA root->name = ("Scene");
-    //Load Baker House
-    App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    
+    //App->assimpMeshes->LoadMeshFromFile("Assets/Models/StreetEnviroment.fbx");
    
+    filePath = "Assets/Models/street/scene.DAE";
+    streetEnviroment = App->assimpMeshes->LoadMeshFromFile(filePath);
+    streetEnviroment->transform->setRotation(float3(0.f,0.f,-90.f));
+
     defaultCamera = PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::CAMERA);
     defaultCamera->name = "Main Camera";
     defaultCamera->transform->setPosition(float3(0.f, 2.5f, -10.f));

@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 #include "Module.h"
 #include "Globals.h"
 #include <vector>
@@ -14,6 +13,7 @@
 
 #include <string>
 
+using namespace std;
 
 #define VERTEX 5
 
@@ -71,7 +71,7 @@ public:
     bool Start() override;
     bool CleanUp() override;
     GameObject* ProcessNode(const aiScene* scene, aiNode* node, GameObject* parent, std::string Path);
-    GameObject* LoadMeshFromFile(const char* file_path);
+    GameObject* LoadMeshFromFile(string file_path);
     Mesh* ImportAssimpMesh(aiMesh* aiMesh);
     std::string ImportTexture(const aiScene* scene, int index, std::string path);
     void BufferMesh(Mesh* mesh);

@@ -56,6 +56,11 @@ public:
 	std::vector<ComponentCamera*> sceneCameras;
 	ComponentCamera* mainCamera;
 
+	std::string filePath;
+	std::string texPath;
+
+	GameObject* streetEnviroment;
+
 	GameObject* defaultCamera;
 
 	GameObject* CreateGameObject(GameObject* parent);
