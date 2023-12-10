@@ -99,13 +99,13 @@ void ComponentTransform:: PrintInspector() {
 	{
 		//ImGui::SameLine((ImGui::GetWindowWidth() / 2) - 75);
 		ImGui::Text("X\t\t Y\t\t Z");
-		ImGui::InputFloat3("Position", position.ptr());
+		ImGui::DragFloat3("Position", position.ptr());
 
 		ImGui::Text("X\t\t Y\t\t Z");
-		ImGui::InputFloat3("Rotation", rotation.ptr());
+		ImGui::DragFloat3("Rotation", rotation.ptr());
 
 		ImGui::Text("X\t\t Y\t\t Z");
-		ImGui::InputFloat3("Scale", scale.ptr());
+		ImGui::DragFloat3("Scale", scale.ptr());
 	}
 
 
