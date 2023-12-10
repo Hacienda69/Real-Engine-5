@@ -11,10 +11,6 @@
 #include "Primitive.h"
 #include "Glew/include/glew.h"
 
-
-//todo: REMOVE this before 1st delivery!!
-#include "glmath.h"
-
 #define MAX_LIGHTS 8
 
 class ModuleRenderer3D : public Module
@@ -74,9 +70,6 @@ public:
 	SDL_GLContext context;
 	CPlane Grid;
 	
-	//You won't need this after using Frustum
-	mat4x4 ProjectionMatrix;
-
 	GLuint test;
 	GLuint VBO;
 	GLuint EBO;
