@@ -49,12 +49,14 @@ update_status ModuleScene::PreUpdate(float dt) {
             deltaTime = (float)timerGameScene.Read() / 1000.0f;
             timerGameScene.Stop();
             timerGameScene.Start();
-            //TODO cubo rotando
             break;
 
         case 2: // STOP
             timerGameScene.Stop();
+
             //TODO hacer que el cubo deje de rotar
+            App->hierarchy->findByName("BakerHouse.fbx")->transform->resetMatrix();
+
             deltaTime = 0;
             isPlay = false;
             break;
@@ -71,7 +73,7 @@ update_status ModuleScene::Update(float dt) {
     //LOG("GameObjects: %d", gameObjects.size());
     //LOG("SceneCameras: %d", sceneCameras.size());
 
-    PlayEvent(isPlay);
+    if (isPlay) PlayEvent();
 
     for (int i = 0; i < gameObjects.size(); i++)
     {
@@ -260,16 +262,18 @@ void ModuleScene::SetSelectedByTriangle(LineSegment ray, std::vector<GameObject*
     }
 }
 
-void ModuleScene::PlayEvent(bool& isPlay)
+void ModuleScene::PlayEvent()
 {
-    if (!isPlay) return;
+    counter += deltaTime;
 
-    GameObject* house = App->hierarchy->findByName("BakerHouse.fbx"); 
-    float3 previousRot = house->transform->getRotation(); 
+    if (counter > 0.03f)
+    {
+        GameObject* house = App->hierarchy->findByName("BakerHouse.fbx");
+        float3 previousRot = house->transform->getRotation();
 
-    float angularSpeed = 300.f;
+        house->transform->setRotation(float3(previousRot.x, previousRot.y + 1, previousRot.z));
+        counter = 0.f;
+    }
 
-    float rotationAngle = angularSpeed * deltaTime;
-
-    house->transform->setRotation(float3(previousRot.x, previousRot.y + rotationAngle, previousRot.z));
+    //LOG("Counter %f", counter)
 }

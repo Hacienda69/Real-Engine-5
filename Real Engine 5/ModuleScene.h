@@ -25,7 +25,7 @@ public:
 	void Pause();
 
 	// What happens when play is pressed
-	void PlayEvent(bool& isPlay);
+	void PlayEvent();
 
 	bool CleanUp();
 
