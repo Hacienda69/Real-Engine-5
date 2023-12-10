@@ -59,11 +59,9 @@ public:
 	std::string filePath;
 	std::string texPath;
 
-	GameObject* streetEnviroment;
-
-	GameObject* defaultCamera;
-
 	GameObject* CreateGameObject(GameObject* parent);
 	GameObject* root = nullptr;
-	
+	GameObject* streetEnviroment;
+	GameObject* bakerHouse;
+	GameObject* defaultCamera;
 };

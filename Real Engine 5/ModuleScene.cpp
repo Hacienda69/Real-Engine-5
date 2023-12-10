@@ -30,11 +30,14 @@ bool ModuleScene::Start() {
     
     root = new GameObject(nullptr);
     
-    //App->assimpMeshes->LoadMeshFromFile("Assets/Models/StreetEnviroment.fbx");
-   
+    bakerHouse = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse->transform->setPosition(float3(0.f, 0.5f, 0.f));
+    bakerHouse->name = "Baker House";
+
     filePath = "Assets/Models/street/scene.DAE";
     streetEnviroment = App->assimpMeshes->LoadMeshFromFile(filePath);
-    streetEnviroment->transform->setRotation(float3(0.f,0.f,-90.f));
+    streetEnviroment->transform->setRotation(float3(-90.f, 0.f, 0.f));
+    streetEnviroment->name = "Street Environment";
 
     defaultCamera = PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::CAMERA);
     defaultCamera->name = "Main Camera";
@@ -43,7 +46,6 @@ bool ModuleScene::Start() {
 
     return true;
 }
-
 
 update_status ModuleScene::PreUpdate(float dt) {
     
@@ -58,7 +60,8 @@ update_status ModuleScene::PreUpdate(float dt) {
             timerGameScene.Stop();
 
             //TODO hacer que el cubo deje de rotar
-            //App->hierarchy->findByName("BakerHouse.fbx")->transform->resetMatrix();
+            if(App->hierarchy->findByName("Baker House") != nullptr)
+                App->hierarchy->findByName("Baker House")->transform->resetMatrix();
 
             deltaTime = 0;
             isPlay = false;
@@ -136,8 +139,6 @@ void ModuleScene::SceneWindow(bool& active) {
 
         intersectedGO.clear();
     }
-
-
     ImGui::End();
 }
 
@@ -227,56 +228,66 @@ void ModuleScene::SetSelectedByTriangle(LineSegment ray, std::vector<GameObject*
 
     for (int i = 0; i < GoList.size(); i++)
     {
-        Mesh* mesh = GoList[i]->GetMeshComponent()->meshes[i];
-        float4x4 matrix = GoList[i]->transform->getGlobalMatrix().Transposed();
+        ComponentMesh* auxMesh = GoList[i]->GetMeshComponent();
+        if (auxMesh != nullptr) {
 
-        for (int j = 0; j < mesh->indexCount; j += 3)
-        {
-            float4 point1, point2, point3;
-            float* vertex1 = &mesh->vertex[mesh->index[j] * VERTEX];
-            float* vertex2 = &mesh->vertex[mesh->index[j + 1] * VERTEX];
-            float* vertex3 = &mesh->vertex[mesh->index[j + 2] * VERTEX];
-
-            point1 = matrix * float4(*vertex1, *(vertex1 + 1), *(vertex1 + 2), 1);
-            point2 = matrix * float4(*vertex2, *(vertex2 + 1), *(vertex2 + 2), 1);
-            point3 = matrix * float4(*vertex3, *(vertex3 + 1), *(vertex3 + 2), 1);
-
-            float3 _point1, _point2, _point3;
-            _point1 = float3(point1.x, point1.y, point1.z);
-            _point2 = float3(point2.x, point2.y, point2.z);
-            _point3 = float3(point3.x, point3.y, point3.z);
-
-            Triangle triangle(_point1, _point2, _point3);
-
-            if (ray.Intersects(triangle, &currentDistance, nullptr))
+            for (int w = 0; w < auxMesh->getMeshes().size(); w++)
             {
-                if (minDistance == 0) {
-                    minDistance = currentDistance;
-                    App->hierarchy->SetGameObject(GoList[i]);
-                    continue;
-                }
+                Mesh* mesh = auxMesh->getMeshes()[w];
+                float4x4 matrix = GoList[i]->transform->getGlobalMatrix().Transposed();
 
-                if (minDistance > currentDistance) {
-                    minDistance = currentDistance;
-                    App->hierarchy->SetGameObject(GoList[i]);
+                if (mesh->indexCount > 9) {
+                    for (int j = 0; j < mesh->indexCount; j += 3)
+                    {
+                        float4 point1, point2, point3;
+                        float* vertex1 = &mesh->vertex[mesh->index[j] * VERTEX];
+                        float* vertex2 = &mesh->vertex[mesh->index[j + 1] * VERTEX];
+                        float* vertex3 = &mesh->vertex[mesh->index[j + 2] * VERTEX];
+
+                        point1 = matrix * float4(*vertex1, *(vertex1 + 1), *(vertex1 + 2), 1);
+                        point2 = matrix * float4(*vertex2, *(vertex2 + 1), *(vertex2 + 2), 1);
+                        point3 = matrix * float4(*vertex3, *(vertex3 + 1), *(vertex3 + 2), 1);
+
+                        float3 _point1, _point2, _point3;
+                        _point1 = float3(point1.x, point1.y, point1.z);
+                        _point2 = float3(point2.x, point2.y, point2.z);
+                        _point3 = float3(point3.x, point3.y, point3.z);
+
+                        Triangle triangle(_point1, _point2, _point3);
+
+                        if (ray.Intersects(triangle, &currentDistance, nullptr))
+                        {
+                            if (minDistance == 0) {
+                                minDistance = currentDistance;
+                                App->hierarchy->SetGameObject(GoList[i]);
+                                continue;
+                            }
+
+                            if (minDistance > currentDistance) {
+                                minDistance = currentDistance;
+                                App->hierarchy->SetGameObject(GoList[i]);
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 }
-
 void ModuleScene::PlayEvent()
 {
     counter += deltaTime;
-    /*
+    
     if (counter > 0.03f)
     {
-        GameObject* house = App->hierarchy->findByName("BakerHouse.fbx");
-        float3 previousRot = house->transform->getRotation();
+        GameObject* house = App->hierarchy->findByName("Baker House");
 
-        house->transform->setRotation(float3(previousRot.x, previousRot.y + 1, previousRot.z));
+        if (house != nullptr) {
+            float3 previousRot = house->transform->getRotation();
+            house->transform->setRotation(float3(previousRot.x, previousRot.y + 1, previousRot.z));
+        }
         counter = 0.f;
     }
-    */
+    
     //LOG("Counter %f", counter)
 }
