@@ -1,5 +1,7 @@
 # REAL ENGINE 5
 
+### (2nd Assignment Features down below!!)
+
 De la mano del aclamado estudio "Aprobé Motores", formado por los brillantes desarrolladores Marc Escandell y Daniel Mañas, en una sorprendente y extraordinaria colaboración (les forkeamos) con SheeeshEngine, otro motor excepcionalmente innovador creado por unos compañeros de clase, Oriol Martín (@Urii98: https://github.com/Urii98) y Xiao Shan Costajussà (@xaitta: https://github.com/xaitta), llega "Real Engine 5", un nuevo motor de videojuegos puntero en la pujante industria del entretenimiento virtual, esperamos que lo disfruten.
 
 Link del tenedor original: https://github.com/Urii98/SheeeshEngine
@@ -46,6 +48,39 @@ The engine supports docking.
 
 ### Additional Comments
 We have managed to carry out all the assignments, the only one that we have not been able to do was the display of the vertex normals, on the other hand, the display of the face normals it's done.
+
+### 2ndFeatures
+
+#### Misc.
+- The ‘Street Environment’ scene is automatically loaded at the start.
+
+#### Game Objects
+- The user is able to use the inspector to modify a GameObject:
+	- Hierarchy: delete, reparent, create empty and create children
+	- Transform: translate, rotate and scale Game Objects.
+	- Mesh: select or drop any imported mesh
+	- Texture: select or drop any imported texture
+	- Camera is a component with settings that can be modified.
+
+- GameObjects can be picked from the world using the mouse.
+
+- All meshes use a bounding volume (AABB) and can be discarded using Frustum Culling. This process is visualized in the editor.
+
+#### Scenes
+- The user can Start / Pause / Stop the simulation and recover its original state.
+
+- The editor has 2 windows one with the scene(editor view) and another captured from a gameobject with a camera component(main game camera), each one has its own framebuffer and the user can visualize both at the same time.
+
+#### Resource Management:
+- The user can drop/import new files. Hierarchy window reacts properly
+
+- Asset files can be deleted through the Hierarchy window
+
+### Additional Comments
+We have not managed to do:
+- CFF
+- Scene Serialization
+- Proper Resource Manager
 
 ## 3rd party libraries used
 
