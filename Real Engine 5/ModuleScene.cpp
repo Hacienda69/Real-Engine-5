@@ -7,6 +7,8 @@
 #include "ModuleEditor.h"
 #include "OurPrimitive.h"
 
+#include "Bullet/include/btBulletCollisionCommon.h"
+
 #include "ImGui/imgui.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
 #include "ImGui/backends/imgui_impl_sdl2.h"
