@@ -1,7 +1,5 @@
 # REAL ENGINE 5
 
-### (2nd Assignment Features down below!!)
-
 De la mano del aclamado estudio "Aprobé Motores", formado por los brillantes desarrolladores Marc Escandell y Daniel Mañas, en una sorprendente y extraordinaria colaboración (les forkeamos) con SheeeshEngine, otro motor excepcionalmente innovador creado por unos compañeros de clase, Oriol Martín (@Urii98: https://github.com/Urii98) y Xiao Shan Costajussà (@xaitta: https://github.com/xaitta), llega "Real Engine 5", un nuevo motor de videojuegos puntero en la pujante industria del entretenimiento virtual, esperamos que lo disfruten.
 
 Link del tenedor original: https://github.com/Urii98/SheeeshEngine
@@ -20,7 +18,9 @@ Original fork link: https://github.com/Urii98/SheeeshEngine
 
 ## Engine Description
 
-### Features
+The Real Engine 5 is a video game engine developed as a university project for the third-year subject of Video Game Engines. In this subject we have had to develop an engine implementing (or trying) all the functionalities that were asked of us. There have been three deliveries, each of which has demanded certain implementations, the most important of all being the last, in which each class group was assigned a high-level system in which to specialize their engine, ours being 3D physics. Below we leave as a list all the features that our engine has, separated by the delivery in which they were ordered. Below are some visual examples of the capabilities and uses of the engine and finally all the libraries that we have used.
+
+### Basic Features
 
 #### Game Objects
 - Drag and drop game objects and textures in the Hierarchy.
@@ -42,14 +42,7 @@ Original fork link: https://github.com/Urii98/SheeeshEngine
 - Mouse wheel to zoom in and zoom out.
 - Holding SHIFT duplicates movement speed.
 
-### Additional funcionality
-An image of the texture is displayed in the Inspector Window.
-The engine supports docking.
-
-### Additional Comments
-We have managed to carry out all the assignments, the only one that we have not been able to do was the display of the vertex normals, on the other hand, the display of the face normals it's done.
-
-### 2ndFeatures
+### 2nd Assignment Features
 
 #### Misc.
 - The ‘Street Environment’ scene is automatically loaded at the start.
@@ -73,14 +66,19 @@ We have managed to carry out all the assignments, the only one that we have not 
 
 #### Resource Management:
 - The user can drop/import new files. Hierarchy window reacts properly
-
 - Asset files can be deleted through the Hierarchy window
 
-### Additional Comments
-We have not managed to do:
-- CFF
-- Scene Serialization
-- Proper Resource Manager
+### 3rd Assignment features
+
+Short introduction to the engine and its context (university subject).
+Team photo and quick explanation of the individual work of each member.
+Short explanation of last assignment sub-system, containing two animated gif that shows editor and in-game functionality.
+One minute video speed-up that shows the process of authoring scenes in your editor, especially with your core technology from the last assignment (captured from the computer, not mobile).
+Link to the code repository and last release to download.
+
+### Additional funcionality
+An image of the texture is displayed in the Inspector Window.
+The engine supports docking.
 
 ## 3rd party libraries used
 
@@ -99,3 +97,27 @@ We have not managed to do:
 - PhysFS 3.0.2: https://icculus.org/physfs/
 
 - DevIL 1.8.0: https://github.com/DentonW/DevIL
+
+## License
+
+MIT License
+
+Copyright (c) 2023 Hacienda69 & MrMonkey420
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
