@@ -1,0 +1,57 @@
+﻿styles.css
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: #111;
+    color: #fff;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    text-align: center;
+    padding: 20px;
+    background-color: #222;
+}
+
+h1, h2, h3 {
+    color: #00ffcc;
+}
+
+p {
+    line-height: 1.6;
+}
+
+a {
+    color: #00b3e6;
+}
+
+section {
+    padding: 30px;
+    margin-bottom: 40px;
+    background-color: #333;
+    border-radius: 10px;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+}
+
+/* Define more styles for different sections, links, etc. */
+
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%; /* 16:9 aspect ratio */
+    padding-top: 30px;
+    height: 0;
+    overflow: hidden;
+}
+
+    .video-container iframe {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+    }
