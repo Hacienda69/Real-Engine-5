@@ -1,9 +1,9 @@
 ﻿styles.css
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Montserrat', sans-serif;
     background-color: #111;
-    color: #fff;
+    color: #ddd;
     margin: 0;
     padding: 0;
 }
@@ -37,8 +37,6 @@ ul {
     list-style: none;
     padding: 0;
 }
-
-/* Define more styles for different sections, links, etc. */
 
 .video-container {
     position: relative;
