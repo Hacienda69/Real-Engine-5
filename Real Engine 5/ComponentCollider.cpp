@@ -34,7 +34,7 @@ void ComponentCollider::PrintInspector()
     {
         if (type = C_BOX)       { ImGui::SameLine(); ImGui::Text(" ( Box Collider ) "); }
         if (type = C_SPHERE)    { ImGui::SameLine(); ImGui::Text(" ( Sphere Collider ) "); }
-        if (type = C_CYILINDER) { ImGui::SameLine(); ImGui::Text(" ( Cylinder Collider ) "); }
+        if (type = C_CYLINDER)  { ImGui::SameLine(); ImGui::Text(" ( Cylinder Collider ) "); }
 
         if (ImGui::Combo("Collider Type", &colTypeIdentifier, colType, IM_ARRAYSIZE(colType)))
         {

@@ -24,5 +24,3 @@ void Component::PrintInspector() {}
 void Component::EnableComponent() {}
 
 void Component::DisableComponent() {}
-
-

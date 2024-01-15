@@ -19,14 +19,15 @@ public:
 	ComponentCollider(GameObject* owner);
 	~ComponentCollider();
 
-public:
-
 	void Update();
 	void PrintInspector();
 
-private:
+public:
 
 	CollType type;
-	int colTypeIdentifier; // Used in PrintInspector() / 0 = box, 1 = sphere, 3 = cylinder
 
+private:
+
+	int colTypeIdentifier; // Used in PrintInspector() / 0 = box, 1 = sphere, 3 = cylinder
+	int width, height, depth; // For collider shape
 };
