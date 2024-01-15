@@ -110,5 +110,4 @@ GameObject* PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryTyp
 
         }
     }
-   
 }
