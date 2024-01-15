@@ -58,6 +58,9 @@
     <Filter Include="Sources\GameObject\Source">
       <UniqueIdentifier>{4569a79c-c447-4a26-9eaf-f24f4a052de4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Sources\Physics">
+      <UniqueIdentifier>{af57a58c-e848-4cb2-8664-c44f5087ea80}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Application.h">
@@ -354,6 +357,12 @@
     <ClInclude Include="p2List.h">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="PhysBody3D.h">
+      <Filter>Sources\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysVehicle3D.h">
+      <Filter>Sources\Physics</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="log.cpp">
@@ -556,6 +565,12 @@
     </ClCompile>
     <ClCompile Include="ModulePhysics.cpp">
       <Filter>Sources\Modules\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysBody3D.cpp">
+      <Filter>Sources\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysVehicle3D.cpp">
+      <Filter>Sources\Physics</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -70,6 +70,7 @@
       <SDLCheck>false</SDLCheck>
       <ExceptionHandling>false</ExceptionHandling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <AdditionalIncludeDirectories>C:\Users\Dani\Documents\GitHub\Real-Engine-5\Real Engine 5\Bullet\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -77,8 +78,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <SubSystem>Windows</SubSystem>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
-      <AdditionalDependencies>$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>$(CoreLibraryDependencies);BulletDynamics.lib;BulletCollision.lib;LinearMath.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <IgnoreSpecificDefaultLibraries>msvcrt.lib</IgnoreSpecificDefaultLibraries>
+      <AdditionalLibraryDirectories>C:\Users\Dani\Documents\GitHub\Real-Engine-5\Real Engine 5\Bullet\libx86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -177,6 +179,8 @@
     <ClInclude Include="OurPrimitive.h" />
     <ClInclude Include="p2List.h" />
     <ClInclude Include="parson.h" />
+    <ClInclude Include="PhysBody3D.h" />
+    <ClInclude Include="PhysVehicle3D.h" />
     <ClInclude Include="Primitive.h" />
     <ClInclude Include="Timer.h" />
     <ClInclude Include="ComponentTransform.h" />
@@ -245,6 +249,8 @@
     <ClCompile Include="ModuleHierarchy.cpp" />
     <ClCompile Include="OurPrimitive.cpp" />
     <ClCompile Include="parson.c" />
+    <ClCompile Include="PhysBody3D.cpp" />
+    <ClCompile Include="PhysVehicle3D.cpp" />
     <ClCompile Include="Primitive.cpp" />
     <ClCompile Include="test.cpp" />
     <ClCompile Include="Timer.cpp" />

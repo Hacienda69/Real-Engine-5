@@ -68,7 +68,7 @@ public:
 
 	Light lights[MAX_LIGHTS];
 	SDL_GLContext context;
-	CPlane Grid;
+	PrimPlane Grid;
 	
 	GLuint test;
 	GLuint VBO;
