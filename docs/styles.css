@@ -1,55 +1,86 @@
-﻿styles.css
-
-body {
-    font-family: 'Montserrat', sans-serif;
-    background-color: #111;
-    color: #ddd;
+﻿body {
+    background-color: #000000; /* Black background on the sides */
+    color: #ffffff; /* Text color */
+    font-family: 'Roboto', sans-serif;
     margin: 0;
     padding: 0;
 }
 
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #000000; /* Background color where text is */
+}
+
 header {
     text-align: center;
-    padding: 20px;
-    background-color: #222;
 }
 
-h1, h2, h3 {
-    color: #00ffcc;
+h1 {
+    color: #C3073F;
+    font-size: 2.5em; /* Adjusted font size */
 }
 
-p {
-    line-height: 1.6;
+h2, h3 {
+    color: #C3073F;
+    border-bottom: 1px solid #C3073F;
+    padding-bottom: 5px;
 }
 
-a {
-    color: #00b3e6;
-}
-
-section {
-    padding: 30px;
-    margin-bottom: 40px;
-    background-color: #333;
-    border-radius: 10px;
+h4 {
+    color: #C3073F;
 }
 
 ul {
-    list-style: none;
+    color: #ffffff;
+    list-style-type: none;
     padding: 0;
 }
 
+#intro {
+    background-color: #000000; /* Background color where text is */
+    color: #000000; /* Text color */
+}
+
+    #intro a, #authors a, #third-party-libraries a {
+        color: #C3073F; /* Link color */
+    }
+
+    #intro div {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 20px;
+        text-align: justify;
+    }
+
+p {
+    color: #ffffff; /* Text color */
+    margin-bottom: 10px;
+}
+
+a {
+    color: #ffffff; /* Link color */
+    text-decoration: none;
+}
+
+    a:hover {
+        text-decoration: underline;
+    }
+
+#video-section {
+    background-color: #000000; /* Background color for the video section */
+    color: #ffffff; /* Text color */
+}
+
 .video-container {
-    position: relative;
-    padding-bottom: 56.25%; /* 16:9 aspect ratio */
-    padding-top: 30px;
-    height: 0;
+    width: 100%;
+    max-width: 800px; /* Adjust this value as needed */
+    margin: 0 auto;
     overflow: hidden;
 }
 
-    .video-container iframe {
-        position: absolute;
-        top: 0;
-        left: 0;
+    .video-container video {
         width: 100%;
-        height: 100%;
+        height: auto;
     }
