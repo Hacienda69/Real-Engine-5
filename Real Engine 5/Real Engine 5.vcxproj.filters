@@ -345,6 +345,9 @@
     <ClInclude Include="json.hpp">
       <Filter>Sources\Tools</Filter>
     </ClInclude>
+    <ClInclude Include="ComponentCollider.h">
+      <Filter>Sources\GameObject\Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="log.cpp">
@@ -540,6 +543,9 @@
       <Filter>Sources\Helpers</Filter>
     </ClCompile>
     <ClCompile Include="ComponentCamera.cpp">
+      <Filter>Sources\GameObject\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ComponentCollider.cpp">
       <Filter>Sources\GameObject\Source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -7,8 +7,6 @@ Component::Component(GameObject* owner)
 	isActive = false;
 
 	this->mOwner = owner;
-
-
 }
 
 Component::~Component()
