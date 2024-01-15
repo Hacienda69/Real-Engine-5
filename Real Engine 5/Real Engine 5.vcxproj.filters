@@ -348,6 +348,12 @@
     <ClInclude Include="ComponentCollider.h">
       <Filter>Sources\GameObject\Header</Filter>
     </ClInclude>
+    <ClInclude Include="ModulePhysics.h">
+      <Filter>Sources\Modules\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="p2List.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="log.cpp">
@@ -547,6 +553,9 @@
     </ClCompile>
     <ClCompile Include="ComponentCollider.cpp">
       <Filter>Sources\GameObject\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="ModulePhysics.cpp">
+      <Filter>Sources\Modules\Source</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
