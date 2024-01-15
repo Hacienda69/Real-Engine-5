@@ -12,7 +12,6 @@
 #include "ModuleTexture.h"
 #include "ModuleScene.h"
 #include"ModuleHierarchy.h"
-#include "ModulePhysics.h"
 
 #include<vector>
 
@@ -28,7 +27,6 @@ public:
 	ModuleTexture* textures;
 	ModuleScene* scene;
 	ModuleHierarchy* hierarchy;
-	ModulePhysics* physics;
 
 private:
 
