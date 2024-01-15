@@ -9,11 +9,13 @@ class GameObject;
 ComponentCollider::ComponentCollider() : Component(nullptr)
 {
 	type = C_BOX;
+    colTypeIdentifier = 0;
 }
 
 ComponentCollider::ComponentCollider(GameObject* owner) : Component(owner)
 {
 	type = C_BOX;
+    colTypeIdentifier = 0;
 }
 
 ComponentCollider::~ComponentCollider() 
@@ -32,15 +34,15 @@ void ComponentCollider::PrintInspector()
 
     if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
     {
-        if (type = C_BOX)       { ImGui::SameLine(); ImGui::Text(" ( Box Collider ) "); }
-        if (type = C_SPHERE)    { ImGui::SameLine(); ImGui::Text(" ( Sphere Collider ) "); }
-        if (type = C_CYLINDER)  { ImGui::SameLine(); ImGui::Text(" ( Cylinder Collider ) "); }
+        if (colTypeIdentifier == 0)  { ImGui::SameLine(); ImGui::Text(" ( Box Collider ) "); }
+        if (colTypeIdentifier == 1)  { ImGui::SameLine(); ImGui::Text(" ( Sphere Collider ) "); }
+        if (colTypeIdentifier == 2)  { ImGui::SameLine(); ImGui::Text(" ( Cylinder Collider ) "); }
 
         if (ImGui::Combo("Collider Type", &colTypeIdentifier, colType, IM_ARRAYSIZE(colType)))
         {
             if (colTypeIdentifier == 0) type = CollType::C_BOX;
             if (colTypeIdentifier == 1) type = CollType::C_SPHERE;
-            if (colTypeIdentifier == 3) type = CollType::C_CYLINDER;
+            if (colTypeIdentifier == 2) type = CollType::C_CYLINDER;
         }
     }
 }
