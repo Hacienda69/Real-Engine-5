@@ -4,8 +4,19 @@
 #include "Globals.h"
 #include "ComponentCamera.h"
 #include "ImGui/imgui.h"
+#include "Primitive.h"
+#include "p2DynArray.h"
+
+struct PhysBody3D;
+struct PhysMotor3D;
 
 class GameObject;
+
+struct Constraints
+{
+	p2DynArray<PhysBody3D*>		phys_constraints;
+	p2DynArray<PrimCube*>		prim_constraints;
+};
 
 class ModuleScene : public Module
 {
@@ -64,4 +75,18 @@ public:
 	GameObject* streetEnviroment;
 	GameObject* bakerHouse;
 	GameObject* defaultCamera;
+
+	Constraints constraints;
+
+	PhysBody3D* pb_chassis;
+	PrimCube p_chassis;
+
+	PhysBody3D* pb_wheel;
+	Cylinder p_wheel;
+
+	PhysBody3D* pb_wheel2;
+	Cylinder p_wheel2;
+
+	PhysMotor3D* left_wheel;
+	PhysMotor3D* right_wheel;
 };

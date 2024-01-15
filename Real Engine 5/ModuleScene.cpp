@@ -6,6 +6,10 @@
 #include "ComponentCamera.h"
 #include "ModuleEditor.h"
 #include "OurPrimitive.h"
+#include "PhysBody3D.h"
+#include "PhysVehicle3D.h"
+#include "Primitive.h"
+#include "ModulePlayer.h"
 
 #include "ImGui/imgui.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
@@ -13,6 +17,7 @@
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled) 
 {
+
 }
 
 ModuleScene::~ModuleScene() 

@@ -13,6 +13,7 @@ Application::Application()
 	scene = new ModuleScene(this);
 	hierarchy = new ModuleHierarchy(this);
 	physics = new ModulePhysics(this);
+	player = new ModulePlayer(this);
 	// The order of calls is very important!
 	// Modules will Init() Start() and Update in this order
 	// They will CleanUp() in reverse order
@@ -26,6 +27,7 @@ Application::Application()
 	AddModule(assimpMeshes);
 	AddModule(textures);
 	AddModule(scene);
+	AddModule(player);
 
 	// Renderer last!
 	AddModule(renderer3D);
