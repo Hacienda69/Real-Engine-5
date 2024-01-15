@@ -347,6 +347,17 @@
     </ClInclude>
     <ClInclude Include="ComponentCollider.h">
       <Filter>Sources\GameObject\Header</Filter>
+    <ClInclude Include="ModulePhysics.h">
+      <Filter>Sources\Modules\Header</Filter>
+    </ClInclude>
+    <ClInclude Include="p2List.h">
+      <Filter>Sources\Tools</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysVehicle3D.h">
+      <Filter>Sources\Helpers</Filter>
+    </ClInclude>
+    <ClInclude Include="PhysBody3D.h">
+      <Filter>Sources\Helpers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -547,6 +558,14 @@
     </ClCompile>
     <ClCompile Include="ComponentCollider.cpp">
       <Filter>Sources\GameObject\Source</Filter>
+    <ClCompile Include="ModulePhysics.cpp">
+      <Filter>Sources\Modules\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysVehicle3D.cpp">
+      <Filter>Sources\Helpers</Filter>
+    </ClCompile>
+    <ClCompile Include="PhysBody3D.cpp">
+      <Filter>Sources\Helpers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
