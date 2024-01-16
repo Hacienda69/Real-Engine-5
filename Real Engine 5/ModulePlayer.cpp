@@ -190,6 +190,12 @@ update_status ModulePlayer::Update(float dt)
 		vehicle->Turn(turn);
 		vehicle->Brake(brake);
 	}
+	else if (App->scene->isPlay == true) {
+		turn = acceleration = brake = 0.0f;
+		vehicle->ApplyEngineForce(acceleration);
+		vehicle->Turn(turn);
+		vehicle->Brake(brake);
+	}
 	else
 		vehicle->SetPos(0, 20, -10);
 

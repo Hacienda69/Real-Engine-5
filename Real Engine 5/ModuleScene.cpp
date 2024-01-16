@@ -19,7 +19,7 @@
 
 std::vector<PhysBody3D*> cubeBodies;
 
-ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled), isPlay(false)
+ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled), isPlay(false), isPaused(false)
 {
 
 }
@@ -76,21 +76,21 @@ update_status ModuleScene::PreUpdate(float dt) {
         deltaTime = (float)timerGameScene.Read() / 1000.0f;
         timerGameScene.Stop();
         timerGameScene.Start();
-        isPlay = true;  // Update ModuleScene's isPlay
-        App->scene->isPlay = true;  // Update ModulePlayer's isPlay
+        isPlay = true;
+        isPaused = false;
+        App->scene->isPlay = true;
         break;
 
     case 2: // STOP
         timerGameScene.Stop();
-        isPlay = false;  // Update ModuleScene's isPlay
-        App->scene->isPlay = false;  // Update ModulePlayer's isPlay
-        // ... Other STOP case code ...
+        isPlay = false;
+        App->scene->isPlay = false;
         break;
 
     case 3:	// PAUSE
-        isPlay = false;  // Update ModuleScene's isPlay
-        App->scene->isPlay = false;  // Update ModulePlayer's isPlay
-        // ... Other PAUSE case code ...
+        isPlay = false;
+        isPaused = true;
+        App->scene->isPlay = false;
         break;
     }
     return UPDATE_CONTINUE;

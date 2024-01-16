@@ -58,6 +58,7 @@ public:
 	Timer timerGameScene;
 	bool isStop = false;
 	bool isPlay;
+	bool isPaused;
 	int gameState = 0;
 	float deltaTime = 0;
 

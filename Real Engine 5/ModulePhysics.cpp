@@ -119,25 +119,35 @@ update_status ModulePhysics::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
 
-	if (debug == true)
+	if (App->scene->isPlay) // Check if the game is in PLAY mode
 	{
-		world->debugDrawWorld();
+		world->stepSimulation(dt, 15);
 
-		// Render vehicles
-		for each (PhysVehicle3D * item in vehicles)
+		int numManifolds = world->getDispatcher()->getNumManifolds();
+		for (int i = 0; i < numManifolds; i++)
 		{
-			item->Render();
+			//  PONER AQUI CODIGO SOBRE COLISIONES
 		}
 
-	}
-	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
-	{
-		if (App->scene->isPlay == true) {
-			PrimSphere s(1);
-			s.SetPos(App->camera->sceneCamera->frustum.pos.x, App->camera->sceneCamera->frustum.pos.y, App->camera->sceneCamera->frustum.pos.z);
-			float force = 30.0f;
+		if (debug == true)
+		{
+			world->debugDrawWorld();
 
-			AddBody(s)->Push((App->camera->sceneCamera->frustum.front.x * force), (App->camera->sceneCamera->frustum.front.y * force), (App->camera->sceneCamera->frustum.front.z * force));
+			for each (PhysVehicle3D * item in vehicles)
+			{
+				item->Render();
+			}
+		}
+
+		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
+		{
+			if (App->scene->isPlay == true) {
+				PrimSphere s(1);
+				s.SetPos(App->camera->sceneCamera->frustum.pos.x, App->camera->sceneCamera->frustum.pos.y, App->camera->sceneCamera->frustum.pos.z);
+				float force = 30.0f;
+
+				AddBody(s)->Push((App->camera->sceneCamera->frustum.front.x * force), (App->camera->sceneCamera->frustum.front.y * force), (App->camera->sceneCamera->frustum.front.z * force));
+			}
 		}
 	}
 
