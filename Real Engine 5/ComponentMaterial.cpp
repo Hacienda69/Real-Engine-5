@@ -45,24 +45,21 @@ void ComponentMaterial::ResetTexture()
 void ComponentMaterial::UpdateMeshTexture()
 {
 	ComponentMesh* componentMesh = mOwner->GetMeshComponent();
-	for (int i = 0; 1 < mOwner->GetMeshComponent()->meshes.size(); i++) {
+	for (int i = 0; i < mOwner->GetMeshComponent()->meshes.size(); i++) {
 		if (componentMesh == nullptr)
 			return;
 
-		if (textureSelected == 0)
-		{
+		if (textureSelected == 0) {
 			componentMesh->meshes[i]->id_texture = textureID;
-
 			return;
 		}
-
-		if (textureSelected == 2)
-		{
+		else if (textureSelected == 2) {
 			componentMesh->meshes[i]->id_texture = App->textures->checkersID;
 			return;
 		}
-
-		componentMesh->meshes[i]->id_texture = -1;
+		else {
+			componentMesh->meshes[i]->id_texture = -1;
+		}
 	}
 }
 
