@@ -119,6 +119,16 @@ update_status ModulePhysics::Update(float dt)
 	if (App->input->GetKey(SDL_SCANCODE_F1) == KEY_DOWN)
 		debug = !debug;
 
+	if (debug == true)
+	{
+		world->debugDrawWorld();
+
+		for each (PhysVehicle3D * item in vehicles)
+		{
+			item->Render();
+		}
+	}
+
 	if (App->scene->isPlay) // Check if the game is in PLAY mode
 	{
 		world->stepSimulation(dt, 15);
@@ -127,16 +137,6 @@ update_status ModulePhysics::Update(float dt)
 		for (int i = 0; i < numManifolds; i++)
 		{
 			//  PONER AQUI CODIGO SOBRE COLISIONES
-		}
-
-		if (debug == true)
-		{
-			world->debugDrawWorld();
-
-			for each (PhysVehicle3D * item in vehicles)
-			{
-				item->Render();
-			}
 		}
 
 		if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
