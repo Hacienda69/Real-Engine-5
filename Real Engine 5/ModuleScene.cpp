@@ -11,9 +11,13 @@
 #include "Primitive.h"
 #include "ModulePlayer.h"
 
+#include "Bullet/include/btBulletDynamicsCommon.h"
+
 #include "ImGui/imgui.h"
 #include "ImGui/backends/imgui_impl_opengl3.h"
 #include "ImGui/backends/imgui_impl_sdl2.h"
+
+std::vector<PhysBody3D*> cubeBodies;
 
 ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled) 
 {
@@ -43,6 +47,20 @@ bool ModuleScene::Start() {
     streetEnviroment = App->assimpMeshes->LoadMeshFromFile(filePath);
     streetEnviroment->transform->setRotation(float3(-90.f, 0.f, 0.f));
     streetEnviroment->name = "Street Environment";
+
+    PrimCube cube1(1.0f, 1.0f, 1.0f);
+    cube1.SetPos(0.0f, 2.0f, 0.0f);
+    cube1.color = { 1.0f, 0.0f, 0.0f, 1.0f };  // primer cubo en rojo
+    PhysBody3D* body1 = App->physics->AddBody(cube1, 1.0f);
+    cubeBodies.push_back(body1);
+
+    PrimCube cube2(1.0f, 1.0f, 1.0f);
+    cube2.SetPos(2.0f, 2.0f, 0.0f);
+    cube2.color = { 0.0f, 0.0f, 1.0f, 1.0f };  // segundo cubo en azul
+    PhysBody3D* body2 = App->physics->AddBody(cube2, 1.0f);
+    cubeBodies.push_back(body2);
+
+    App->physics->CreateJointBetweenCubes(cubeBodies[0], cubeBodies[1]);
 
     defaultCamera = PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::CAMERA);
     defaultCamera->name = "Main Camera";

@@ -373,6 +373,17 @@ void ModulePhysics::AddConstraintHinge(PhysBody3D& bodyA, PhysBody3D& bodyB, con
 	hinge->setDbgDrawSize(2.0f);
 }
 
+void ModulePhysics::CreateJointBetweenCubes(PhysBody3D* bodyA, PhysBody3D* bodyB)
+{
+	if (bodyA && bodyB)
+	{
+		vec3 anchorA;
+		vec3 anchorB;
+
+		AddConstraintP2P(*bodyA, *bodyB, anchorA, anchorB);
+	}
+}
+
 void ModulePhysics::RemoveBody(PhysBody3D* body)
 {
 	world->removeRigidBody(body->body);
