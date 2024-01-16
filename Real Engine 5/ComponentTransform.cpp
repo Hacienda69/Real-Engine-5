@@ -108,8 +108,5 @@ void ComponentTransform:: PrintInspector() {
 		ImGui::DragFloat3("Scale", scale.ptr());
 	}
 
-
 	calculateMatrix();
-
-
 }

@@ -1,33 +1,56 @@
+#include "Application.h"
 #include "Component.h"
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
+#include "ModulePhysics.h"
 
-class Component;
-class GameObject;
+#ifdef _DEBUG
+#pragma comment (lib, "Bullet/libx86/BulletDynamics_debug.lib")
+#pragma comment (lib, "Bullet/libx86/BulletCollision_debug.lib")
+#pragma comment (lib, "Bullet/libx86/LinearMath_debug.lib")
+#else
+#pragma comment (lib, "Bullet/libx86/BulletDynamics.lib")
+#pragma comment (lib, "Bullet/libx86/BulletCollision.lib")
+#pragma comment (lib, "Bullet/libx86/LinearMath.lib")
+#endif
 
-enum CollType
-{
-	C_BOX,
-	C_SPHERE,
-	C_CYLINDER,
-};
 
 class ComponentCollider : public Component
 {
 public:
-	ComponentCollider();
-	ComponentCollider(GameObject* owner);
-	~ComponentCollider();
+    enum CollType
+    {
+        C_BOX,
+        C_SPHERE,
+        C_CYLINDER,
+        NONE,
+    };
 
-	void Update();
-	void PrintInspector();
+    ComponentCollider();
+    ComponentCollider(GameObject* owner);
+    ~ComponentCollider();
 
-public:
+    void Update();
+    void PrintInspector();
 
-	CollType type;
+    void SetBoxCollider();
+    void SetSphereCollider();
+    void SetCylinderCollider();
 
 private:
+    ModulePhysics* physics;
 
-	int colTypeIdentifier; // Used in PrintInspector() / 0 = box, 1 = sphere, 3 = cylinder
-	int width, height, depth; // For collider shape
+    CollType type;
+    PhysBody3D* collider;
+
+    //int colTypeIdentifier; // Used in PrintInspector() / 0 = box, 1 = sphere, 2 = cylinder
+    bool isTrigger;
+
+    float2 cylinderShape; // For cylinder shape / [0] = radius, [1] = height
+    float3 boxSize; // For box shape
+    float radius; // For sphere shape
+
+    PrimCube boxCol;
+    PrimSphere sphereCol;
+    PrimCylinder cylinderCol;
 };
