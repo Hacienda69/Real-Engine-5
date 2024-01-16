@@ -40,7 +40,7 @@ public:
     void RemoveCollider();
     void UpdateShape();
 
-    // ----------
+    // --------------------------------------------------------------------------------------
     void toIdentity(mat4x4 mat);
 
 private:
@@ -57,6 +57,8 @@ private:
     float radius; // For sphere shape
 
     float mass;
+
+    float3 auxColPos;
 
     float3 colPos;
     float3 colRot;

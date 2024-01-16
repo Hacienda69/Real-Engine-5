@@ -16,7 +16,7 @@ ComponentPhysics::ComponentPhysics() : Component(nullptr)
 
     colPos = { 0, 0, 0 };
     colRot = { 0, 0, 0 };
-    colScl = { 1, 1, 1 };
+    colScl = { 3, 3, 3 };
 
     mass = 0.f;
 
@@ -33,7 +33,7 @@ ComponentPhysics::ComponentPhysics(GameObject* owner) : Component(owner)
 
     colPos = { 0, 0, 0 };
     colRot = { 0, 0, 0 };
-    colScl = { 1, 1, 1 };
+    colScl = { 3, 3, 3 };
 
     mass = 0.f;
 
@@ -71,6 +71,7 @@ void ComponentPhysics::PrintInspector()
         {
             if (isStatic) mass = 0;
             if (!isStatic) mass = 1;
+            UpdateShape();
         }
         if (!isStatic)
         {
@@ -121,19 +122,19 @@ void ComponentPhysics::PrintInspector()
         switch (type)
         {
         case ComponentPhysics::C_BOX: 
-            if (ImGui::DragFloat3("Position", colPos.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat3("Rotation", colRot.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat3("Scale", colScl.ptr()))    { UpdateShape(); }
+            if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3(" - Scale",    colScl.ptr())) { UpdateShape(); }
             break;
         case ComponentPhysics::C_SPHERE: 
-            if (ImGui::DragFloat3("Position", colPos.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat3("Rotation", colRot.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat("Radius", &radius))         { UpdateShape(); }
+            if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat(" - Radius",    &radius))      { UpdateShape(); }
             break;
         case ComponentPhysics::C_CYLINDER: 
-            if (ImGui::DragFloat3("Position", colPos.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat3("Rotation", colRot.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat2("Radius, Height", cylinderShape.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat2(" - Radius, Height", cylinderShape.ptr())) { UpdateShape(); }
             break;  
         case ComponentPhysics::NONE:
             break; 
@@ -158,12 +159,12 @@ void ComponentPhysics::SetBoxCollider()
     PrimCube box;
     toIdentity(box.transform);
 
-    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
-
     box.SetPos(colPos.x / 2, colPos.y / 2 + 1, colPos.z / 2);
-    box.size.x = GoTransform->getScale().x;
-    box.size.y = GoTransform->getScale().y;
-    box.size.z = GoTransform->getScale().z;
+    box.size.x = colScl.x;
+    box.size.y = colScl.y;
+    box.size.z = colScl.z;
+
+    box.color = Green;
     
     collider = App->physics->AddBody(box, mass);
 }
@@ -190,6 +191,8 @@ void ComponentPhysics::SetSphereCollider()
 
     sphere.radius = radius;
 
+    sphere.color = Green;
+
     collider = App->physics->AddBody(sphere, mass);
 }
 
@@ -214,6 +217,7 @@ void ComponentPhysics::SetCylinderCollider()
     cylinder.SetRotation(rotAngle, rotVec);
     cylinder.radius = 1.0f;
     cylinder.height = 1.0f;
+
     cylinder.color = Green;
 
     collider = App->physics->AddBody(cylinder, mass);
@@ -254,7 +258,7 @@ void ComponentPhysics::UpdateShape()
         box.size.x = colScl.x; 
         box.size.y = colScl.y; 
         box.size.z = colScl.z; 
-         
+        
         collider = App->physics->AddBody(box, mass); 
         break;
 
