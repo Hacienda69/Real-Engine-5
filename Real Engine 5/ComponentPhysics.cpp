@@ -11,12 +11,8 @@ ComponentPhysics::ComponentPhysics() : Component(nullptr)
     type = NONE;
     isTrigger = false;
 
-    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();  
-    boxSize.x = GoTransform->getScale().x;  
-    boxSize.y = GoTransform->getScale().y;  
-    boxSize.z = GoTransform->getScale().z;  
     radius = 1.5f;
-    cylinderShape = float2(radius, boxSize.y); 
+    cylinderShape = float2(radius, 1);
 
     colPos = { 0, 0, 0 };
     colRot = { 0, 0, 0 };
@@ -32,12 +28,8 @@ ComponentPhysics::ComponentPhysics(GameObject* owner) : Component(owner)
     type = NONE; 
     isTrigger = false;
 
-    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent(); 
-    boxSize.x = GoTransform->getScale().x; 
-    boxSize.y = GoTransform->getScale().y; 
-    boxSize.z = GoTransform->getScale().z; 
     radius = 1.5f;
-    cylinderShape = float2(radius, boxSize.y); 
+    cylinderShape = float2(radius, 1); 
 
     colPos = { 0, 0, 0 };
     colRot = { 0, 0, 0 };
@@ -56,11 +48,7 @@ ComponentPhysics::~ComponentPhysics()
 void ComponentPhysics::Update()
 {
     // Lógica de actualización del collider si es necesario
-
     if (mOwner == nullptr) return;
-
-    if (isStatic) mass = 0.0f;
-    else mass = 1.0f;
 }
 
 void ComponentPhysics::PrintInspector()
@@ -78,65 +66,69 @@ void ComponentPhysics::PrintInspector()
         {
             // Configurar el RigidBody como un sensor si es necesario
         }
-         
-        if (ImGui::Combo("Collider type", reinterpret_cast<int*>(&type), colType, IM_ARRAYSIZE(colType)));
-
-        // This is inefficient, colldiers are removed and re-added on every frame but it's the only way to update its position and rotation. Sorry :(
-        switch (type)
+        ImGui::SameLine();
+        if (ImGui::Checkbox("Static", &isStatic))
         {
-        case CollType::C_BOX:
-            if (collider == nullptr) {
-                SetBoxCollider();
+            if (isStatic) mass = 0;
+            if (!isStatic) mass = 1;
+        }
+        if (!isStatic)
+        {
+            if (ImGui::DragFloat("Mass", &mass)) { UpdateShape(); }
+        }
+         
+        if (ImGui::Combo("Collider type", reinterpret_cast<int*>(&type), colType, IM_ARRAYSIZE(colType))) 
+        {
+            switch (type)
+            {
+            case CollType::C_BOX:
+                if (collider == nullptr) {
+                    SetBoxCollider();
+                }
+                else {
+                    RemoveCollider();
+                    SetBoxCollider();
+                }
+                break;
+            case CollType::C_SPHERE:
+                if (collider == nullptr) {
+                    SetSphereCollider();
+                }
+                else {
+                    RemoveCollider();
+                    SetSphereCollider();
+                }
+                break;
+            case CollType::C_CYLINDER:
+                if (collider == nullptr) {
+                    SetCylinderCollider();
+                }
+                else {
+                    RemoveCollider();
+                    SetCylinderCollider();
+                }
+                break;
+            case CollType::NONE:
+                if (collider != nullptr) RemoveCollider();
             }
-            else {
-                App->physics->RemoveBody(collider);
-                SetBoxCollider();
-            }
-            break;
-        case CollType::C_SPHERE:
-            if (collider == nullptr) {
-                SetSphereCollider();
-            }
-            else {
-                App->physics->RemoveBody(collider);
-                SetSphereCollider();
-            }
-            break;
-        case CollType::C_CYLINDER:
-            if (collider == nullptr) {
-                SetCylinderCollider();
-            }
-            else {
-                App->physics->RemoveBody(collider);
-                SetCylinderCollider();
-            }
-            break;
-        case CollType::NONE:
-            if (collider != nullptr) App->physics->RemoveBody(collider);
         }
 
         switch (type)
         {
         case ComponentPhysics::C_BOX: 
-            ImGui::Text("Box size");
-            if (ImGui::DragFloat3("X / Y / Z", boxSize.ptr()))
-            {
-
-            }
+            if (ImGui::DragFloat3("Position", colPos.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3("Rotation", colRot.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3("Scale", colScl.ptr()))    { UpdateShape(); }
             break;
         case ComponentPhysics::C_SPHERE: 
-            ImGui::Text("Sphere radius");
-            if (ImGui::DragFloat("Radius", &radius)) 
-            {
-
-            }
+            if (ImGui::DragFloat3("Position", colPos.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3("Rotation", colRot.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat("Radius", &radius))         { UpdateShape(); }
             break;
         case ComponentPhysics::C_CYLINDER: 
-            ImGui::Text("Cylinder shape");
-            if (ImGui::DragFloat2("Radius, Height", cylinderShape.ptr()))
-            {
-
-            }
+            if (ImGui::DragFloat3("Position", colPos.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat3("Rotation", colRot.ptr())) { UpdateShape(); }
+            if (ImGui::DragFloat2("Radius, Height", cylinderShape.ptr())) { UpdateShape(); }
             break;  
         case ComponentPhysics::NONE:
             break; 
@@ -146,24 +138,65 @@ void ComponentPhysics::PrintInspector()
     }
 }
 
+void ComponentPhysics::RemoveCollider() 
+{
+    if (collider == nullptr) {
+        return;
+    }
+
+    ComponentTransform* mOwner_transform = mOwner->GetTransformComponent();
+    std::vector<GameObject*> mOwner_children = mOwner->GetChildren();
+
+    for (int i = 0; i < mOwner_transform->affectedCollidersList.size(); i++) {
+
+        if (mOwner_transform->affectedCollidersList[i]->collider == collider) {
+
+            ComponentTransform::AffectedCollider* colPtr = mOwner_transform->affectedCollidersList[i];
+            mOwner_transform->affectedCollidersList.erase(mOwner_transform->affectedCollidersList.begin() + i);
+            delete*& colPtr;
+            colPtr = nullptr;
+        }
+    }
+
+    for (int i = 0; i < mOwner->GetChildren().size(); i++) {
+
+        for (int j = 0; j < mOwner_children[i]->GetTransformComponent()->affectedCollidersList.size(); j++) {
+
+            if (mOwner_children[i]->GetTransformComponent()->affectedCollidersList[j]->collider == collider) {
+
+                ComponentTransform::AffectedCollider* colPtr = mOwner_children[i]->GetTransformComponent()->affectedCollidersList[j];
+                mOwner_children[i]->GetTransformComponent()->affectedCollidersList.erase(mOwner_children[i]->GetTransformComponent()->affectedCollidersList.begin() + j);
+                delete*& colPtr;
+                colPtr = nullptr;
+            }
+        }
+    }
+    App->physics->RemoveBody(collider);
+    collider->~PhysBody3D();
+    collider = nullptr;
+}
+
 void ComponentPhysics::SetBoxCollider() 
 {   
+    type = CollType::C_BOX;
+
     PrimCube box;
     toIdentity(box.transform);
 
     ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
 
-    box.SetPos(colPos.x, colPos.y, colPos.z);
-    boxSize.x = GoTransform->getScale().x;
-    boxSize.y = GoTransform->getScale().y;
-    boxSize.z = GoTransform->getScale().z;
+    box.SetPos(colPos.x / 2, colPos.y / 2 + 1, colPos.z / 2);
+    box.size.x = GoTransform->getScale().x;
+    box.size.y = GoTransform->getScale().y;
+    box.size.z = GoTransform->getScale().z;
     
     collider = App->physics->AddBody(box, mass);
-    LinkToTransform();
 }
 
 void ComponentPhysics::SetSphereCollider() 
 { 
+    type = CollType::C_SPHERE;
+
     ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent(); 
     float3 gRot = GoTransform->getGlobalRotation();
 
@@ -177,17 +210,18 @@ void ComponentPhysics::SetSphereCollider()
 
     PrimSphere sphere;
 
-    sphere.SetPos(colPos.x, colPos.y, colPos.z);
+    sphere.SetPos(colPos.x / 2, colPos.y / 2 + 1, colPos.z / 2);
     sphere.SetRotation(rotAngle, rotVec);
 
     sphere.radius = radius;
 
     collider = App->physics->AddBody(sphere, mass);
-    LinkToTransform();
 }
 
 void ComponentPhysics::SetCylinderCollider() 
 {
+    type = CollType::C_CYLINDER;
+
     ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
     float3 gRot = GoTransform->getGlobalRotation();
 
@@ -201,40 +235,132 @@ void ComponentPhysics::SetCylinderCollider()
 
     PrimCylinder cylinder;
 
-    cylinder.SetPos(colPos.x, colPos.y, colPos.z);
+    cylinder.SetPos(colPos.x / 2, colPos.y / 2 + 1, colPos.z / 2);
     cylinder.SetRotation(rotAngle, rotVec);
     cylinder.radius = 1.0f;
     cylinder.height = 1.0f;
     cylinder.color = Green;
 
     collider = App->physics->AddBody(cylinder, mass);
-    LinkToTransform();
 }
 
-void ComponentPhysics::LinkToTransform()
+void ComponentPhysics::UpdateShape()
 {
     ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
 
-    ComponentTransform::AffectedCollider* newRelation = new ComponentTransform::AffectedCollider();
-    newRelation->collider = collider;
-    mat4x4 newMat;
-    newRelation->offset = newMat;
+    for (int i = 0; i < GoTransform->affectedCollidersList.size(); i++) {
 
-    GoTransform->affectedCollidersList.push_back(newRelation);
-    GoTransform->setOffset();
+        if (GoTransform->affectedCollidersList[i]->collider == collider) {
+
+            ComponentTransform::AffectedCollider* colPtr = GoTransform->affectedCollidersList[i];
+            GoTransform->affectedCollidersList.erase(GoTransform->affectedCollidersList.begin() + i);
+            delete*& colPtr;
+            colPtr = nullptr;
+        }
+    }
 
     std::vector<GameObject*> mOwner_children = mOwner->GetChildren();
 
     for (int i = 0; i < mOwner_children.size(); i++) {
-        ComponentTransform::AffectedCollider* newRel = new ComponentTransform::AffectedCollider();
-        newRel->collider = collider;
-        mat4x4 newMt;
-        newRelation->offset = newMt;
-        mOwner_children[i]->GetTransformComponent()->affectedCollidersList.push_back(newRel);
-        mOwner_children[i]->GetTransformComponent()->setOffset();
+
+        for (int j = 0; j < mOwner_children[i]->GetTransformComponent()->affectedCollidersList.size(); j++) {
+
+            if (mOwner_children[i]->GetTransformComponent()->affectedCollidersList[j]->collider == collider) {
+
+                ComponentTransform::AffectedCollider* colPtr = mOwner_children[i]->GetTransformComponent()->affectedCollidersList[j];
+                mOwner_children[i]->GetTransformComponent()->affectedCollidersList.erase(mOwner_children[i]->GetTransformComponent()->affectedCollidersList.begin() + j);
+                delete*& colPtr;
+                colPtr = nullptr;
+            }
+        }
+    }
+
+    App->physics->RemoveBody(collider);
+    collider->~PhysBody3D();
+    collider = nullptr;
+
+    float3 auxRot = colRot;
+
+    float rx = auxRot.x * DEGTORAD;
+    float ry = auxRot.y * DEGTORAD;
+    float rz = auxRot.z * DEGTORAD;
+
+    PrimCube box;
+    PrimSphere sphere;
+    PrimCylinder cylinder;
+
+    switch (type) 
+    {
+    case CollType::C_BOX:
+
+        box.transform[0] = cos(ry) * cos(rz);
+        box.transform[1] = sin(ry) * sin(rx) * cos(rz) - (cos(rx) * sin(rz));
+        box.transform[2] = sin(rx) * sin(rz) + sin(ry) * cos(rz) * cos(rx);
+         
+        box.transform[4] = cos(ry) * sin(rz);
+        box.transform[5] = cos(rx) * cos(rz) + sin(ry) * sin(rz) * sin(rz);
+        box.transform[6] = sin(ry) * sin(rz) * cos(rx) - sin(rx) * cos(rz);
+
+        box.transform[8] = -sin(ry);
+        box.transform[9] =  cos(ry) * sin(rx);
+        box.transform[10] = cos(rx) * cos(ry);
+
+        box.SetPos(colPos.x / 2, colPos.y / 2 + 1, colPos.z / 2);
+
+        box.size.x = colScl.x; 
+        box.size.y = colScl.y; 
+        box.size.z = colScl.z; 
+         
+        collider = App->physics->AddBody(box, mass); 
+        break;
+
+    case CollType::C_SPHERE:
+
+        sphere.transform[0] = cos(ry) * cos(rz);
+        sphere.transform[1] = sin(ry) * sin(rx) * cos(rz) - (cos(rx) * sin(rz));
+        sphere.transform[2] = sin(rx) * sin(rz) + sin(ry) * cos(rz) * cos(rx);
+
+        sphere.transform[4] = cos(ry) * sin(rz);
+        sphere.transform[5] = cos(rx) * cos(rz) + sin(ry) * sin(rz) * sin(rz);
+        sphere.transform[6] = sin(ry) * sin(rz) * cos(rx) - sin(rx) * cos(rz);
+
+        sphere.transform[8] = -sin(ry);
+        sphere.transform[9] = cos(ry) * sin(rx);
+        sphere.transform[10] = cos(rx) * cos(ry);
+
+        sphere.SetPos(colPos.x / 2, colPos.y / 2 + 1, colPos.z / 2);
+        sphere.radius = radius;
+
+        collider = App->physics->AddBody(sphere, mass);
+        break;
+
+    case CollType::C_CYLINDER:
+
+        cylinder.transform[0] = cos(ry) * cos(rz);
+        cylinder.transform[1] = sin(ry) * sin(rx) * cos(rz) - (cos(rx) * sin(rz));
+        cylinder.transform[2] = sin(rx) * sin(rz) + sin(ry) * cos(rz) * cos(rx);
+
+        cylinder.transform[4] = cos(ry) * sin(rz);
+        cylinder.transform[5] = cos(rx) * cos(rz) + sin(ry) * sin(rz) * sin(rz);
+        cylinder.transform[6] = sin(ry) * sin(rz) * cos(rx) - sin(rx) * cos(rz);
+
+        cylinder.transform[8] = -sin(ry);
+        cylinder.transform[9] = cos(ry) * sin(rx);
+        cylinder.transform[10] = cos(rx) * cos(ry);
+
+        cylinder.SetPos(colPos.x / 2, colPos.y / 2 + 1, colPos.z / 2);
+        cylinder.radius = cylinderShape.x;
+        cylinder.height = cylinderShape.y;
+
+        collider = App->physics->AddBody(cylinder, mass);
+
+        break;
+    default:
+        break;
     }
 }
 
+// -----------------------------------------------------------------------------------------------
 void ComponentPhysics::toIdentity(mat4x4 mat) 
 {
     for (int i = 0; i < 15; ++i)

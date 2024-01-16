@@ -9,7 +9,7 @@ PhysBody3D::PhysBody3D(btRigidBody* body) : body(body)
 // ---------------------------------------------------------
 PhysBody3D::~PhysBody3D()
 {
-	delete body;
+	//delete body;
 }
 
 // ---------------------------------------------------------

@@ -37,7 +37,6 @@ public:
 	void PrintInspector();
 
 	void calculateMatrix();
-	void setOffset();
 
 public: 
 	std::vector<AffectedCollider*> affectedCollidersList;
