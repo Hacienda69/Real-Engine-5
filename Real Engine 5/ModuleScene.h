@@ -11,6 +11,7 @@ struct PhysBody3D;
 struct PhysMotor3D;
 
 class GameObject;
+class ComponentPhysics;
 
 struct Constraints
 {

@@ -10,12 +10,9 @@ ComponentTransform::ComponentTransform(GameObject* owner) : Component(owner) {
 
 ComponentTransform::~ComponentTransform()
 {
-
 	type = ComponentType::TRANSFORM;
 	resetMatrix();
 }
-
-
 
 float4x4 ComponentTransform::getGlobalMatrix()
 {
