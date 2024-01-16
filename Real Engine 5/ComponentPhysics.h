@@ -47,10 +47,13 @@ public:
     void RemoveCollider();
     void UpdateShape();
 
+    void setMass(float m) { mass = m; }
+    void setStatic(bool x) { isStatic = x; }
+
 public:
     void toIdentity(mat4x4 mat);
 
-public:
+private:
     CollType colliderType;
     PhysBody3D* collider;
 
@@ -58,7 +61,7 @@ public:
 
     //int colTypeIdentifier; // Used in PrintInspector() / 0 = box, 1 = sphere, 2 = cylinder
     bool isTrigger;
-    bool isStatic; // if true: mass = 0
+    bool isStatic = true; // if true: mass = 0
 
     float2 cylinderShape; // For cylinder shape / [0] = radius, [1] = height
     float radius; // For sphere shape

@@ -7,6 +7,7 @@
 #include "ComponentCamera.h"
 #include "MathGeoLib/include/Geometry/Frustum.h"
 #include "MathGeoLib/include/MathGeoLib.h"
+#include "ComponentPhysics.h"
 
 
 #include "ImGui/backends/imgui_impl_opengl3.h"
@@ -27,7 +28,14 @@ bool ModuleCamera3D::Start()
 	bool ret = true;
 
 	sceneCamera = new ComponentCamera();
-	sceneCamera->frustum.pos = float3(0, 11, -21);
+	sceneCamera->frustum.pos = float3(0, 5, -10);
+
+	PrimSphere sphere;
+	sphere.SetPos(sceneCamera->frustum.pos.x, sceneCamera->frustum.pos.y, sceneCamera->frustum.pos.z);
+	sphere.radius = 1;
+	sphere.color = Red;
+
+	collider = App->physics->AddBody(sphere, 0);
 
 	return ret;
 }
@@ -125,6 +133,15 @@ update_status ModuleCamera3D::Update(float dt)
 	}
 
 	sceneCamera->frustum.pos += newPos;
+
+	App->physics->RemoveBody(collider);
+
+	PrimSphere sphere;
+	sphere.SetPos(sceneCamera->frustum.pos.x, sceneCamera->frustum.pos.y, sceneCamera->frustum.pos.z);
+	sphere.radius = 1;
+	sphere.color = Red;
+
+	collider = App->physics->AddBody(sphere, 0);
 
 	return UPDATE_CONTINUE;
 }

@@ -324,7 +324,7 @@ void ModuleScene::StartEnvironment()
     bakerHouse2->name = "Baker House 2";
 
     bakerHouse3 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
-    bakerHouse3->transform->setPosition(float3(0.f, 0.0f, -10.f));
+    bakerHouse3->transform->setPosition(float3(5.f, 0.0f, -10.f));
     bakerHouse3->transform->setRotation(float3(0, 180, 0));
     bakerHouse3->name = "Baker House 3";
 
@@ -348,9 +348,23 @@ void ModuleScene::StartEnvironment()
     floor->transform->setScale(float3(20, 20, 1));
     floor->name = "Floor";
 
-
     bakerHouse1->GetPhysicsComponent()->SetBoxCollider(); 
     bakerHouse2->GetPhysicsComponent()->SetBoxCollider();
     bakerHouse3->GetPhysicsComponent()->SetBoxCollider();
     bakerHouse4->GetPhysicsComponent()->SetBoxCollider();
+
+    bakerHouse1->GetPhysicsComponent()->setStatic(false);
+    bakerHouse2->GetPhysicsComponent()->setStatic(false);
+    bakerHouse3->GetPhysicsComponent()->setStatic(false);
+    bakerHouse4->GetPhysicsComponent()->setStatic(false);
+
+    bakerHouse1->GetPhysicsComponent()->setMass(1);
+    bakerHouse2->GetPhysicsComponent()->setMass(1);
+    bakerHouse3->GetPhysicsComponent()->setMass(1);
+    bakerHouse4->GetPhysicsComponent()->setMass(1);
+
+    bakerHouse1->GetPhysicsComponent()->UpdateShape();
+    bakerHouse2->GetPhysicsComponent()->UpdateShape();
+    bakerHouse3->GetPhysicsComponent()->UpdateShape();
+    bakerHouse4->GetPhysicsComponent()->UpdateShape();
 }

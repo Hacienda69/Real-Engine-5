@@ -39,5 +39,6 @@ private:
 
 public:
 	ComponentCamera* sceneCamera;
+	PhysBody3D* collider;
 	camStates state;
 };

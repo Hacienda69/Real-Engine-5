@@ -144,6 +144,7 @@ update_status ModulePhysics::Update(float dt)
 			if (App->scene->isPlay == true) {
 				PrimSphere s(1);
 				s.SetPos(App->camera->sceneCamera->frustum.pos.x, App->camera->sceneCamera->frustum.pos.y, App->camera->sceneCamera->frustum.pos.z);
+				s.color = Color(1, 0, 0, 0);
 				float force = 30.0f;
 
 				AddBody(s)->Push((App->camera->sceneCamera->frustum.front.x * force), (App->camera->sceneCamera->frustum.front.y * force), (App->camera->sceneCamera->frustum.front.z * force));
