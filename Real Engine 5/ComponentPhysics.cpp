@@ -6,7 +6,6 @@
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "PhysBody3D.h"
 
-
 ComponentPhysics::ComponentPhysics() : Component(nullptr)
 {
     type = NONE;
@@ -160,7 +159,7 @@ void ComponentPhysics::SetBoxCollider()
     boxSize.z = GoTransform->getScale().z;
     
     collider = App->physics->AddBody(box, mass);
-    //add colldier relations
+    LinkToTransform();
 }
 
 void ComponentPhysics::SetSphereCollider() 
@@ -184,7 +183,7 @@ void ComponentPhysics::SetSphereCollider()
     sphere.radius = radius;
 
     collider = App->physics->AddBody(sphere, mass);
-    //add colldier relations
+    LinkToTransform();
 }
 
 void ComponentPhysics::SetCylinderCollider() 
@@ -209,30 +208,32 @@ void ComponentPhysics::SetCylinderCollider()
     cylinder.color = Green;
 
     collider = App->physics->AddBody(cylinder, mass);
-    // add collider relations
+    LinkToTransform();
 }
 
-//void ComponentPhysics::LinkToTransform()
-//{
-//    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
-//
-//    ComponentTransform::AffectedCollider* newRelation = new ComponentTransform::AffectedCollider();
-//    newRelation->collider = collider;
-//    mat4x4 newMat;
-//    newRelation->offset = newMat;
-//
-//    GoTransform->affectedCollidersList.push_back(newRelation);
-//    GoTransform->SaveOffsetMatrix();
-//
-//    for (int i = 0; i < GO->children.size(); i++) {
-//        CTransform::CollidersRelation* newRel = new CTransform::CollidersRelation();
-//        newRel->colliderAffected = collider;
-//        mat4x4 newMt;
-//        newRelation->offsetMatrix = newMt;
-//        GO->children[i]->GOtrans->collidersAffecting.push_back(newRel);
-//        GO->children[i]->GOtrans->SaveOffsetMatrix();
-//    }
-//}
+void ComponentPhysics::LinkToTransform()
+{
+    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
+
+    ComponentTransform::AffectedCollider* newRelation = new ComponentTransform::AffectedCollider();
+    newRelation->collider = collider;
+    mat4x4 newMat;
+    newRelation->offset = newMat;
+
+    GoTransform->affectedCollidersList.push_back(newRelation);
+    GoTransform->setOffset();
+
+    std::vector<GameObject*> mOwner_children = mOwner->GetChildren();
+
+    for (int i = 0; i < mOwner_children.size(); i++) {
+        ComponentTransform::AffectedCollider* newRel = new ComponentTransform::AffectedCollider();
+        newRel->collider = collider;
+        mat4x4 newMt;
+        newRelation->offset = newMt;
+        mOwner_children[i]->GetTransformComponent()->affectedCollidersList.push_back(newRel);
+        mOwner_children[i]->GetTransformComponent()->setOffset();
+    }
+}
 
 void ComponentPhysics::toIdentity(mat4x4 mat) 
 {
