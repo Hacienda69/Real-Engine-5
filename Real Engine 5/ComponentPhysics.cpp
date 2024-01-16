@@ -1,12 +1,12 @@
 #include "Globals.h"
-#include "ComponentCollider.h"
+#include "ComponentPhysics.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "PhysBody3D.h"
 
 
-ComponentCollider::ComponentCollider() : Component(nullptr)
+ComponentPhysics::ComponentPhysics() : Component(nullptr)
 {
     type = NONE;
     isTrigger = false;
@@ -17,7 +17,7 @@ ComponentCollider::ComponentCollider() : Component(nullptr)
     collider = nullptr;
 }
 
-ComponentCollider::ComponentCollider(GameObject* owner) : Component(owner)
+ComponentPhysics::ComponentPhysics(GameObject* owner) : Component(owner)
 {
     type = NONE;
     isTrigger = false;
@@ -28,21 +28,36 @@ ComponentCollider::ComponentCollider(GameObject* owner) : Component(owner)
     collider = nullptr;
 }
 
-ComponentCollider::~ComponentCollider()
+ComponentPhysics::~ComponentPhysics()
 {
 
 }
 
-void ComponentCollider::Update()
+void ComponentPhysics::Update()
 {
     // Lógica de actualización del collider si es necesario
+
+    if (mOwner == nullptr) return;
+
+    // This doesn't work for some reason
+    ComponentTransform* transform = App->hierarchy->objSelected->GetTransformComponent(); 
+    if (transform) { 
+        float3 pos = transform->getPosition(); 
+        float3 rot = transform->getRotation(); // Nueva línea para obtener la rotación 
+
+        // Actualizar la posición
+        collider->SetPos(pos.x / 2, pos.y / 2 + 1, pos.z / 2); 
+
+        // Actualizar la rotación
+        collider->SetRot(rot.x, rot.y, rot.z);
+    }
 }
 
-void ComponentCollider::PrintInspector()
+void ComponentPhysics::PrintInspector()
 {
     const char* colType[] = { "Box", "Sphere", "Cylinder", "None" };
 
-    if (ImGui::CollapsingHeader("Collider", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
+    if (ImGui::CollapsingHeader("Physics", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
     {
         if (type == CollType::C_BOX)      { ImGui::SameLine(); ImGui::Text(" ( Box Collider ) "); }
         if (type == CollType::C_SPHERE)   { ImGui::SameLine(); ImGui::Text(" ( Sphere Collider ) "); }
@@ -56,7 +71,8 @@ void ComponentCollider::PrintInspector()
          
         if (ImGui::Combo("Collider type", reinterpret_cast<int*>(&type), colType, IM_ARRAYSIZE(colType)));
 
-        switch (type) 
+        // This is inefficient, colldiers are removed and re-added on every frame but it's the only way to update its position and rotation. Sorry :(
+        switch (type)
         {
         case CollType::C_BOX:
             if (collider == nullptr) {
@@ -91,7 +107,7 @@ void ComponentCollider::PrintInspector()
 
         switch (type)
         {
-        case ComponentCollider::C_BOX: 
+        case ComponentPhysics::C_BOX: 
             ImGui::Text("Box size");
             if (ImGui::DragFloat3("X / Y / Z", boxSize.ptr()))
             {
@@ -103,7 +119,7 @@ void ComponentCollider::PrintInspector()
                 cylinderCol.height = boxSize.y;
             }
             break;
-        case ComponentCollider::C_SPHERE: 
+        case ComponentPhysics::C_SPHERE: 
             ImGui::Text("Sphere radius");
             if (ImGui::DragFloat("Radius", &radius)) 
             {
@@ -113,7 +129,7 @@ void ComponentCollider::PrintInspector()
                 cylinderCol.radius = radius;
             }
             break;
-        case ComponentCollider::C_CYLINDER: 
+        case ComponentPhysics::C_CYLINDER: 
             ImGui::Text("Cylinder shape");
             if (ImGui::DragFloat2("Radius, Height", cylinderShape.ptr()))
             {
@@ -124,7 +140,7 @@ void ComponentCollider::PrintInspector()
                 boxCol.size.y = cylinderShape.y;
             }
             break;  
-        case ComponentCollider::NONE:
+        case ComponentPhysics::NONE:
             break; 
         default:
             break;
@@ -132,7 +148,7 @@ void ComponentCollider::PrintInspector()
     }
 }
 
-void ComponentCollider::SetBoxCollider() 
+void ComponentPhysics::SetBoxCollider() 
 {   
     boxCol.size.x = boxSize.x;  // Ancho (width)
     boxCol.size.y = boxSize.y;  // Altura (height)
@@ -141,23 +157,25 @@ void ComponentCollider::SetBoxCollider()
     ComponentTransform* transform = App->hierarchy->objSelected->GetTransformComponent();
     if (transform) {
         float3 pos = transform->getPosition();
+        float3 rot = transform->getRotation(); // Nueva línea para obtener la rotación 
         boxCol.SetPos(pos.x / 2, pos.y / 2 + 1, pos.z / 2);
     }
     collider = App->physics->AddBody(boxCol, 0);
 }
 
-void ComponentCollider::SetSphereCollider() 
+void ComponentPhysics::SetSphereCollider() 
 {
     sphereCol.radius = radius; 
     ComponentTransform* transform = App->hierarchy->objSelected->GetTransformComponent(); 
     if (transform) {
         float3 pos = transform->getPosition();
+
         sphereCol.SetPos(pos.x / 2, pos.y / 2 + 1, pos.z / 2);
     }
     collider = App->physics->AddBody(sphereCol, 0);
 }
 
-void ComponentCollider::SetCylinderCollider() 
+void ComponentPhysics::SetCylinderCollider() 
 {
     cylinderCol.radius = cylinderShape.x;
     cylinderCol.height = cylinderShape.y;
@@ -165,6 +183,7 @@ void ComponentCollider::SetCylinderCollider()
     ComponentTransform* transform = App->hierarchy->objSelected->GetTransformComponent(); 
     if (transform) { 
         float3 pos = transform->getPosition(); 
+
         cylinderCol.SetPos(pos.x / 2, pos.y / 2 + 1, pos.z / 2); 
     }
     collider = App->physics->AddBody(cylinderCol, 0);

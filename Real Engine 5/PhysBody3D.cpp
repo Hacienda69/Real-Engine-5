@@ -46,6 +46,18 @@ void PhysBody3D::SetPos(float x, float y, float z)
 	body->setWorldTransform(t);
 }
 
+// Ángulos en radianes!!!
+void PhysBody3D::SetRot(float x, float y, float z)
+{
+	btTransform t = body->getWorldTransform();
+	btQuaternion rotationQuat;
+	rotationQuat.setEulerZYX(z, y, x); // Asumiendo que tus ángulos son en radianes
+
+	t.setRotation(rotationQuat);
+	body->setWorldTransform(t);
+}
+
+// ---------------------------------------------------------
 void PhysBody3D::SetAsSensor(bool is_sensor)
 {
 	if (this->is_sensor != is_sensor)
