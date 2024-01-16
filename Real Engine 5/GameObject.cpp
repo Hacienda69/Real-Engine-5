@@ -3,7 +3,7 @@
 #include "ComponentTransform.h"
 #include "ComponentMesh.h"
 #include "ComponentCamera.h"
-#include "ComponentCollider.h"
+#include "ComponentPhysics.h"
 #include "OurPrimitive.h"
 #include "ModuleInput.h"
 
@@ -146,7 +146,7 @@ bool GameObject::SetAsChildOf(GameObject* gameObject)
 // PRINT INSPECTOR -------------------------------------------------------------------------------
 void GameObject::PrintInspector()
 {
-	char* listComponents[] { "Add Component", "Mesh Component", "Material Component", "Camera Component", "Collider Component"};
+	char* listComponents[] { "Add Component", "Mesh Component", "Material Component", "Camera Component", "Physics Component"};
 	char aux[255] = { ' ' }; 
 
 	if (mParent != nullptr)
@@ -217,9 +217,9 @@ void GameObject::PrintInspector()
 				else LOG("Camera Component already added")
 			}
 			break;
-			case 4: // Collider
+			case 4: // Physics
 			{
-				ComponentCollider* cc = new ComponentCollider();
+				ComponentPhysics* cc = new ComponentPhysics();
 				AddComponent(cc);
 			}
 			break;

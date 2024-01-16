@@ -15,7 +15,7 @@
 #endif
 
 
-class ComponentCollider : public Component
+class ComponentPhysics : public Component
 {
 public:
     enum CollType
@@ -26,9 +26,9 @@ public:
         NONE,
     };
 
-    ComponentCollider();
-    ComponentCollider(GameObject* owner);
-    ~ComponentCollider();
+    ComponentPhysics();
+    ComponentPhysics(GameObject* owner);
+    ~ComponentPhysics();
 
     void Update();
     void PrintInspector();

@@ -1,4 +1,3 @@
-
 #include "Primitive.h"
 #include "Globals.h"
 
