@@ -132,11 +132,13 @@ update_status ModulePhysics::Update(float dt)
 	}
 	if (App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
-		PrimSphere s(1);
-		s.SetPos(App->camera->sceneCamera->frustum.pos.x, App->camera->sceneCamera->frustum.pos.y, App->camera->sceneCamera->frustum.pos.z);
-		float force = 30.0f;
+		if (App->scene->isPlay == true) {
+			PrimSphere s(1);
+			s.SetPos(App->camera->sceneCamera->frustum.pos.x, App->camera->sceneCamera->frustum.pos.y, App->camera->sceneCamera->frustum.pos.z);
+			float force = 30.0f;
 
-		AddBody(s)->Push((App->camera->sceneCamera->frustum.front.x * force), (App->camera->sceneCamera->frustum.front.y * force), (App->camera->sceneCamera->frustum.front.z * force));
+			AddBody(s)->Push((App->camera->sceneCamera->frustum.front.x * force), (App->camera->sceneCamera->frustum.front.y * force), (App->camera->sceneCamera->frustum.front.z * force));
+		}
 	}
 
 	return UPDATE_CONTINUE;
