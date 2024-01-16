@@ -1,8 +1,10 @@
+#include "Globals.h"
 #include "Application.h"
 #include "Component.h"
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "ModulePhysics.h"
+#include "PhysBody3D.h"
 
 #ifdef _DEBUG
 #pragma comment (lib, "Bullet/libx86/BulletDynamics_debug.lib")
@@ -40,12 +42,19 @@ public:
     void Update();
     void PrintInspector();
 
+    void Enable() { isActive = true; }
+    void Disable() { isActive = false; }
+    bool IsEnable() { return isActive; }
+
     void SetBoxCollider();
     void SetSphereCollider();
     void SetCylinderCollider();
 
     void RemoveCollider();
     void UpdateShape();
+
+    void CubeColliderCreate();
+    void SphereColliderCreate();
 
     void setMass(float m) { mass = m; }
     void setStatic(bool x) { isStatic = x; }
@@ -54,11 +63,14 @@ public:
     void toIdentity(mat4x4 mat);
 
 private:
+    ModulePhysics* phys;
+    CollType type;
     CollType colliderType;
     PhysBody3D* collider;
 
     mat4x4 colliderMatrix;
 
+    ComponentTransform* transformComponent;
     //int colTypeIdentifier; // Used in PrintInspector() / 0 = box, 1 = sphere, 2 = cylinder
     bool isTrigger;
     bool isStatic = true; // if true: mass = 0
@@ -67,8 +79,12 @@ private:
     float radius; // For sphere shape
 
     float mass;
-
+    float3 boxSize;
     float3 auxColPos;
+
+    PrimCube cube;
+    PrimSphere sphere;
+    PrimCylinder cylinder;
 
     float3 colPos;
     float3 colRot;

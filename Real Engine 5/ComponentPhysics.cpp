@@ -5,6 +5,9 @@
 #include "ComponentTransform.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "PhysBody3D.h"
+#include "Primitive.h"
+#include "ModulePhysics.h"
+#include "Module.h"
 
 ComponentPhysics::ComponentPhysics() : Component(nullptr)
 {
@@ -14,16 +17,17 @@ ComponentPhysics::ComponentPhysics() : Component(nullptr)
 
     radius = 1.5f;
     cylinderShape = float2(radius, 1);
-
+    boxSize = float3(0, 0, 0);
     colPos = { 0, 0, 0 };
     colRot = { 0, 0, 0 };
     colScl = { 3, 3, 3 };
 
     mass = 0.f;
 
+    phys = nullptr;
     p2pConstraint = nullptr;
     hingeConstraint = nullptr;
-
+    isStatic = false;
     collider = nullptr;
 }
 
@@ -35,7 +39,7 @@ ComponentPhysics::ComponentPhysics(GameObject* owner) : Component(owner)
 
     radius = 1.5f;
     cylinderShape = float2(radius, 1); 
-
+    boxSize = float3(3, 3, 3);
     ComponentTransform* auxTransform = owner->GetTransformComponent();
 
     colPos = { 
@@ -48,9 +52,10 @@ ComponentPhysics::ComponentPhysics(GameObject* owner) : Component(owner)
 
     mass = 0.f;
 
+    phys = nullptr;
     p2pConstraint = nullptr;
     hingeConstraint = nullptr;
-
+    isStatic = false;
     collider = nullptr;
 }
 
@@ -64,101 +69,107 @@ ComponentPhysics::~ComponentPhysics()
 
 void ComponentPhysics::Update()
 {
-    // Lógica de actualización del collider si es necesario
+    if (isStatic) //sequeda
+        App->physics->SetBodyMass(collider, 0);
+    else
+        App->physics->SetBodyMass(collider, mass);
+
+    if (collider != nullptr) {
+        float matrix[16];
+        collider->GetTransform(matrix);
+        mOwner->GetTransformComponent()->SetTransformFromMatrix(matrix);
+    }
     if (mOwner == nullptr) return;
 }
 
 void ComponentPhysics::PrintInspector()
 {
-    const char* colType[] = { "Box", "Sphere", "Cylinder", "None" };
-
-    if (ImGui::CollapsingHeader("Physics", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
+    if (ImGui::CollapsingHeader("Physics"))
     {
-        if (colliderType == CollType::C_BOX)      { ImGui::SameLine(); ImGui::Text(" ( Box Collider ) "); }
-        if (colliderType == CollType::C_SPHERE)   { ImGui::SameLine(); ImGui::Text(" ( Sphere Collider ) "); }
-        if (colliderType == CollType::C_CYLINDER) { ImGui::SameLine(); ImGui::Text(" ( Cylinder Collider ) "); }
-        if (colliderType == CollType::NONE)       { ImGui::SameLine(); ImGui::Text(" ( No Collider ) "); }
+        ImGui::Checkbox("Static\t", &isStatic);
 
-        if (ImGui::Checkbox("isTrigger", &isTrigger)) 
-        {
-            // Configurar el RigidBody como un sensor si es necesario
-        }
         ImGui::SameLine();
-        if (ImGui::Checkbox("Static", &isStatic))
-        {
-            if (isStatic) mass = 0;
-            if (!isStatic) mass = 1;
-            UpdateShape();
-        }
-        if (!isStatic)
-        {
-            if (ImGui::DragFloat("Mass", &mass)) { UpdateShape(); }
-        }
-         
-        if (ImGui::Button("Remove Collider"))
-        {
-            RemoveCollider();
-            colliderType = CollType::NONE;
-        }
-        if (ImGui::Combo("Collider type", reinterpret_cast<int*>(&colliderType), colType, IM_ARRAYSIZE(colType)))
-        {
+        ImGui::PushItemWidth(120.0f);
+        if (ImGui::InputFloat("Mass", &mass, 1.0f, 33))
+            App->physics->SetBodyMass(collider, mass);
+
+        ImGui::Text("\n");
+
+        if (ImGui::Combo("Collider", reinterpret_cast<int*>(&colliderType), "Box\0Sphere\0Cylinder\0None"))
+
+            //	CheckShapes();
+
             switch (colliderType)
             {
-            case CollType::C_BOX:
+            case ComponentPhysics::CollType::C_BOX:
+            {
                 if (collider == nullptr) {
-                    SetBoxCollider();
+                    CubeColliderCreate();
                 }
                 else {
-                    RemoveCollider();
-                    SetBoxCollider();
+                    App->physics->RemoveBody(collider);
+                    CubeColliderCreate();
                 }
                 break;
-            case CollType::C_SPHERE:
-                if (collider == nullptr) {
-                    SetSphereCollider();
-                }
-                else {
-                    RemoveCollider();
-                    SetSphereCollider();
-                }
-                break;
-            case CollType::C_CYLINDER:
-                if (collider == nullptr) {
-                    SetCylinderCollider();
-                }
-                else {
-                    RemoveCollider();
-                    SetCylinderCollider();
-                }
-                break;
-            case CollType::NONE:
-                if (collider != nullptr) RemoveCollider();
             }
-        }
+            case ComponentPhysics::CollType::C_SPHERE:
+            {
+                if (collider == nullptr) {
+                    SphereColliderCreate();
+                }
+                else {
+                    App->physics->RemoveBody(collider);
+                    SphereColliderCreate();
+                }
+            }
+            break;
+            case ComponentPhysics::CollType::C_CYLINDER:
+            {
+                if (collider == nullptr) {
+                    collider = App->physics->AddBody(cylinder, 1);
+                }
+            }
+            break;
+            default:
+                break;
+            }
 
         switch (colliderType)
         {
-        case CollType::C_BOX:
-            if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat3(" - Scale",    colScl.ptr())) { UpdateShape(); }
+        case ComponentPhysics::CollType::C_BOX:
+            ImGui::Text("X\t\t Y\t\t Z");
+            ImGui::PushItemWidth(200.0f);
+            if (ImGui::DragFloat3("Box Size ", boxSize.ptr()), 1.0f, 0.0f, 1000.0f)
+            {
+                cube.size.x = boxSize.x;
+                cube.size.y = boxSize.y;
+                cube.size.z = boxSize.z;
+                if (ImGui::Button("Update Collider")) {
+                    App->physics->RemoveBody(collider);
+                    collider = App->physics->AddBody(cube, mass);
+                }
+            }
             break;
-        case CollType::C_SPHERE:
-            if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat(" - Radius",    &radius))      { UpdateShape(); }
-            break;
-        case CollType::C_CYLINDER:
-            if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
-            if (ImGui::DragFloat2(" - Radius, Height", cylinderShape.ptr())) { UpdateShape(); }
-            break;  
-        case CollType::NONE:
-            break; 
-        default:
+        case ComponentPhysics::CollType::C_SPHERE:
+            if (ImGui::DragFloat("Sphere Radius ", &radius), 1.0f, 0.0f, 1000.0f)
+            {
+                sphere.radius = radius;
+                if (ImGui::Button("Update Collider")) {
+                    App->physics->RemoveBody(collider);
+                    collider = App->physics->AddBody(sphere, mass);
+                }
+            }
             break;
         }
+
+        if (ImGui::Button("Remove Collider"))
+        {
+            App->physics->RemoveBody(collider);
+            collider = nullptr;
+        }
+
     }
+    Update();
 }
 
 void ComponentPhysics::RemoveCollider() 
@@ -325,7 +336,30 @@ void ComponentPhysics::UpdateShape()
     }
 }
 
-// -----------------------------------------------------------------------------------------------
+void ComponentPhysics::CubeColliderCreate()
+{
+    cube.size = (3, 3, 3);
+    transformComponent = App->hierarchy->objSelected->GetTransformComponent();
+    if (transformComponent) {
+        float3 pos = transformComponent->getPosition();
+        cube.SetPos(pos.x / 2, pos.y / 2 / 4, pos.z / 2);
+    }
+    collider = App->physics->AddBody(cube, 1);
+    mass = 1;
+}
+
+void ComponentPhysics::SphereColliderCreate()
+{
+    sphere.radius = 2;
+    transformComponent = App->hierarchy->objSelected->GetTransformComponent();
+    if (transformComponent) {
+        float3 pos = transformComponent->getPosition();
+        sphere.SetPos(pos.x / 2, pos.y / 2 / 2, pos.z / 2);
+    }
+    collider = App->physics->AddBody(sphere, 1);
+    mass = 1;
+}
+
 void ComponentPhysics::toIdentity(mat4x4 mat) 
 {
     for (int i = 0; i < 15; ++i)

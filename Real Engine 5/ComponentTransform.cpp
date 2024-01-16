@@ -74,8 +74,6 @@ void ComponentTransform::setScale(float3 sca)
 	calculateMatrix();
 }
 
-
-
 void ComponentTransform::calculateMatrix()
 {
 
@@ -115,4 +113,21 @@ float3 ComponentTransform::getGlobalRotation()
 	globalMatrix.Decompose(position, globalRotation, scale); 
 
 	return globalRotation.ToEulerXYZ() * RADTODEG; 
+}
+
+void ComponentTransform::SetTransformFromMatrix(const float* matrix)
+{
+	position = float3(matrix[12], matrix[13], matrix[14]);
+
+	float3 extractedScale;
+	extractedScale.x = float3(matrix[0], matrix[1], matrix[2]).Length();
+	extractedScale.y = float3(matrix[4], matrix[5], matrix[6]).Length();
+	extractedScale.z = float3(matrix[8], matrix[9], matrix[10]).Length();
+	scale = extractedScale;
+
+	rotation.x = atan2(matrix[6], matrix[10]) * RADTODEG;
+	rotation.y = atan2(-matrix[2], sqrt(matrix[1] * matrix[1] + matrix[0] * matrix[0])) * RADTODEG;
+	rotation.z = atan2(matrix[1], matrix[0]) * RADTODEG;
+
+	calculateMatrix();
 }

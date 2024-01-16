@@ -30,7 +30,7 @@ public:
 	void setScale(float3 sca);
 
 	void PrintInspector();
-
+	void SetTransformFromMatrix(const float* matrix);
 	void calculateMatrix();
 
 private:
