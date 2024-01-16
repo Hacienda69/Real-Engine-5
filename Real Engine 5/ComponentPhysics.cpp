@@ -8,7 +8,7 @@
 
 ComponentPhysics::ComponentPhysics() : Component(nullptr)
 {
-    type = NONE;
+    colliderType = CollType::NONE;
     isTrigger = false;
 
     radius = 1.5f;
@@ -20,29 +20,44 @@ ComponentPhysics::ComponentPhysics() : Component(nullptr)
 
     mass = 0.f;
 
+    p2pConstraint = nullptr;
+    hingeConstraint = nullptr;
+
     collider = nullptr;
 }
 
 ComponentPhysics::ComponentPhysics(GameObject* owner) : Component(owner)
 {
-    type = NONE; 
+    colliderType = CollType::NONE;
     isTrigger = false;
 
     radius = 1.5f;
     cylinderShape = float2(radius, 1); 
 
-    colPos = { 0, 0, 0 };
+    ComponentTransform* auxTransform = owner->GetTransformComponent();
+
+    colPos = { 
+        auxTransform->getPosition().x,
+        auxTransform->getPosition().y,
+        auxTransform->getPosition().z
+    };
     colRot = { 0, 0, 0 };
     colScl = { 3, 3, 3 };
 
     mass = 0.f;
+
+    p2pConstraint = nullptr;
+    hingeConstraint = nullptr;
 
     collider = nullptr;
 }
 
 ComponentPhysics::~ComponentPhysics()
 {
-
+    RemoveCollider();
+    delete hingeConstraint;
+    delete p2pConstraint;
+    delete collider;
 }
 
 void ComponentPhysics::Update()
@@ -57,10 +72,10 @@ void ComponentPhysics::PrintInspector()
 
     if (ImGui::CollapsingHeader("Physics", ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick | ImGuiTreeNodeFlags_SpanAvailWidth))
     {
-        if (type == CollType::C_BOX)      { ImGui::SameLine(); ImGui::Text(" ( Box Collider ) "); }
-        if (type == CollType::C_SPHERE)   { ImGui::SameLine(); ImGui::Text(" ( Sphere Collider ) "); }
-        if (type == CollType::C_CYLINDER) { ImGui::SameLine(); ImGui::Text(" ( Cylinder Collider ) "); }
-        if (type == CollType::NONE)       { ImGui::SameLine(); ImGui::Text(" ( No Collider ) "); }
+        if (colliderType == CollType::C_BOX)      { ImGui::SameLine(); ImGui::Text(" ( Box Collider ) "); }
+        if (colliderType == CollType::C_SPHERE)   { ImGui::SameLine(); ImGui::Text(" ( Sphere Collider ) "); }
+        if (colliderType == CollType::C_CYLINDER) { ImGui::SameLine(); ImGui::Text(" ( Cylinder Collider ) "); }
+        if (colliderType == CollType::NONE)       { ImGui::SameLine(); ImGui::Text(" ( No Collider ) "); }
 
         if (ImGui::Checkbox("isTrigger", &isTrigger)) 
         {
@@ -81,11 +96,11 @@ void ComponentPhysics::PrintInspector()
         if (ImGui::Button("Remove Collider"))
         {
             RemoveCollider();
-            type = CollType::NONE;
+            colliderType = CollType::NONE;
         }
-        if (ImGui::Combo("Collider type", reinterpret_cast<int*>(&type), colType, IM_ARRAYSIZE(colType))) 
+        if (ImGui::Combo("Collider type", reinterpret_cast<int*>(&colliderType), colType, IM_ARRAYSIZE(colType)))
         {
-            switch (type)
+            switch (colliderType)
             {
             case CollType::C_BOX:
                 if (collider == nullptr) {
@@ -119,24 +134,24 @@ void ComponentPhysics::PrintInspector()
             }
         }
 
-        switch (type)
+        switch (colliderType)
         {
-        case ComponentPhysics::C_BOX: 
+        case CollType::C_BOX:
             if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
             if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
             if (ImGui::DragFloat3(" - Scale",    colScl.ptr())) { UpdateShape(); }
             break;
-        case ComponentPhysics::C_SPHERE: 
+        case CollType::C_SPHERE:
             if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
             if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
             if (ImGui::DragFloat(" - Radius",    &radius))      { UpdateShape(); }
             break;
-        case ComponentPhysics::C_CYLINDER: 
+        case CollType::C_CYLINDER:
             if (ImGui::DragFloat3(" - Position", colPos.ptr())) { UpdateShape(); }
             if (ImGui::DragFloat3(" - Rotation", colRot.ptr())) { UpdateShape(); }
             if (ImGui::DragFloat2(" - Radius, Height", cylinderShape.ptr())) { UpdateShape(); }
             break;  
-        case ComponentPhysics::NONE:
+        case CollType::NONE:
             break; 
         default:
             break;
@@ -154,7 +169,7 @@ void ComponentPhysics::RemoveCollider()
 
 void ComponentPhysics::SetBoxCollider() 
 {   
-    type = CollType::C_BOX;
+    colliderType = CollType::C_BOX;
 
     PrimCube box;
     toIdentity(box.transform);
@@ -171,7 +186,7 @@ void ComponentPhysics::SetBoxCollider()
 
 void ComponentPhysics::SetSphereCollider() 
 { 
-    type = CollType::C_SPHERE;
+    colliderType = CollType::C_SPHERE;
 
     ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent(); 
     float3 gRot = GoTransform->getGlobalRotation();
@@ -198,7 +213,7 @@ void ComponentPhysics::SetSphereCollider()
 
 void ComponentPhysics::SetCylinderCollider() 
 {
-    type = CollType::C_CYLINDER;
+    colliderType = CollType::C_CYLINDER;
 
     ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
     float3 gRot = GoTransform->getGlobalRotation();
@@ -237,7 +252,7 @@ void ComponentPhysics::UpdateShape()
     PrimSphere sphere;
     PrimCylinder cylinder;
 
-    switch (type) 
+    switch (colliderType)
     {
     case CollType::C_BOX:
 

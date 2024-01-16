@@ -219,7 +219,7 @@ void GameObject::PrintInspector()
 			break;
 			case 4: // Physics
 			{
-				ComponentPhysics* cc = new ComponentPhysics();
+				ComponentPhysics* cc = new ComponentPhysics(this);
 				AddComponent(cc);
 			}
 			break;
