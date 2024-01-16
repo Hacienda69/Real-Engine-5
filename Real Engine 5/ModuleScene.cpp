@@ -10,6 +10,7 @@
 #include "PhysVehicle3D.h"
 #include "Primitive.h"
 #include "ModulePlayer.h"
+#include "GameObject.h"
 
 #include "Bullet/include/btBulletDynamicsCommon.h"
 
@@ -39,14 +40,30 @@ bool ModuleScene::Start() {
     
     root = new GameObject(nullptr);
     
-    bakerHouse = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
-    bakerHouse->transform->setPosition(float3(0.f, 0.5f, 0.f));
-    bakerHouse->name = "Baker House";
+    bakerHouse1 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse1->transform->setPosition(float3(0.f, 0.0f, 10.f));
+    bakerHouse1->name = "Baker House 1";
 
-    filePath = "Assets/Models/street/scene.DAE";
-    streetEnviroment = App->assimpMeshes->LoadMeshFromFile(filePath);
-    streetEnviroment->transform->setRotation(float3(-90.f, 0.f, 0.f));
-    streetEnviroment->name = "Street Environment";
+    bakerHouse2 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse2->transform->setPosition(float3(-10.f, 0.0f, 0.f));
+    bakerHouse2->transform->setRotation(float3(0, -90, 0));
+    bakerHouse2->name = "Baker House 2";
+
+    bakerHouse3 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse3->transform->setPosition(float3(0.f, 0.0f, -10.f));
+    bakerHouse3->transform->setRotation(float3(0, 180, 0)); 
+    bakerHouse3->name = "Baker House 3";
+
+    bakerHouse4 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse4->transform->setPosition(float3(10.f, 0.0f, 0.f));
+    bakerHouse4->transform->setRotation(float3(0, 90, 0));
+    bakerHouse4->name = "Baker House 4";
+
+    floor = PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::P_PLANE);
+    floor->transform->setPosition(float3(0, 0, 0));
+    floor->transform->setRotation(float3(-90, 0, 0));
+    floor->transform->setScale(float3(20, 20, 1));
+    floor->name = "Floor";
 
     PrimCube cube1(1.0f, 1.0f, 1.0f);
     cube1.SetPos(0.0f, 2.0f, 0.0f);

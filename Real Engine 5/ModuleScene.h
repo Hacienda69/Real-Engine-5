@@ -74,9 +74,14 @@ public:
 
 	GameObject* CreateGameObject(GameObject* parent);
 	GameObject* root = nullptr;
-	GameObject* streetEnviroment;
-	GameObject* bakerHouse;
 	GameObject* defaultCamera;
+
+	GameObject* bakerHouse1;
+	GameObject* bakerHouse2;
+	GameObject* bakerHouse3;
+	GameObject* bakerHouse4;
+
+	GameObject* floor;
 
 	Constraints constraints;
 
