@@ -5,7 +5,7 @@ enum class ComponentType
 	TRANSFORM,
 	MESH,
 	MATERIAL,
-	COLLIDER,
+	PHYSICS,
 	CAMERA
 };
 

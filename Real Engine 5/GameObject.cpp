@@ -288,6 +288,19 @@ ComponentCamera* GameObject::GetCameraComponent()
 	return nullptr;
 }
 
+ComponentPhysics* GameObject::GetPhysicsComponent()
+{
+	for (size_t i = 0; i < mComponents.size(); i++)
+	{
+		if (mComponents[i]->type == ComponentType::PHYSICS) {
+
+			return (ComponentPhysics*)mComponents[i];
+		}
+	}
+
+	return nullptr;
+}
+
 const std::vector<GameObject*>& GameObject::GetChildren() const {
 	return mChildren;
 }

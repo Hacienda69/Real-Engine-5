@@ -52,6 +52,8 @@ public:
 
 	void SetSelectedByTriangle(LineSegment ray, std::vector<GameObject*> GoList);
 
+	void StartEnvironment();
+
 public:
 
 	ImVec2 sizeScreen;

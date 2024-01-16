@@ -8,6 +8,7 @@
 
 ComponentPhysics::ComponentPhysics() : Component(nullptr)
 {
+    type = ComponentType::PHYSICS;
     colliderType = CollType::NONE;
     isTrigger = false;
 
@@ -28,6 +29,7 @@ ComponentPhysics::ComponentPhysics() : Component(nullptr)
 
 ComponentPhysics::ComponentPhysics(GameObject* owner) : Component(owner)
 {
+    type = ComponentType::PHYSICS;
     colliderType = CollType::NONE;
     isTrigger = false;
 

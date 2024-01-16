@@ -27,7 +27,7 @@ bool ModuleCamera3D::Start()
 	bool ret = true;
 
 	sceneCamera = new ComponentCamera();
-	sceneCamera->frustum.pos = float3(0, 5, -10);
+	sceneCamera->frustum.pos = float3(0, 11, -21);
 
 	return ret;
 }

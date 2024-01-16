@@ -1,3 +1,4 @@
+#include "Application.h"
 #include "ModuleScene.h"
 #include "GameObject.h"
 #include "Application.h"
@@ -11,6 +12,8 @@
 #include "Primitive.h"
 #include "ModulePlayer.h"
 #include "GameObject.h"
+#include "ModuleHierarchy.h"
+#include "ComponentPhysics.h"
 
 #include "Bullet/include/btBulletDynamicsCommon.h"
 
@@ -39,31 +42,8 @@ bool ModuleScene::Init()
 bool ModuleScene::Start() {
     
     root = new GameObject(nullptr);
-    
-    bakerHouse1 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
-    bakerHouse1->transform->setPosition(float3(0.f, 0.0f, 10.f));
-    bakerHouse1->name = "Baker House 1";
-
-    bakerHouse2 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
-    bakerHouse2->transform->setPosition(float3(-10.f, 0.0f, 0.f));
-    bakerHouse2->transform->setRotation(float3(0, -90, 0));
-    bakerHouse2->name = "Baker House 2";
-
-    bakerHouse3 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
-    bakerHouse3->transform->setPosition(float3(0.f, 0.0f, -10.f));
-    bakerHouse3->transform->setRotation(float3(0, 180, 0)); 
-    bakerHouse3->name = "Baker House 3";
-
-    bakerHouse4 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
-    bakerHouse4->transform->setPosition(float3(10.f, 0.0f, 0.f));
-    bakerHouse4->transform->setRotation(float3(0, 90, 0));
-    bakerHouse4->name = "Baker House 4";
-
-    floor = PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::P_PLANE);
-    floor->transform->setPosition(float3(0, 0, 0));
-    floor->transform->setRotation(float3(-90, 0, 0));
-    floor->transform->setScale(float3(20, 20, 1));
-    floor->name = "Floor";
+   
+    StartEnvironment();
 
     PrimCube cube1(1.0f, 1.0f, 1.0f);
     cube1.SetPos(0.0f, 2.0f, 0.0f);
@@ -83,6 +63,7 @@ bool ModuleScene::Start() {
     defaultCamera->name = "Main Camera";
     defaultCamera->transform->setPosition(float3(0.f, 2.5f, -10.f));
     setMainCamera(defaultCamera->GetCameraComponent());
+
 
     return true;
 }
@@ -329,4 +310,47 @@ void ModuleScene::PlayEvent()
     }
     
     //LOG("Counter %f", counter)
+}
+
+void ModuleScene::StartEnvironment()
+{
+    bakerHouse1 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse1->transform->setPosition(float3(0.f, 0.0f, 10.f));
+    bakerHouse1->name = "Baker House 1";
+
+    bakerHouse2 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse2->transform->setPosition(float3(-10.f, 0.0f, 0.f));
+    bakerHouse2->transform->setRotation(float3(0, -90, 0));
+    bakerHouse2->name = "Baker House 2";
+
+    bakerHouse3 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse3->transform->setPosition(float3(0.f, 0.0f, -10.f));
+    bakerHouse3->transform->setRotation(float3(0, 180, 0));
+    bakerHouse3->name = "Baker House 3";
+
+    bakerHouse4 = App->assimpMeshes->LoadMeshFromFile("Assets/Models/BakerHouse.fbx");
+    bakerHouse4->transform->setPosition(float3(10.f, 0.0f, 0.f));
+    bakerHouse4->transform->setRotation(float3(0, 90, 0));
+    bakerHouse4->name = "Baker House 4";
+
+    ComponentPhysics* cP = new ComponentPhysics(bakerHouse1);
+    bakerHouse1->AddComponent(cP);
+    cP = new ComponentPhysics(bakerHouse2);
+    bakerHouse2->AddComponent(cP);
+    cP = new ComponentPhysics(bakerHouse3);
+    bakerHouse3->AddComponent(cP);
+    cP = new ComponentPhysics(bakerHouse4);
+    bakerHouse4->AddComponent(cP);
+
+    floor = PrimitivesGeomtriesLibrary::InstanciatePrimitiveGeometry(GeometryType::P_PLANE);
+    floor->transform->setPosition(float3(0, 0, 0));
+    floor->transform->setRotation(float3(-90, 0, 0));
+    floor->transform->setScale(float3(20, 20, 1));
+    floor->name = "Floor";
+
+
+    bakerHouse1->GetPhysicsComponent()->SetBoxCollider(); 
+    bakerHouse2->GetPhysicsComponent()->SetBoxCollider();
+    bakerHouse3->GetPhysicsComponent()->SetBoxCollider();
+    bakerHouse4->GetPhysicsComponent()->SetBoxCollider();
 }

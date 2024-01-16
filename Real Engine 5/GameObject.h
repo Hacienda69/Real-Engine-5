@@ -12,6 +12,7 @@ class ComponentTransform;
 class ComponentMesh;
 class ComponentMaterial;
 class ComponentCamera;
+class ComponentPhysics;
 
 class GameObject
 {
@@ -38,6 +39,8 @@ public:
 	ComponentMaterial* GetTextureComponent();
 
 	ComponentCamera* GetCameraComponent();
+
+	ComponentPhysics* GetPhysicsComponent();
 
 	const std::vector<GameObject*>& GetChildren() const;
 

@@ -50,8 +50,7 @@ public:
 public:
     void toIdentity(mat4x4 mat);
 
-private:
-    CollType type;
+public:
     CollType colliderType;
     PhysBody3D* collider;
 
