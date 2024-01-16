@@ -37,20 +37,31 @@ public:
     void SetSphereCollider();
     void SetCylinderCollider();
 
+    void RemoveCollider();
+    void LinkToTransform();
+
+    // ----------
+    void toIdentity(mat4x4 mat);
+
 private:
     ModulePhysics* physics;
 
     CollType type;
     PhysBody3D* collider;
 
+    mat4x4 transformMatrix;
+
     //int colTypeIdentifier; // Used in PrintInspector() / 0 = box, 1 = sphere, 2 = cylinder
     bool isTrigger;
+    bool isStatic; // if true: mass = 0
 
     float2 cylinderShape; // For cylinder shape / [0] = radius, [1] = height
     float3 boxSize; // For box shape
     float radius; // For sphere shape
 
-    PrimCube boxCol;
-    PrimSphere sphereCol;
-    PrimCylinder cylinderCol;
+    float mass;
+
+    float3 colPos;
+    float3 colRot;
+    float3 colScl;
 };

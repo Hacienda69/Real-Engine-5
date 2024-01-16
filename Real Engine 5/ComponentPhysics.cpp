@@ -1,4 +1,5 @@
 #include "Globals.h"
+#include "GameObject.h"
 #include "ComponentPhysics.h"
 #include "ComponentMesh.h"
 #include "ComponentTransform.h"
@@ -10,20 +11,40 @@ ComponentPhysics::ComponentPhysics() : Component(nullptr)
 {
     type = NONE;
     isTrigger = false;
+
+    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();  
+    boxSize.x = GoTransform->getScale().x;  
+    boxSize.y = GoTransform->getScale().y;  
+    boxSize.z = GoTransform->getScale().z;  
     radius = 1.5f;
-    boxSize = float3(3, 3, 3);
-    cylinderShape = float2(radius, boxSize.y);
+    cylinderShape = float2(radius, boxSize.y); 
+
+    colPos = { 0, 0, 0 };
+    colRot = { 0, 0, 0 };
+    colScl = { 1, 1, 1 };
+
+    mass = 0.f;
 
     collider = nullptr;
 }
 
 ComponentPhysics::ComponentPhysics(GameObject* owner) : Component(owner)
 {
-    type = NONE;
+    type = NONE; 
     isTrigger = false;
+
+    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent(); 
+    boxSize.x = GoTransform->getScale().x; 
+    boxSize.y = GoTransform->getScale().y; 
+    boxSize.z = GoTransform->getScale().z; 
     radius = 1.5f;
-    boxSize = float3(3, 3, 3);
-    cylinderShape = float2(radius, boxSize.y);
+    cylinderShape = float2(radius, boxSize.y); 
+
+    colPos = { 0, 0, 0 };
+    colRot = { 0, 0, 0 };
+    colScl = { 1, 1, 1 };
+
+    mass = 0.f;
 
     collider = nullptr;
 }
@@ -39,18 +60,8 @@ void ComponentPhysics::Update()
 
     if (mOwner == nullptr) return;
 
-    // This doesn't work for some reason
-    ComponentTransform* transform = App->hierarchy->objSelected->GetTransformComponent(); 
-    if (transform) { 
-        float3 pos = transform->getPosition(); 
-        float3 rot = transform->getRotation(); // Nueva línea para obtener la rotación 
-
-        // Actualizar la posición
-        collider->SetPos(pos.x / 2, pos.y / 2 + 1, pos.z / 2); 
-
-        // Actualizar la rotación
-        collider->SetRot(rot.x, rot.y, rot.z);
-    }
+    if (isStatic) mass = 0.0f;
+    else mass = 1.0f;
 }
 
 void ComponentPhysics::PrintInspector()
@@ -111,33 +122,21 @@ void ComponentPhysics::PrintInspector()
             ImGui::Text("Box size");
             if (ImGui::DragFloat3("X / Y / Z", boxSize.ptr()))
             {
-                boxCol.size.x = boxSize.x;  // Ancho (width)
-                boxCol.size.y = boxSize.y;  // Altura (height)
-                boxCol.size.z = boxSize.z;  // Profundidad (depth)
 
-                cylinderShape = float2(radius, boxSize.y);
-                cylinderCol.height = boxSize.y;
             }
             break;
         case ComponentPhysics::C_SPHERE: 
             ImGui::Text("Sphere radius");
             if (ImGui::DragFloat("Radius", &radius)) 
             {
-                sphereCol.radius = radius;
 
-                cylinderShape = float2(radius, boxSize.y);
-                cylinderCol.radius = radius;
             }
             break;
         case ComponentPhysics::C_CYLINDER: 
             ImGui::Text("Cylinder shape");
             if (ImGui::DragFloat2("Radius, Height", cylinderShape.ptr()))
             {
-                cylinderCol.radius = cylinderShape.x;
-                cylinderCol.height = cylinderShape.y;
 
-                sphereCol.radius = cylinderShape.x;
-                boxCol.size.y = cylinderShape.y;
             }
             break;  
         case ComponentPhysics::NONE:
@@ -150,41 +149,96 @@ void ComponentPhysics::PrintInspector()
 
 void ComponentPhysics::SetBoxCollider() 
 {   
-    boxCol.size.x = boxSize.x;  // Ancho (width)
-    boxCol.size.y = boxSize.y;  // Altura (height)
-    boxCol.size.z = boxSize.z;  // Profundidad (depth)
+    PrimCube box;
+    toIdentity(box.transform);
 
-    ComponentTransform* transform = App->hierarchy->objSelected->GetTransformComponent();
-    if (transform) {
-        float3 pos = transform->getPosition();
-        float3 rot = transform->getRotation(); // Nueva línea para obtener la rotación 
-        boxCol.SetPos(pos.x / 2, pos.y / 2 + 1, pos.z / 2);
-    }
-    collider = App->physics->AddBody(boxCol, 0);
+    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
+
+    box.SetPos(colPos.x, colPos.y, colPos.z);
+    boxSize.x = GoTransform->getScale().x;
+    boxSize.y = GoTransform->getScale().y;
+    boxSize.z = GoTransform->getScale().z;
+    
+    collider = App->physics->AddBody(box, mass);
+    //add colldier relations
 }
 
 void ComponentPhysics::SetSphereCollider() 
-{
-    sphereCol.radius = radius; 
-    ComponentTransform* transform = App->hierarchy->objSelected->GetTransformComponent(); 
-    if (transform) {
-        float3 pos = transform->getPosition();
+{ 
+    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent(); 
+    float3 gRot = GoTransform->getGlobalRotation();
 
-        sphereCol.SetPos(pos.x / 2, pos.y / 2 + 1, pos.z / 2);
-    }
-    collider = App->physics->AddBody(sphereCol, 0);
+    float rx = gRot.x * DEGTORAD;
+    float ry = gRot.y * DEGTORAD;
+    float rz = gRot.z * DEGTORAD;
+
+    Quat rotQuat = Quat::FromEulerXYZ(rx, ry, rz);
+    vec3 rotVec(rotQuat.Axis().x, rotQuat.Axis().y, rotQuat.Axis().z);
+    float rotAngle = rotQuat.Angle();
+
+    PrimSphere sphere;
+
+    sphere.SetPos(colPos.x, colPos.y, colPos.z);
+    sphere.SetRotation(rotAngle, rotVec);
+
+    sphere.radius = radius;
+
+    collider = App->physics->AddBody(sphere, mass);
+    //add colldier relations
 }
 
 void ComponentPhysics::SetCylinderCollider() 
 {
-    cylinderCol.radius = cylinderShape.x;
-    cylinderCol.height = cylinderShape.y;
+    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
+    float3 gRot = GoTransform->getGlobalRotation();
 
-    ComponentTransform* transform = App->hierarchy->objSelected->GetTransformComponent(); 
-    if (transform) { 
-        float3 pos = transform->getPosition(); 
+    float rx = gRot.x * DEGTORAD;
+    float ry = gRot.y * DEGTORAD;
+    float rz = gRot.z * DEGTORAD;
 
-        cylinderCol.SetPos(pos.x / 2, pos.y / 2 + 1, pos.z / 2); 
+    Quat rotQuat = Quat::FromEulerXYZ(rx, ry, rz);
+    vec3 rotVec(rotQuat.Axis().x, rotQuat.Axis().y, rotQuat.Axis().z);
+    float rotAngle = rotQuat.Angle();
+
+    PrimCylinder cylinder;
+
+    cylinder.SetPos(colPos.x, colPos.y, colPos.z);
+    cylinder.SetRotation(rotAngle, rotVec);
+    cylinder.radius = 1.0f;
+    cylinder.height = 1.0f;
+    cylinder.color = Green;
+
+    collider = App->physics->AddBody(cylinder, mass);
+    // add collider relations
+}
+
+//void ComponentPhysics::LinkToTransform()
+//{
+//    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
+//
+//    ComponentTransform::AffectedCollider* newRelation = new ComponentTransform::AffectedCollider();
+//    newRelation->collider = collider;
+//    mat4x4 newMat;
+//    newRelation->offset = newMat;
+//
+//    GoTransform->affectedCollidersList.push_back(newRelation);
+//    GoTransform->SaveOffsetMatrix();
+//
+//    for (int i = 0; i < GO->children.size(); i++) {
+//        CTransform::CollidersRelation* newRel = new CTransform::CollidersRelation();
+//        newRel->colliderAffected = collider;
+//        mat4x4 newMt;
+//        newRelation->offsetMatrix = newMt;
+//        GO->children[i]->GOtrans->collidersAffecting.push_back(newRel);
+//        GO->children[i]->GOtrans->SaveOffsetMatrix();
+//    }
+//}
+
+void ComponentPhysics::toIdentity(mat4x4 mat) 
+{
+    for (int i = 0; i < 15; ++i)
+    {
+        if (i == 0 || i == 5 || i == 10 || i == 15) mat[i] = 1;
+        else mat[i] = 0;
     }
-    collider = App->physics->AddBody(cylinderCol, 0);
 }

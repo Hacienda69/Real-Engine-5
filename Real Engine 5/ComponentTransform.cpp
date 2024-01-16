@@ -110,3 +110,25 @@ void ComponentTransform:: PrintInspector() {
 
 	calculateMatrix();
 }
+
+float3 ComponentTransform::getGlobalRotation() 
+{ 
+	if (mOwner->GetParent() == nullptr) return getRotation(); 
+
+	float4x4 globalMatrix = getGlobalMatrix(); 
+	Quat globalRotation; 
+	globalMatrix.Decompose(position, globalRotation, scale); 
+
+	return globalRotation.ToEulerXYZ() * RADTODEG; 
+}
+
+//void ComponentTransform::setOffset() {
+//	for (int i = 0; i < affectedCollidersList.size(); i++) {
+//		float glMat[16];
+//		affectedCollidersList[i]->collider->body->getWorldTransform().getOpenGLMatrix(glMat); 
+//
+//		for (int j = 0; j < 16; j++) {
+//			affectedCollidersList[i]->offset[j] = glMat[j] - mOwner->GetTransformComponent()->matrix[j];
+//		}
+//	}
+//}
