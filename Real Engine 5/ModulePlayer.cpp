@@ -157,7 +157,8 @@ bool ModulePlayer::CleanUp()
 // Update: draw background
 update_status ModulePlayer::Update(float dt)
 {
-	turn = acceleration = brake = 0.0f;
+	if (App->scene->isPlay == true) {
+		turn = acceleration = brake = 0.0f;
 		if (App->input->GetKey(SDL_SCANCODE_W) == KEY_REPEAT)
 		{
 			acceleration = MAX_ACCELERATION;
@@ -185,9 +186,13 @@ update_status ModulePlayer::Update(float dt)
 			brake = BRAKE_POWER;
 		}
 
-	vehicle->ApplyEngineForce(acceleration);
-	vehicle->Turn(turn);
-	vehicle->Brake(brake);
+		vehicle->ApplyEngineForce(acceleration);
+		vehicle->Turn(turn);
+		vehicle->Brake(brake);
+	}
+	else
+		vehicle->SetPos(0, 20, -10);
+
 	vehicle->Render();
 
 	return UPDATE_CONTINUE;

@@ -19,7 +19,7 @@
 
 std::vector<PhysBody3D*> cubeBodies;
 
-ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled) 
+ModuleScene::ModuleScene(Application* app, bool start_enabled) : Module(app, start_enabled), isPlay(false)
 {
 
 }
@@ -71,28 +71,27 @@ bool ModuleScene::Start() {
 }
 
 update_status ModuleScene::PreUpdate(float dt) {
-    
     switch (gameState) {
-        case 1: // PLAY
-            deltaTime = (float)timerGameScene.Read() / 1000.0f;
-            timerGameScene.Stop();
-            timerGameScene.Start();
-            break;
+    case 1: // PLAY
+        deltaTime = (float)timerGameScene.Read() / 1000.0f;
+        timerGameScene.Stop();
+        timerGameScene.Start();
+        isPlay = true;  // Update ModuleScene's isPlay
+        App->scene->isPlay = true;  // Update ModulePlayer's isPlay
+        break;
 
-        case 2: // STOP
-            timerGameScene.Stop();
+    case 2: // STOP
+        timerGameScene.Stop();
+        isPlay = false;  // Update ModuleScene's isPlay
+        App->scene->isPlay = false;  // Update ModulePlayer's isPlay
+        // ... Other STOP case code ...
+        break;
 
-            //TODO hacer que el cubo deje de rotar
-            if(App->hierarchy->findByName("Baker House") != nullptr)
-                App->hierarchy->findByName("Baker House")->transform->resetMatrix();
-
-            deltaTime = 0;
-            isPlay = false;
-            break;
-
-        case 3:	// PAUSE
-            isPlay = false;
-            break;
+    case 3:	// PAUSE
+        isPlay = false;  // Update ModuleScene's isPlay
+        App->scene->isPlay = false;  // Update ModulePlayer's isPlay
+        // ... Other PAUSE case code ...
+        break;
     }
     return UPDATE_CONTINUE;
 }
