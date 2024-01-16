@@ -89,8 +89,6 @@ void ComponentTransform::calculateMatrix()
 	Quat q;
 	q = Quat::FromEulerXYZ(rx, ry, rz);
 	matrix = float4x4::FromTRS(position, q, scale).Transposed();
-
-
 }
 
 void ComponentTransform:: PrintInspector() {

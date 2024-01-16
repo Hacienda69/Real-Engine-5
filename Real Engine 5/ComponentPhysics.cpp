@@ -77,6 +77,11 @@ void ComponentPhysics::PrintInspector()
             if (ImGui::DragFloat("Mass", &mass)) { UpdateShape(); }
         }
          
+        if (ImGui::Button("Remove Collider"))
+        {
+            RemoveCollider();
+            type = CollType::NONE;
+        }
         if (ImGui::Combo("Collider type", reinterpret_cast<int*>(&type), colType, IM_ARRAYSIZE(colType))) 
         {
             switch (type)
@@ -140,40 +145,10 @@ void ComponentPhysics::PrintInspector()
 
 void ComponentPhysics::RemoveCollider() 
 {
-    if (collider == nullptr) {
-        return;
+    if (collider != nullptr) {
+        App->physics->RemoveBody(collider);
+        collider = nullptr;
     }
-
-    ComponentTransform* mOwner_transform = mOwner->GetTransformComponent();
-    std::vector<GameObject*> mOwner_children = mOwner->GetChildren();
-
-    for (int i = 0; i < mOwner_transform->affectedCollidersList.size(); i++) {
-
-        if (mOwner_transform->affectedCollidersList[i]->collider == collider) {
-
-            ComponentTransform::AffectedCollider* colPtr = mOwner_transform->affectedCollidersList[i];
-            mOwner_transform->affectedCollidersList.erase(mOwner_transform->affectedCollidersList.begin() + i);
-            delete*& colPtr;
-            colPtr = nullptr;
-        }
-    }
-
-    for (int i = 0; i < mOwner->GetChildren().size(); i++) {
-
-        for (int j = 0; j < mOwner_children[i]->GetTransformComponent()->affectedCollidersList.size(); j++) {
-
-            if (mOwner_children[i]->GetTransformComponent()->affectedCollidersList[j]->collider == collider) {
-
-                ComponentTransform::AffectedCollider* colPtr = mOwner_children[i]->GetTransformComponent()->affectedCollidersList[j];
-                mOwner_children[i]->GetTransformComponent()->affectedCollidersList.erase(mOwner_children[i]->GetTransformComponent()->affectedCollidersList.begin() + j);
-                delete*& colPtr;
-                colPtr = nullptr;
-            }
-        }
-    }
-    App->physics->RemoveBody(collider);
-    collider->~PhysBody3D();
-    collider = nullptr;
 }
 
 void ComponentPhysics::SetBoxCollider() 
@@ -246,38 +221,7 @@ void ComponentPhysics::SetCylinderCollider()
 
 void ComponentPhysics::UpdateShape()
 {
-    ComponentTransform* GoTransform = App->hierarchy->objSelected->GetTransformComponent();
-
-    for (int i = 0; i < GoTransform->affectedCollidersList.size(); i++) {
-
-        if (GoTransform->affectedCollidersList[i]->collider == collider) {
-
-            ComponentTransform::AffectedCollider* colPtr = GoTransform->affectedCollidersList[i];
-            GoTransform->affectedCollidersList.erase(GoTransform->affectedCollidersList.begin() + i);
-            delete*& colPtr;
-            colPtr = nullptr;
-        }
-    }
-
-    std::vector<GameObject*> mOwner_children = mOwner->GetChildren();
-
-    for (int i = 0; i < mOwner_children.size(); i++) {
-
-        for (int j = 0; j < mOwner_children[i]->GetTransformComponent()->affectedCollidersList.size(); j++) {
-
-            if (mOwner_children[i]->GetTransformComponent()->affectedCollidersList[j]->collider == collider) {
-
-                ComponentTransform::AffectedCollider* colPtr = mOwner_children[i]->GetTransformComponent()->affectedCollidersList[j];
-                mOwner_children[i]->GetTransformComponent()->affectedCollidersList.erase(mOwner_children[i]->GetTransformComponent()->affectedCollidersList.begin() + j);
-                delete*& colPtr;
-                colPtr = nullptr;
-            }
-        }
-    }
-
-    App->physics->RemoveBody(collider);
-    collider->~PhysBody3D();
-    collider = nullptr;
+    RemoveCollider();
 
     float3 auxRot = colRot;
 

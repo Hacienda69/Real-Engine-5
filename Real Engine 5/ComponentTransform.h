@@ -11,11 +11,6 @@
 class ComponentTransform : public Component
 {
 public:
-	struct AffectedCollider 
-	{
-		PhysBody3D* collider;
-		mat4x4 offset;
-	};
 
 	ComponentTransform(GameObject* owner);
 	~ComponentTransform();
@@ -37,9 +32,6 @@ public:
 	void PrintInspector();
 
 	void calculateMatrix();
-
-public: 
-	std::vector<AffectedCollider*> affectedCollidersList;
 
 private:
 	float4x4 matrix;
