@@ -62,9 +62,8 @@ public:
 public:
     void toIdentity(mat4x4 mat);
 
-private:
+public:
     ModulePhysics* phys;
-    CollType type;
     CollType colliderType;
     PhysBody3D* collider;
 
