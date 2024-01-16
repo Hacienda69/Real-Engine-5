@@ -1,7 +1,5 @@
 #include "Application.h"
 #include "Component.h"
-#include "PhysBody3D.h"
-#include "Globals.h"
 #include "GameObject.h"
 #include "MathGeoLib/include/MathGeoLib.h"
 #include "ModulePhysics.h"
@@ -15,8 +13,6 @@
 #pragma comment (lib, "Bullet/libx86/BulletCollision.lib")
 #pragma comment (lib, "Bullet/libx86/LinearMath.lib")
 #endif
-
-ComponentTransform;
 
 class ComponentPhysics : public Component
 {
